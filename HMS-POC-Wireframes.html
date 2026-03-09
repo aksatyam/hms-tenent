@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HMS Enterprise — POC Wireframes</title>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -1525,9 +1525,9 @@ const Audit_Log = ({nav}) => (
       <table className="table-wire text-xs">
         <thead><tr><th>Timestamp</th><th>User</th><th>Entity</th><th>Action</th><th>Old Value</th><th>New Value</th><th>IP</th></tr></thead>
         <tbody>
-          <tr><td>09-Mar 11:45</td><td>Dr. Ananya Mehta</td><td>Consultation</td><td>CREATE</td><td>—</td><td className="font-mono">{"status":"active"...}</td><td>192.168.1.45</td></tr>
-          <tr><td>09-Mar 11:48</td><td>Dr. Ananya Mehta</td><td>Prescription</td><td>CREATE</td><td>—</td><td className="font-mono">{"drugs":2...}</td><td>192.168.1.45</td></tr>
-          <tr><td>09-Mar 12:02</td><td>Neha Agarwal</td><td>DrugBatch</td><td>UPDATE</td><td className="font-mono">{"stock":2100}</td><td className="font-mono">{"stock":2085}</td><td>192.168.1.52</td></tr>
+          <tr><td>09-Mar 11:45</td><td>Dr. Ananya Mehta</td><td>Consultation</td><td>CREATE</td><td>—</td><td className="font-mono">{'{"status":"active"...'}</td><td>192.168.1.45</td></tr>
+          <tr><td>09-Mar 11:48</td><td>Dr. Ananya Mehta</td><td>Prescription</td><td>CREATE</td><td>—</td><td className="font-mono">{'{"drugs":2...'}</td><td>192.168.1.45</td></tr>
+          <tr><td>09-Mar 12:02</td><td>Neha Agarwal</td><td>DrugBatch</td><td>UPDATE</td><td className="font-mono">{'{"stock":2100}'}</td><td className="font-mono">{'{"stock":2085}'}</td><td>192.168.1.52</td></tr>
         </tbody>
       </table>
       <div className="mt-2 text-xs text-gray-400">No UPDATE/DELETE on audit table — enforced via PostgreSQL row-level security | 7-year retention</div>
