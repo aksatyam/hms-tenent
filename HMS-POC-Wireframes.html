@@ -109,7 +109,7 @@ const MODULES = [
     screens: ['Patient Registration','Token Queue','Doctor Consultation','E-Prescription','Lab Order','Discharge Summary','OPD Dashboard'],
     roles: ['L3','L4','L5'] },
   { id: 'M02', label: 'Pharmacy', color: '#7C3AED', icon: '💊',
-    screens: ['Prescription Worklist','Drug Dispensing','Stock Ledger','Purchase Order','GRN Entry','Inter-Branch Transfer'],
+    screens: ['Prescription Worklist','Drug Dispensing','Pharmacy Billing','Stock Ledger','Purchase Order','GRN Entry','Inter-Branch Transfer'],
     roles: ['L3','L4','L5'] },
   { id: 'M03', label: 'Laboratory', color: '#0369A1', icon: '🔬',
     screens: ['Lab Worklist','Sample Collection','Result Entry','Result Validation','Lab Report','TAT Monitor'],
@@ -118,7 +118,7 @@ const MODULES = [
     screens: ['Patient Bill','Payment Collection','TPA Insurance','GST Invoice','Day-End Close','Revenue Dashboard'],
     roles: ['L2','L3','L5'] },
   { id: 'M05', label: 'HR & Payroll', color: '#BE185D', icon: '👥',
-    screens: ['Employee Onboarding','Attendance','Leave Management','Payroll Run','Payslip','Compliance Export'],
+    screens: ['Employee Onboarding','Doctor Profiles','Attendance','Leave Management','Payroll Run','Payslip','Compliance Export'],
     roles: ['L2','L3','L4','L5'] },
   { id: 'M06', label: 'Inventory', color: '#065F46', icon: '📦',
     screens: ['Stock Dashboard','Purchase Requisition','Approval Queue','Vendor Management','Asset Register'],
@@ -671,6 +671,62 @@ const Pharma_Transfer = ({nav}) => (
   </div>
 );
 
+const Pharma_Billing = ({nav}) => (
+  <div>
+    <SectionHeader title="Pharmacy Billing" module="M02 Pharmacy" roleIds={['L5']} />
+    <div className="grid grid-cols-3 gap-6">
+      <div className="col-span-2 card">
+        <div className="card-header">🧾 Pharmacy Invoice</div>
+        <div className="grid grid-cols-3 gap-3 mb-4">
+          <FormRow label="Patient UHID" value="APL-20260309-001" />
+          <FormRow label="Patient Name" value="Rajesh Kumar Sharma" />
+          <FormRow label="Bill Type" value="OPD Dispensing" />
+        </div>
+        <table className="table-wire">
+          <thead><tr><th>Drug</th><th>Batch</th><th>Qty</th><th>MRP</th><th>Disc%</th><th>GST</th><th>Amount</th></tr></thead>
+          <tbody>
+            <tr><td>Paracetamol 650mg</td><td className="font-mono text-xs">PAR-2026-A</td><td>10</td><td>45.00</td><td>5%</td><td>12%</td><td>478.80</td></tr>
+            <tr><td>Metformin 500mg</td><td className="font-mono text-xs">MET-2025-K</td><td>30</td><td>120.00</td><td>0%</td><td>12%</td><td>4,032.00</td></tr>
+            <tr><td>Atorvastatin 20mg</td><td className="font-mono text-xs">ATV-2026-C</td><td>15</td><td>85.00</td><td>10%</td><td>12%</td><td>1,285.20</td></tr>
+          </tbody>
+          <tfoot><tr><td colSpan="6" className="font-bold text-right">Grand Total</td><td className="font-bold text-green-700">₹5,796.00</td></tr></tfoot>
+        </table>
+        <div className="mt-3 flex gap-2">
+          <button className="btn-wire btn-primary">Generate Bill</button>
+          <button className="btn-wire btn-outline">Print Invoice</button>
+          <button className="btn-wire btn-outline">Send to Finance</button>
+        </div>
+      </div>
+      <div>
+        <div className="card mb-4">
+          <div className="card-header">💳 Payment Mode</div>
+          <div className="space-y-2">
+            {['Cash','Card (POS)','UPI','TPA / Insurance','Credit (Approved)'].map(m=>(
+              <label key={m} className="flex items-center gap-2 text-sm"><input type="radio" name="payMode" defaultChecked={m==='Cash'}/>{m}</label>
+            ))}
+          </div>
+          <FormRow label="Amount Received" value="₹5,796.00" />
+          <FormRow label="Change Due" value="₹0.00" />
+        </div>
+        <div className="card">
+          <div className="card-header">📋 Bill Summary</div>
+          <div className="space-y-1 text-xs">
+            <div className="flex justify-between"><span>Subtotal</span><span>₹5,350.00</span></div>
+            <div className="flex justify-between"><span>GST (12%)</span><span>₹642.00</span></div>
+            <div className="flex justify-between"><span>Discount</span><span className="text-red-500">-₹196.00</span></div>
+            <div className="flex justify-between font-bold border-t pt-1 mt-1"><span>Net Payable</span><span>₹5,796.00</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div className="mt-3 flex gap-3">
+      <FlowArrow text="Bill posted → Finance Day-End Close" onClick={()=>nav('M04','Day-End Close')} />
+      <FlowArrow text="TPA claim? → TPA Insurance" onClick={()=>nav('M04','TPA Insurance')} />
+    </div>
+    <KafkaBadge event="pharmacy.bill.created → hms.pharmacy.events" />
+  </div>
+);
+
 // M03 Laboratory Screens
 const Lab_Worklist = ({nav}) => (
   <div>
@@ -1165,6 +1221,73 @@ const HR_Compliance = ({nav}) => (
         </div>
       ))}
     </div>
+  </div>
+);
+
+const HR_DoctorProfiles = ({nav}) => (
+  <div>
+    <SectionHeader title="Doctor Profile Management" module="M05 HR & Payroll" roleIds={['L3','L4']} />
+    <div className="grid grid-cols-3 gap-6">
+      <div className="col-span-2 card">
+        <div className="card-header">🩺 Doctor Directory</div>
+        <table className="table-wire">
+          <thead><tr><th>Emp ID</th><th>Doctor Name</th><th>Specialty</th><th>Qualification</th><th>Reg. No.</th><th>Schedule</th><th>Status</th></tr></thead>
+          <tbody>
+            {[
+              {id:'EMP-003',name:'Dr. Ananya Mehta',spec:'General Medicine',qual:'MBBS, MD',reg:'MCI-78452',sched:'Mon-Sat',status:'Active'},
+              {id:'EMP-004',name:'Dr. Vikram Patel',spec:'Orthopedics',qual:'MBBS, MS Ortho',reg:'MCI-65321',sched:'Mon-Fri',status:'Active'},
+              {id:'EMP-007',name:'Dr. Sanjay Kapoor',spec:'Cardiology',qual:'MBBS, DM Cardio',reg:'MCI-91204',sched:'Mon-Sat',status:'Active'},
+              {id:'EMP-010',name:'Dr. Meera Joshi',spec:'Pediatrics',qual:'MBBS, DCH',reg:'MCI-44128',sched:'Tue-Sat',status:'On Leave'},
+            ].map(d=>(
+              <tr key={d.id}>
+                <td className="font-mono text-xs">{d.id}</td>
+                <td className="font-semibold">{d.name}</td>
+                <td>{d.spec}</td>
+                <td className="text-xs">{d.qual}</td>
+                <td className="font-mono text-xs">{d.reg}</td>
+                <td className="text-xs">{d.sched}</td>
+                <td><span className={`px-2 py-0.5 rounded text-xs ${d.status==='Active'?'bg-green-100 text-green-700':'bg-amber-100 text-amber-700'}`}>{d.status}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <button className="btn-wire btn-primary mt-3">+ Add New Doctor</button>
+      </div>
+      <div>
+        <div className="card mb-4">
+          <div className="card-header">👤 Profile — Dr. Ananya Mehta</div>
+          <div className="space-y-2 text-sm">
+            <FormRow label="Employee ID" value="EMP-003" />
+            <FormRow label="Department" value="General Medicine" />
+            <FormRow label="Qualification" value="MBBS, MD (Gen Med)" />
+            <FormRow label="MCI Reg. No." value="MCI-78452" />
+            <FormRow label="Join Date" value="15-Jun-2023" />
+            <FormRow label="Consulting Fee" value="₹800" />
+            <FormRow label="Revenue Share %" value="60% Doctor / 40% Hospital" />
+            <FormRow label="License Expiry" value="31-Dec-2027" />
+          </div>
+          <div className="mt-3 flex gap-2">
+            <button className="btn-wire btn-primary text-xs">Edit Profile</button>
+            <button className="btn-wire btn-outline text-xs" onClick={()=>nav('M11','Doctor Schedule')}>View Schedule →</button>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-header">📊 Doctor Stats</div>
+          <div className="grid grid-cols-2 gap-2">
+            <StatCard value="342" label="Patients (MTD)" />
+            <StatCard value="4.8" label="Rating" color="#16A34A" />
+            <StatCard value="92%" label="Attendance" color="#0369A1" />
+            <StatCard value="₹2.7L" label="Revenue (MTD)" color="#B45309" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div className="mt-3 flex gap-3">
+      <FlowArrow text="Configure doctor schedule → Appointment Schedule" onClick={()=>nav('M11','Doctor Schedule')} />
+      <FlowArrow text="View appointments → Appointment Calendar" onClick={()=>nav('M11','Appointment Calendar')} />
+      <FlowArrow text="Payroll for doctor → Payroll Run" onClick={()=>nav('M05','Payroll Run')} />
+    </div>
+    <KafkaBadge event="doctor.profile.updated → hms.hr.events" />
   </div>
 );
 
@@ -1793,6 +1916,7 @@ const Appt_Schedule = ({nav}) => (
       <FormRow label="Block-out Dates" value="15-Mar-2026 (Conference), 26-Jan-2026 (Holiday)" />
       <button className="btn-wire btn-primary mt-3">Save Schedule</button>
     </div>
+    <div className="mt-3"><FlowArrow text="View Doctor Profile → HR Doctor Profiles" onClick={()=>nav('M05','Doctor Profiles')} /></div>
   </div>
 );
 
@@ -1865,6 +1989,7 @@ const Appt_NoShow = ({nav}) => (
         </tbody>
       </table>
     </div>
+    <div className="mt-3"><FlowArrow text="Check doctor availability → Doctor Profiles" onClick={()=>nav('M05','Doctor Profiles')} /></div>
   </div>
 );
 
@@ -2082,8 +2207,8 @@ const SCREEN_MAP = {
   },
   'M02': {
     'Prescription Worklist': Pharma_Worklist, 'Drug Dispensing': Pharma_Dispensing,
-    'Stock Ledger': Pharma_StockLedger, 'Purchase Order': Pharma_PO,
-    'GRN Entry': Pharma_GRN, 'Inter-Branch Transfer': Pharma_Transfer,
+    'Pharmacy Billing': Pharma_Billing, 'Stock Ledger': Pharma_StockLedger,
+    'Purchase Order': Pharma_PO, 'GRN Entry': Pharma_GRN, 'Inter-Branch Transfer': Pharma_Transfer,
   },
   'M03': {
     'Lab Worklist': Lab_Worklist, 'Sample Collection': Lab_SampleCollection,
@@ -2095,7 +2220,8 @@ const SCREEN_MAP = {
     'GST Invoice': Fin_GST, 'Day-End Close': Fin_DayClose, 'Revenue Dashboard': Fin_Revenue,
   },
   'M05': {
-    'Employee Onboarding': HR_Onboarding, 'Attendance': HR_Attendance, 'Leave Management': HR_Leave,
+    'Employee Onboarding': HR_Onboarding, 'Doctor Profiles': HR_DoctorProfiles,
+    'Attendance': HR_Attendance, 'Leave Management': HR_Leave,
     'Payroll Run': HR_Payroll, 'Payslip': HR_Payslip, 'Compliance Export': HR_Compliance,
   },
   'M06': {
