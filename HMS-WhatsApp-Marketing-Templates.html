@@ -1,0 +1,2307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HMS Enterprise — WhatsApp Marketing Templates</title>
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --dark-navy: #0F2640;
+    --teal: #0D7377;
+    --teal-light: #10B981;
+    --gold: #C49A2A;
+    --gold-light: #F6E27A;
+    --wa-green: #25D366;
+    --wa-dark: #075E54;
+    --wa-light: #DCF8C6;
+    --wa-bg: #ECE5DD;
+    --wa-chat-bg: #E5DDD5;
+    --wa-blue: #34B7F1;
+    --wa-header: #075E54;
+    --bubble-out: #DCF8C6;
+    --bubble-in: #FFFFFF;
+    --text-dark: #1A202C;
+    --text-body: #2D3748;
+    --text-muted: #718096;
+    --bg-light: #F7FAFC;
+    --border: #E2E8F0;
+    --red: #E53E3E;
+    --orange: #ED8936;
+    --purple: #805AD5;
+    --pink: #D53F8C;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #F0F2F5;
+    color: var(--text-body);
+    line-height: 1.5;
+  }
+
+  /* ═══════════ HERO HEADER ═══════════ */
+  .hero {
+    background: linear-gradient(135deg, var(--dark-navy) 0%, var(--navy) 40%, var(--teal) 100%);
+    padding: 60px 40px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(37,211,102,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(196,154,42,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 50px;
+  }
+  .hero-text { flex: 1; }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(37,211,102,0.15);
+    border: 1px solid rgba(37,211,102,0.3);
+    border-radius: 20px;
+    padding: 6px 16px;
+    margin-bottom: 20px;
+  }
+  .hero-badge span {
+    font-size: 12px;
+    color: var(--wa-green);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-size: 42px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+  .hero h1 .accent { color: var(--wa-green); }
+  .hero h1 .gold { color: var(--gold-light); }
+  .hero p {
+    font-size: 17px;
+    color: rgba(255,255,255,0.7);
+    max-width: 520px;
+    line-height: 1.6;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 30px;
+    margin-top: 30px;
+  }
+  .hero-stat {
+    text-align: center;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    min-width: 100px;
+  }
+  .hero-stat .num {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--wa-green);
+    display: block;
+  }
+  .hero-stat .label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  /* WhatsApp phone mockup in hero */
+  .hero-phone {
+    width: 280px;
+    flex-shrink: 0;
+  }
+  .phone-frame {
+    background: #000;
+    border-radius: 32px;
+    padding: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .phone-screen {
+    background: var(--wa-chat-bg);
+    border-radius: 22px;
+    overflow: hidden;
+    height: 380px;
+  }
+  .phone-header {
+    background: var(--wa-header);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .phone-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--teal), var(--wa-green));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 700;
+  }
+  .phone-name {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .phone-status {
+    color: rgba(255,255,255,0.6);
+    font-size: 11px;
+  }
+  .phone-msgs {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .phone-msg {
+    max-width: 85%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.4;
+    position: relative;
+  }
+  .phone-msg.incoming {
+    background: #fff;
+    align-self: flex-start;
+    border-top-left-radius: 2px;
+    color: var(--text-dark);
+  }
+  .phone-msg.outgoing {
+    background: var(--bubble-out);
+    align-self: flex-end;
+    border-top-right-radius: 2px;
+    color: var(--text-dark);
+  }
+  .phone-msg .time {
+    font-size: 9px;
+    color: #999;
+    float: right;
+    margin-left: 8px;
+    margin-top: 4px;
+  }
+  .phone-msg .tick { color: var(--wa-blue); font-size: 10px; }
+
+  /* ═══════════ NAV TABS ═══════════ */
+  .nav-bar {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    overflow-x: auto;
+    padding: 0 20px;
+    gap: 4px;
+  }
+  .nav-tab {
+    padding: 14px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-tab:hover { color: var(--navy); }
+  .nav-tab.active {
+    color: var(--wa-dark);
+    border-bottom-color: var(--wa-green);
+  }
+  .nav-tab .count {
+    background: var(--wa-green);
+    color: #fff;
+    font-size: 10px;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-weight: 700;
+  }
+
+  /* ═══════════ MAIN CONTENT ═══════════ */
+  .main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+  }
+
+  /* Campaign Section */
+  .campaign-section {
+    margin-bottom: 50px;
+    display: none;
+  }
+  .campaign-section.active { display: block; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+  .section-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .section-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .section-header p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .section-meta {
+    display: flex;
+    gap: 20px;
+    margin: 16px 0 24px 64px;
+  }
+  .meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--text-muted);
+    background: #fff;
+    padding: 4px 12px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+  }
+  .meta-pill strong { color: var(--text-body); }
+
+  /* Template Cards Grid */
+  .templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 24px;
+  }
+
+  .template-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+  }
+  .template-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  }
+
+  /* Card Header */
+  .card-top {
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .card-sublabel {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .card-type {
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .type-marketing { background: #EBF8FF; color: #2B6CB0; }
+  .type-utility { background: #F0FFF4; color: #276749; }
+  .type-transactional { background: #FAF5FF; color: #6B46C1; }
+  .type-remarketing { background: #FFFAF0; color: #C05621; }
+
+  /* WhatsApp Preview */
+  .wa-preview {
+    background: url("data:image/svg+xml,%3Csvg width='400' height='400' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='p' width='60' height='60' patternUnits='userSpaceOnUse'%3E%3Cpath d='M30 5 L35 15 L45 15 L37 22 L40 32 L30 26 L20 32 L23 22 L15 15 L25 15Z' fill='%23d4cfc6' opacity='0.12'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='400' height='400' fill='%23ECE5DD'/%3E%3Crect width='400' height='400' fill='url(%23p)'/%3E%3C/svg%3E") #ECE5DD;
+    padding: 16px;
+    min-height: 200px;
+  }
+
+  /* Message Bubbles */
+  .wa-bubble {
+    max-width: 92%;
+    background: var(--bubble-out);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    position: relative;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.08);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--text-dark);
+    word-wrap: break-word;
+  }
+  .wa-bubble:first-child {
+    border-top-left-radius: 2px;
+  }
+  .wa-bubble .msg-header {
+    display: block;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+  .wa-bubble .msg-img {
+    width: 100%;
+    height: 140px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    padding: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .wa-bubble .msg-img::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 0 6px 0 60px;
+  }
+  .wa-bubble .msg-img.gold-img {
+    background: linear-gradient(135deg, #92400E, var(--gold));
+  }
+  .wa-bubble .msg-img.green-img {
+    background: linear-gradient(135deg, #065F46, var(--teal-light));
+  }
+  .wa-bubble .msg-img.purple-img {
+    background: linear-gradient(135deg, #553C9A, var(--purple));
+  }
+  .wa-bubble .msg-img.red-img {
+    background: linear-gradient(135deg, #9B2C2C, #E53E3E);
+  }
+  .wa-bubble .msg-img .img-icon {
+    font-size: 36px;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .wa-bubble .highlight {
+    background: rgba(37,211,102,0.15);
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+  .wa-bubble .bold { font-weight: 700; }
+  .wa-bubble .italic { font-style: italic; }
+  .wa-bubble .strike { text-decoration: line-through; }
+  .wa-bubble .mono {
+    font-family: monospace;
+    background: rgba(0,0,0,0.06);
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 12px;
+  }
+  .wa-bubble .msg-footer {
+    font-size: 11px;
+    color: #8696A0;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+  .wa-bubble .timestamp {
+    float: right;
+    font-size: 10.5px;
+    color: #8696A0;
+    margin-left: 10px;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .wa-bubble .timestamp .read { color: var(--wa-blue); }
+
+  /* CTA Buttons */
+  .wa-cta {
+    border-top: 1px solid rgba(0,0,0,0.08);
+    margin-top: 0;
+  }
+  .wa-cta-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px;
+    color: var(--wa-blue);
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    text-decoration: none;
+  }
+  .wa-cta-btn:first-child { border-top: none; }
+  .wa-cta-btn svg { width: 16px; height: 16px; }
+
+  /* Card Footer — Template Metadata */
+  .card-footer {
+    padding: 14px 20px;
+    background: var(--bg-light);
+    border-top: 1px solid var(--border);
+  }
+  .card-footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .card-footer-row:last-child { margin-bottom: 0; }
+  .var-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10.5px;
+    background: #EDF2F7;
+    color: #4A5568;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'SF Mono', monospace;
+    margin-right: 4px;
+    margin-bottom: 3px;
+  }
+  .audience-tag {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .card-footer .lang {
+    font-size: 10px;
+    background: var(--wa-dark);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  /* Quick Reply Buttons */
+  .wa-quick-replies {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .wa-qr {
+    padding: 8px 16px;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--wa-blue);
+    font-weight: 500;
+    background: #fff;
+    cursor: pointer;
+  }
+
+  /* ═══════════ CAMPAIGN FLOW ═══════════ */
+  .flow-section {
+    background: #fff;
+    border-radius: 16px;
+    padding: 30px;
+    margin-top: 40px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .flow-section h3 {
+    font-size: 18px;
+    color: var(--navy);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .flow-steps {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+  .flow-step {
+    text-align: center;
+    min-width: 140px;
+    flex-shrink: 0;
+  }
+  .flow-node {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin: 0 auto 8px;
+    position: relative;
+  }
+  .flow-node::after {
+    content: '→';
+    position: absolute;
+    right: -32px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #CBD5E0;
+    font-size: 20px;
+  }
+  .flow-step:last-child .flow-node::after { display: none; }
+  .flow-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-body);
+  }
+  .flow-time {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* ═══════════ KPI METRICS ═══════════ */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .kpi-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .kpi-card .kpi-val {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+  }
+  .kpi-card .kpi-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  /* ═══════════ RESPONSIVE ═══════════ */
+  @media (max-width: 768px) {
+    .hero-inner { flex-direction: column; text-align: center; }
+    .hero h1 { font-size: 28px; }
+    .hero p { margin: 0 auto; }
+    .hero-stats { justify-content: center; }
+    .hero-phone { display: none; }
+    .templates-grid { grid-template-columns: 1fr; }
+    .nav-inner { gap: 0; }
+    .nav-tab { padding: 12px 14px; font-size: 12px; }
+    .section-meta { flex-wrap: wrap; margin-left: 0; }
+  }
+
+  /* Print */
+  @media print {
+    .nav-bar { display: none; }
+    .campaign-section { display: block !important; page-break-inside: avoid; }
+    .template-card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HERO ═══════════ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge">
+        <span>📱 WhatsApp Business API Templates</span>
+      </div>
+      <h1>
+        <span class="gold">HMS Enterprise</span><br>
+        Digital Marketing <span class="accent">Templates</span>
+      </h1>
+      <p>
+        Pre-approved WhatsApp Business API message templates for hospital outreach,
+        lead nurturing, demo scheduling, and customer success campaigns.
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="num">30</span>
+          <span class="label">Templates</span>
+        </div>
+        <div class="hero-stat">
+          <span class="num">8</span>
+          <span class="label">Campaigns</span>
+        </div>
+        <div class="hero-stat">
+          <span class="num">98%</span>
+          <span class="label">Open Rate</span>
+        </div>
+        <div class="hero-stat">
+          <span class="num">45%</span>
+          <span class="label">CTR Target</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-phone">
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="phone-header">
+            <div class="phone-avatar">H</div>
+            <div>
+              <div class="phone-name">HMS Enterprise</div>
+              <div class="phone-status">online</div>
+            </div>
+          </div>
+          <div class="phone-msgs">
+            <div class="phone-msg incoming">
+              Hi! I'm interested in HMS for our 200-bed hospital.
+              <span class="time">10:30 AM</span>
+            </div>
+            <div class="phone-msg outgoing">
+              Welcome! 🏥 HMS Enterprise manages 50+ hospitals across India.
+              <span class="time">10:31 AM <span class="tick">✓✓</span></span>
+            </div>
+            <div class="phone-msg outgoing">
+              Let me schedule a personalized demo for you. Which day works best?
+              <span class="time">10:31 AM <span class="tick">✓✓</span></span>
+            </div>
+            <div class="phone-msg incoming">
+              Tomorrow at 3 PM works!
+              <span class="time">10:32 AM</span>
+            </div>
+            <div class="phone-msg outgoing">
+              Done! 📅 Demo confirmed for tomorrow 3 PM. You'll receive a calendar invite shortly.
+              <span class="time">10:32 AM <span class="tick">✓✓</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ NAV TABS ═══════════ -->
+<div class="nav-bar">
+  <div class="nav-inner">
+    <div class="nav-tab active" onclick="showTab('launch')">🚀 Product Launch <span class="count">4</span></div>
+    <div class="nav-tab" onclick="showTab('feature')">✨ Feature Highlights <span class="count">4</span></div>
+    <div class="nav-tab" onclick="showTab('demo')">📅 Demo & Booking <span class="count">4</span></div>
+    <div class="nav-tab" onclick="showTab('roi')">📊 ROI & Value <span class="count">4</span></div>
+    <div class="nav-tab" onclick="showTab('testimonial')">🏆 Social Proof <span class="count">3</span></div>
+    <div class="nav-tab" onclick="showTab('compliance')">🔒 Compliance <span class="count">3</span></div>
+    <div class="nav-tab" onclick="showTab('nurture')">🤝 Lead Nurture <span class="count">4</span></div>
+    <div class="nav-tab" onclick="showTab('seasonal')">🎯 Seasonal <span class="count">4</span></div>
+  </div>
+</div>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="main">
+
+<!-- ╔══════════════════════════════════════════════╗
+     ║  CAMPAIGN 1 — PRODUCT LAUNCH                ║
+     ╚══════════════════════════════════════════════╝ -->
+<div class="campaign-section active" id="tab-launch">
+  <div class="section-header">
+    <div class="section-icon" style="background:linear-gradient(135deg,#065F46,#10B981);color:#fff">🚀</div>
+    <div>
+      <h2>Product Launch Campaign</h2>
+      <p>First-touch templates for announcing HMS Enterprise to hospital decision-makers</p>
+    </div>
+  </div>
+  <div class="section-meta">
+    <div class="meta-pill">🎯 <strong>Audience:</strong> Hospital CIOs, MD/Directors, IT Heads</div>
+    <div class="meta-pill">📈 <strong>Goal:</strong> Awareness → Demo Request</div>
+    <div class="meta-pill">⏱ <strong>Sequence:</strong> Day 0 → Day 3 → Day 7</div>
+  </div>
+
+  <div class="templates-grid">
+    <!-- Template 1.1 -->
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T1.1 — Launch Announcement</div>
+          <div class="card-sublabel">First-touch awareness message</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <div class="msg-img green-img">
+            <div>
+              <span class="img-icon">🏥</span>
+              HMS Enterprise Platform<br>
+              <small>Next-Gen Hospital Management</small>
+            </div>
+          </div>
+          Namaste <span class="highlight">{{1}}</span> 🙏<br><br>
+          Introducing <span class="bold">HMS Enterprise</span> — India's most comprehensive multi-tenant Hospital Management System.<br><br>
+          ✅ 12 integrated modules<br>
+          ✅ 64 screens covering OPD to Billing<br>
+          ✅ ABDM/ABHA compliant<br>
+          ✅ NABH-aligned workflows<br><br>
+          Built for hospitals like <span class="highlight">{{2}}</span> that want to go fully digital in 2026.<br><br>
+          <span class="italic">Trusted by 50+ hospitals across India.</span>
+          <div class="msg-footer">TGWT Solutions Pvt. Ltd. | Reply STOP to opt out</div>
+          <span class="timestamp">10:00 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">🌐 View Product Overview</a>
+          <a class="wa-cta-btn">📅 Book Free Demo</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} Hospital</span>
+          </div>
+          <span class="lang">EN / HI</span>
+        </div>
+        <div class="card-footer-row">
+          <div class="audience-tag">🎯 Hospital CIOs & Directors</div>
+          <div class="audience-tag">📎 Header: Image</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Template 1.2 -->
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T1.2 — Pain-Point Hook</div>
+          <div class="card-sublabel">Problem-aware outreach</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          Still managing patient records on paper? 📋<br>
+          Still chasing lab reports manually? 🔬<br>
+          Still doing pharmacy billing in Excel? 💊<br><br>
+          You're not alone — <span class="bold">73% of Indian hospitals</span> face the same challenges.<br><br>
+          HMS Enterprise automates it all:<br><br>
+          🏥 <span class="bold">OPD Queue</span> → Zero wait-time tokens<br>
+          💉 <span class="bold">Pharmacy</span> → Auto-billing + expiry alerts<br>
+          🧪 <span class="bold">Lab</span> → Barcode tracking + digital reports<br>
+          💰 <span class="bold">Finance</span> → GST-ready invoicing<br><br>
+          See it in action — <span class="bold">takes just 30 minutes</span>.
+          <span class="timestamp">10:15 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-quick-replies">
+          <span class="wa-qr">📅 Book Demo</span>
+          <span class="wa-qr">📄 Send Brochure</span>
+          <span class="wa-qr">💬 Talk to Sales</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div><span class="var-tag">{{1}} Name</span></div>
+          <span class="lang">EN</span>
+        </div>
+        <div class="card-footer-row">
+          <div class="audience-tag">🎯 Operations Managers, Admin Heads</div>
+          <div class="audience-tag">↩️ Quick Replies</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Template 1.3 -->
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T1.3 — Hindi Launch</div>
+          <div class="card-sublabel">Regional language outreach</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <div class="msg-img" style="background:linear-gradient(135deg,#C05621,#ED8936)">
+            <div>
+              <span class="img-icon">🇮🇳</span>
+              HMS Enterprise<br>
+              <small>अब हिंदी में उपलब्ध</small>
+            </div>
+          </div>
+          नमस्ते <span class="highlight">{{1}}</span> जी 🙏<br><br>
+          <span class="bold">HMS Enterprise</span> — भारत का सबसे एडवांस हॉस्पिटल मैनेजमेंट सिस्टम अब आपके लिए उपलब्ध है।<br><br>
+          ✅ OPD से लेकर बिलिंग तक — सब कुछ डिजिटल<br>
+          ✅ ABDM/ABHA कम्प्लायंट<br>
+          ✅ GST-रेडी फाइनेंस मॉड्यूल<br>
+          ✅ 24/7 सपोर्ट हिंदी में<br><br>
+          <span class="bold">{{2}}</span> जैसे अस्पतालों के लिए बनाया गया।<br><br>
+          <span class="italic">फ्री डेमो बुक करें — सिर्फ 30 मिनट!</span>
+          <div class="msg-footer">TGWT Solutions | STOP भेजें ऑप्ट-आउट के लिए</div>
+          <span class="timestamp">10:30 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">📅 डेमो बुक करें</a>
+          <a class="wa-cta-btn">📞 हमें कॉल करें</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} Hospital</span>
+          </div>
+          <span class="lang">HI</span>
+        </div>
+        <div class="card-footer-row">
+          <div class="audience-tag">🎯 Tier-2/3 city hospitals</div>
+          <div class="audience-tag">📎 Header: Image</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Template 1.4 -->
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T1.4 — Video Intro</div>
+          <div class="card-sublabel">Product walkthrough video</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <div class="msg-img" style="background:linear-gradient(135deg,var(--dark-navy),var(--navy));position:relative">
+            <div>
+              <span style="font-size:44px;display:block;margin-bottom:4px">▶️</span>
+              2-Min Product Walkthrough<br>
+              <small>HMS Enterprise Platform</small>
+            </div>
+          </div>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          <span class="bold">2 minutes.</span> That's all it takes to see how HMS Enterprise transforms hospital operations.<br><br>
+          In this quick walkthrough, you'll see:<br><br>
+          📱 Patient check-in → token → consultation in 60 seconds<br>
+          💊 Pharmacy auto-dispensing with barcode scan<br>
+          📊 Real-time BI dashboards for management<br>
+          🔐 Role-based access for 200+ user permissions<br><br>
+          Watch now and see why <span class="bold">50+ hospitals</span> chose HMS.
+          <span class="timestamp">11:00 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">▶️ Watch Video</a>
+          <a class="wa-cta-btn">📅 Schedule Live Demo</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div><span class="var-tag">{{1}} Name</span></div>
+          <span class="lang">EN</span>
+        </div>
+        <div class="card-footer-row">
+          <div class="audience-tag">🎯 All hospital decision-makers</div>
+          <div class="audience-tag">🎬 Header: Video</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════════╗
+     ║  CAMPAIGN 2 — FEATURE HIGHLIGHTS            ║
+     ╚══════════════════════════════════════════════╝ -->
+<div class="campaign-section" id="tab-feature">
+  <div class="section-header">
+    <div class="section-icon" style="background:linear-gradient(135deg,#553C9A,#805AD5);color:#fff">✨</div>
+    <div>
+      <h2>Feature Highlight Campaign</h2>
+      <p>Deep-dive into individual modules and capabilities — one feature per message</p>
+    </div>
+  </div>
+  <div class="section-meta">
+    <div class="meta-pill">🎯 <strong>Audience:</strong> Department Heads, IT Managers</div>
+    <div class="meta-pill">📈 <strong>Goal:</strong> Education → Feature Interest</div>
+    <div class="meta-pill">⏱ <strong>Frequency:</strong> 2x per week</div>
+  </div>
+
+  <div class="templates-grid">
+    <!-- T2.1 OPD -->
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T2.1 — OPD Module Spotlight</div>
+          <div class="card-sublabel">Queue management focus</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <div class="msg-img green-img">
+            <div>
+              <span class="img-icon">🏥</span>
+              OPD Module<br>
+              <small>Zero Wait-Time Queue Management</small>
+            </div>
+          </div>
+          <span class="bold">Feature Spotlight: Smart OPD Queue</span> 🏥<br><br>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          Did you know the average OPD patient waits <span class="bold">47 minutes</span> in Indian hospitals?<br><br>
+          HMS OPD module cuts this to <span class="bold">under 8 minutes</span>:<br><br>
+          ⚡ <span class="bold">Smart Token System</span> — Auto-assigns based on doctor availability<br>
+          📱 <span class="bold">Live Queue Display</span> — Patients track position on their phone<br>
+          🔄 <span class="bold">Auto-Routing</span> — Follow-ups, emergencies, VIP lanes<br>
+          📊 <span class="bold">Wait-Time Analytics</span> — Real-time bottleneck detection<br><br>
+          <span class="italic">Result: 82% reduction in patient complaints at pilot hospitals.</span>
+          <span class="timestamp">2:00 PM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-quick-replies">
+          <span class="wa-qr">🎥 See OPD Demo</span>
+          <span class="wa-qr">📊 View Case Study</span>
+          <span class="wa-qr">💬 Ask a Question</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div><span class="var-tag">{{1}} Name</span></div>
+          <span class="lang">EN</span>
+        </div>
+        <div class="card-footer-row">
+          <div class="audience-tag">🎯 OPD Heads, Front-Desk Managers</div>
+          <div class="audience-tag">📎 Image + Quick Replies</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T2.2 Pharmacy -->
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T2.2 — Pharmacy Billing Engine</div>
+          <div class="card-sublabel">Auto-billing + inventory focus</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <span class="bold">Feature Spotlight: Pharmacy Billing Engine</span> 💊<br><br>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          Your pharmacy is a <span class="bold">revenue powerhouse</span> — are you capturing every rupee?<br><br>
+          HMS Pharmacy Module handles:<br><br>
+          🧾 <span class="bold">Auto-Invoice Generation</span><br>
+          &nbsp;&nbsp;&nbsp;→ Prescription scan → instant bill with GST<br><br>
+          📦 <span class="bold">Smart Inventory</span><br>
+          &nbsp;&nbsp;&nbsp;→ FIFO dispensing + 90-day expiry alerts<br><br>
+          💰 <span class="bold">Revenue Protection</span><br>
+          &nbsp;&nbsp;&nbsp;→ Drug interaction checks + substitution suggestions<br><br>
+          📊 <span class="bold">Analytics</span><br>
+          &nbsp;&nbsp;&nbsp;→ Fast/slow movers, reorder points, margin analysis<br><br>
+          <span class="bold">Average savings: ₹3.2L/month</span> in reduced expiry wastage.
+          <span class="timestamp">2:30 PM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">💊 See Pharmacy Demo</a>
+          <a class="wa-cta-btn">📄 Download ROI Calculator</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div><span class="var-tag">{{1}} Name</span></div>
+          <span class="lang">EN / HI</span>
+        </div>
+        <div class="card-footer-row">
+          <div class="audience-tag">🎯 Pharmacy Heads, Purchase Managers</div>
+          <div class="audience-tag">🔗 CTA Buttons</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T2.3 Lab -->
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T2.3 — Lab & Diagnostics</div>
+          <div class="card-sublabel">NABL-compliant workflows</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <div class="msg-img purple-img">
+            <div>
+              <span class="img-icon">🧪</span>
+              Lab Module<br>
+              <small>Barcode → Report in Minutes</small>
+            </div>
+          </div>
+          <span class="bold">Feature Spotlight: Smart Lab Management</span> 🧪<br><br>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          From sample collection to report delivery — <span class="bold">fully automated</span>:<br><br>
+          🏷️ Barcode-based sample tracking<br>
+          🔬 Equipment interface integration (HL7)<br>
+          📋 Auto-populated NABL-format reports<br>
+          📱 Patient gets report on WhatsApp + Portal<br>
+          ⏱️ TAT monitoring with escalation alerts<br><br>
+          <span class="bold">Average TAT improvement: 62%</span><br><br>
+          <span class="italic">"Our lab report errors dropped to near-zero after HMS."</span><br>
+          — Dr. Sharma, Pathology Head
+          <span class="timestamp">3:00 PM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-quick-replies">
+          <span class="wa-qr">🧪 Lab Demo</span>
+          <span class="wa-qr">📊 TAT Report</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div><span class="var-tag">{{1}} Name</span></div>
+          <span class="lang">EN</span>
+        </div>
+        <div class="card-footer-row">
+          <div class="audience-tag">🎯 Lab Directors, Pathologists</div>
+          <div class="audience-tag">📎 Image + Replies</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T2.4 BI Dashboard -->
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T2.4 — BI & Analytics Dashboard</div>
+          <div class="card-sublabel">Executive insights focus</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <span class="bold">Feature Spotlight: Executive BI Dashboard</span> 📊<br><br>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          Imagine opening your phone at 8 AM and seeing:<br><br>
+          📈 Yesterday's revenue: <span class="mono">₹12.4L</span><br>
+          🛏️ Bed occupancy: <span class="mono">84%</span><br>
+          ⏱️ Avg OPD wait: <span class="mono">6 min</span><br>
+          💊 Pharmacy revenue: <span class="mono">₹3.1L</span><br>
+          🧪 Lab TAT: <span class="mono">42 min avg</span><br>
+          👨‍⚕️ Doctor utilization: <span class="mono">91%</span><br><br>
+          HMS BI module gives you <span class="bold">10 real-time KPIs</span> across all departments — accessible on mobile, tablet, or desktop.<br><br>
+          <span class="bold">Your hospital's pulse — at a glance.</span>
+          <span class="timestamp">4:00 PM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">📊 See Live Dashboard</a>
+          <a class="wa-cta-btn">📅 Book Strategy Call</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div><span class="var-tag">{{1}} Name</span></div>
+          <span class="lang">EN</span>
+        </div>
+        <div class="card-footer-row">
+          <div class="audience-tag">🎯 Hospital MD/CEO, CFO</div>
+          <div class="audience-tag">🔗 CTA Buttons</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════════╗
+     ║  CAMPAIGN 3 — DEMO & BOOKING                ║
+     ╚══════════════════════════════════════════════╝ -->
+<div class="campaign-section" id="tab-demo">
+  <div class="section-header">
+    <div class="section-icon" style="background:linear-gradient(135deg,#2B6CB0,#4299E1);color:#fff">📅</div>
+    <div>
+      <h2>Demo & Booking Campaign</h2>
+      <p>Schedule demos, confirmations, reminders, and post-demo follow-ups</p>
+    </div>
+  </div>
+  <div class="section-meta">
+    <div class="meta-pill">🎯 <strong>Audience:</strong> Qualified leads who showed interest</div>
+    <div class="meta-pill">📈 <strong>Goal:</strong> Demo Attendance → Proposal</div>
+    <div class="meta-pill">⏱ <strong>Trigger:</strong> Event-based</div>
+  </div>
+
+  <div class="templates-grid">
+    <!-- T3.1 -->
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T3.1 — Demo Invitation</div>
+          <div class="card-sublabel">Personalized demo scheduling</div>
+        </div>
+        <span class="card-type type-utility">Utility</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          Thank you for your interest in HMS Enterprise! 🎉<br><br>
+          I'd love to show you how HMS can transform <span class="highlight">{{2}}</span>'s operations with a <span class="bold">personalized 30-minute demo</span>.<br><br>
+          Here's what we'll cover:<br><br>
+          1️⃣ OPD → Pharmacy → Lab workflow<br>
+          2️⃣ Finance & billing with GST<br>
+          3️⃣ Your specific pain points<br>
+          4️⃣ Live Q&A with our product expert<br><br>
+          🗓 <span class="bold">Available slots this week:</span><br>
+          • {{3}}<br>
+          • {{4}}<br>
+          • {{5}}<br><br>
+          Which time works best for you?
+          <span class="timestamp">11:00 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-quick-replies">
+          <span class="wa-qr">Slot 1</span>
+          <span class="wa-qr">Slot 2</span>
+          <span class="wa-qr">Slot 3</span>
+          <span class="wa-qr">Other Time</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} Hospital</span>
+            <span class="var-tag">{{3-5}} Slots</span>
+          </div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- T3.2 -->
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T3.2 — Demo Confirmation</div>
+          <div class="card-sublabel">Booking confirmed + calendar details</div>
+        </div>
+        <span class="card-type type-transactional">Transactional</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <span class="msg-header">✅ Demo Confirmed!</span>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          Your HMS Enterprise demo is confirmed:<br><br>
+          📅 <span class="bold">Date:</span> {{2}}<br>
+          ⏰ <span class="bold">Time:</span> {{3}}<br>
+          ⏱️ <span class="bold">Duration:</span> 30 minutes<br>
+          👤 <span class="bold">Presenter:</span> {{4}}, Solutions Consultant<br>
+          🔗 <span class="bold">Meeting:</span> Google Meet link will be shared 1 hour before<br><br>
+          <span class="bold">To prepare:</span><br>
+          • Keep a list of your top 3 challenges<br>
+          • Invite your IT head if possible<br>
+          • We'll customize the demo for your hospital size<br><br>
+          See you soon! 🙏
+          <span class="timestamp">11:05 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">📅 Add to Calendar</a>
+          <a class="wa-cta-btn">🔄 Reschedule</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} Date</span>
+            <span class="var-tag">{{3}} Time</span>
+            <span class="var-tag">{{4}} Presenter</span>
+          </div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- T3.3 -->
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T3.3 — Demo Reminder (1 Hour)</div>
+          <div class="card-sublabel">Pre-demo nudge with meeting link</div>
+        </div>
+        <span class="card-type type-transactional">Transactional</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          ⏰ <span class="bold">Reminder: Your HMS Demo starts in 1 hour!</span><br><br>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          Quick reminder — your personalized HMS Enterprise demo is at <span class="bold">{{2}}</span> today.<br><br>
+          🔗 <span class="bold">Join here:</span> {{3}}<br><br>
+          Our consultant <span class="highlight">{{4}}</span> is ready to walk you through the platform tailored for <span class="highlight">{{5}}</span>.<br><br>
+          💡 <span class="italic">Tip: Have your current workflow challenges handy — we'll address each one live!</span>
+          <span class="timestamp">2:00 PM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">🔗 Join Meeting Now</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} Time</span>
+            <span class="var-tag">{{3}} Link</span>
+            <span class="var-tag">{{4}} Consultant</span>
+            <span class="var-tag">{{5}} Hospital</span>
+          </div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- T3.4 -->
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T3.4 — Post-Demo Follow-Up</div>
+          <div class="card-sublabel">Thank you + next steps + proposal</div>
+        </div>
+        <span class="card-type type-utility">Utility</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          Thank you for attending the HMS Enterprise demo today! 🙏<br><br>
+          As discussed, here's a summary of what we covered for <span class="highlight">{{2}}</span>:<br><br>
+          ✅ OPD workflow with smart queue — you loved the token system<br>
+          ✅ Pharmacy billing engine with GST auto-calculation<br>
+          ✅ Real-time BI dashboards<br>
+          ✅ ABDM/ABHA integration roadmap<br><br>
+          <span class="bold">Next Steps:</span><br>
+          1️⃣ Detailed proposal shared via email<br>
+          2️⃣ Custom ROI analysis for your hospital<br>
+          3️⃣ Reference call with a similar-sized hospital<br><br>
+          Any questions? I'm just a message away! 💬
+          <span class="timestamp">5:30 PM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">📄 View Proposal</a>
+          <a class="wa-cta-btn">📞 Schedule Follow-Up Call</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} Hospital</span>
+          </div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════════╗
+     ║  CAMPAIGN 4 — ROI & VALUE                   ║
+     ╚══════════════════════════════════════════════╝ -->
+<div class="campaign-section" id="tab-roi">
+  <div class="section-header">
+    <div class="section-icon" style="background:linear-gradient(135deg,#92400E,#C49A2A);color:#fff">📊</div>
+    <div>
+      <h2>ROI & Value Proposition Campaign</h2>
+      <p>Data-driven messages showcasing cost savings, efficiency gains, and revenue impact</p>
+    </div>
+  </div>
+  <div class="section-meta">
+    <div class="meta-pill">🎯 <strong>Audience:</strong> CFOs, Hospital Owners, Finance Heads</div>
+    <div class="meta-pill">📈 <strong>Goal:</strong> Business Case Justification</div>
+    <div class="meta-pill">⏱ <strong>Stage:</strong> Mid-Funnel Consideration</div>
+  </div>
+
+  <div class="templates-grid">
+    <!-- T4.1 -->
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T4.1 — ROI Calculator</div>
+          <div class="card-sublabel">Personalized savings estimate</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <div class="msg-img gold-img">
+            <div>
+              <span class="img-icon">💰</span>
+              ROI Calculator<br>
+              <small>Your Hospital's Savings Potential</small>
+            </div>
+          </div>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          Based on <span class="highlight">{{2}}</span>'s profile (<span class="bold">{{3}}-bed, {{4}} OPD/day</span>), here's your estimated annual impact with HMS:<br><br>
+          💰 <span class="bold">Revenue Recovery:</span> ₹{{5}}L/year<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;→ Reduced billing leakage + auto-invoicing<br><br>
+          📉 <span class="bold">Cost Savings:</span> ₹{{6}}L/year<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;→ Paper elimination + staff efficiency<br><br>
+          ⏱️ <span class="bold">Time Saved:</span> {{7}} hours/month<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;→ Automated reports + digital workflows<br><br>
+          📊 <span class="bold">Estimated ROI: {{8}}x</span> in first year<br><br>
+          <span class="italic">Want the detailed breakdown?</span>
+          <span class="timestamp">10:00 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">📊 Get Detailed ROI Report</a>
+          <a class="wa-cta-btn">📞 Discuss with CFO Advisor</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} Hospital</span>
+            <span class="var-tag">{{3}} Beds</span>
+            <span class="var-tag">{{4}} OPD</span>
+            <span class="var-tag">{{5-8}} Values</span>
+          </div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- T4.2 -->
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T4.2 — Cost Comparison</div>
+          <div class="card-sublabel">HMS vs. manual operations cost</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <span class="bold">The Real Cost of NOT Going Digital</span> 💸<br><br>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          Here's what manual operations cost a <span class="bold">{{2}}-bed hospital</span> every year:<br><br>
+          📋 Paper & printing: ₹4-6L<br>
+          👥 Extra admin staff: ₹12-18L<br>
+          💊 Pharmacy expiry wastage: ₹8-15L<br>
+          🧾 Billing errors & leakage: ₹10-20L<br>
+          📊 Delayed decisions (no data): <span class="bold">Priceless</span><br><br>
+          <span class="bold">Total annual hidden cost: ₹34-59L</span><br><br>
+          HMS Enterprise eliminates <span class="bold">80%</span> of these costs from Day 1.<br><br>
+          <span class="italic">The question isn't whether you can afford HMS — it's whether you can afford NOT to have it.</span>
+          <span class="timestamp">11:30 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-quick-replies">
+          <span class="wa-qr">📊 See Full Analysis</span>
+          <span class="wa-qr">📅 Book Demo</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} Beds</span>
+          </div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- T4.3 -->
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T4.3 — Before vs After</div>
+          <div class="card-sublabel">Visual transformation story</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <span class="bold">Before HMS vs. After HMS</span> 📊<br><br>
+          <span class="strike">❌ 45-min OPD wait</span> → ✅ <span class="bold">8-min avg</span><br>
+          <span class="strike">❌ Manual billing errors</span> → ✅ <span class="bold">99.9% accuracy</span><br>
+          <span class="strike">❌ Paper lab reports</span> → ✅ <span class="bold">Digital in 2 hrs</span><br>
+          <span class="strike">❌ Month-end MIS chaos</span> → ✅ <span class="bold">Real-time dashboards</span><br>
+          <span class="strike">❌ No patient portal</span> → ✅ <span class="bold">PWA app in 30 days</span><br>
+          <span class="strike">❌ Excel payroll</span> → ✅ <span class="bold">Auto PF/ESIC/TDS</span><br>
+          <span class="strike">❌ Drug expiry losses</span> → ✅ <span class="bold">90-day FIFO alerts</span><br><br>
+          <span class="bold">This isn't a dream — it's HMS Enterprise running at 50+ hospitals right now.</span>
+          <span class="timestamp">3:00 PM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">🔄 See Transformation Stories</a>
+          <a class="wa-cta-btn">📅 Start Your Transformation</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div><em style="font-size:11px;color:#718096">No variables — universal template</em></div>
+          <span class="lang">EN / HI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- T4.4 -->
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T4.4 — Payment Flexibility</div>
+          <div class="card-sublabel">Affordable pricing message</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          We understand — hospital budgets are tight. That's why HMS Enterprise offers <span class="bold">flexible options</span>:<br><br>
+          💳 <span class="bold">Milestone-Based Payment</span><br>
+          &nbsp;&nbsp;&nbsp;Pay as modules go live — no big upfront cost<br><br>
+          📅 <span class="bold">EMI Options</span><br>
+          &nbsp;&nbsp;&nbsp;Spread over 12-24 months<br><br>
+          🆓 <span class="bold">Free POC</span><br>
+          &nbsp;&nbsp;&nbsp;Try OPD + Pharmacy for 30 days — zero risk<br><br>
+          🎁 <span class="bold">Early Adopter Bonus</span><br>
+          &nbsp;&nbsp;&nbsp;Sign by {{2}} and get 3 months free AMC<br><br>
+          <span class="italic">Your digital transformation shouldn't wait for budget season.</span>
+          <span class="timestamp">4:30 PM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-quick-replies">
+          <span class="wa-qr">💰 Get Pricing</span>
+          <span class="wa-qr">🆓 Start Free POC</span>
+          <span class="wa-qr">📞 Call Finance Team</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} Deadline</span>
+          </div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════════╗
+     ║  CAMPAIGN 5 — SOCIAL PROOF                  ║
+     ╚══════════════════════════════════════════════╝ -->
+<div class="campaign-section" id="tab-testimonial">
+  <div class="section-header">
+    <div class="section-icon" style="background:linear-gradient(135deg,#9B2C2C,#E53E3E);color:#fff">🏆</div>
+    <div>
+      <h2>Social Proof & Testimonials</h2>
+      <p>Real results from real hospitals — build trust through success stories</p>
+    </div>
+  </div>
+  <div class="section-meta">
+    <div class="meta-pill">🎯 <strong>Audience:</strong> Decision-stage leads</div>
+    <div class="meta-pill">📈 <strong>Goal:</strong> Trust → Conversion</div>
+  </div>
+
+  <div class="templates-grid">
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T5.1 — Hospital Success Story</div>
+          <div class="card-sublabel">Case study with metrics</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <div class="msg-img red-img">
+            <div>
+              <span class="img-icon">🏆</span>
+              Success Story<br>
+              <small>150-Bed Multi-Specialty Hospital</small>
+            </div>
+          </div>
+          <span class="bold">🏆 Success Story: How a 150-bed hospital saved ₹42L/year</span><br><br>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          A multi-specialty hospital in Pune (similar to <span class="highlight">{{2}}</span>) implemented HMS Enterprise 8 months ago.<br><br>
+          <span class="bold">Results:</span><br>
+          📈 OPD throughput: <span class="bold">+35%</span><br>
+          💰 Revenue recovery: <span class="bold">₹42L/year</span><br>
+          ⏱️ Lab TAT: <span class="bold">-62%</span><br>
+          😊 Patient satisfaction: <span class="bold">4.6/5 → Google rating</span><br>
+          📋 Paper usage: <span class="bold">-90%</span><br><br>
+          <span class="italic">"HMS didn't just digitize our hospital — it transformed how we think about patient care."</span><br>
+          — Hospital Director<br><br>
+          Want similar results for <span class="highlight">{{2}}</span>?
+          <span class="timestamp">10:00 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">📄 Read Full Case Study</a>
+          <a class="wa-cta-btn">📞 Talk to Reference Hospital</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} Hospital</span>
+          </div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T5.2 — Doctor Testimonial</div>
+          <div class="card-sublabel">Clinician endorsement</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <span class="bold">What Doctors Say About HMS</span> 👨‍⚕️<br><br>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          <span class="italic">"Before HMS, I spent 20 minutes per patient on paperwork. Now it's 2 minutes. I see 30% more patients and they get better care."</span><br>
+          — Dr. Rajesh K., Senior Consultant<br><br>
+          <span class="italic">"The prescription module with drug interaction alerts has prevented at least 5 serious incidents in our hospital."</span><br>
+          — Dr. Priya M., Medical Director<br><br>
+          <span class="italic">"My patients book appointments, see reports, and pay bills — all from their phone. We're finally a modern hospital."</span><br>
+          — Dr. Amit S., Hospital Owner<br><br>
+          <span class="bold">Your doctors deserve better tools.</span> Let us show you how.
+          <span class="timestamp">11:00 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-quick-replies">
+          <span class="wa-qr">📅 Book Demo</span>
+          <span class="wa-qr">📞 Talk to Doctor</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div><span class="var-tag">{{1}} Name</span></div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T5.3 — Numbers Don't Lie</div>
+          <div class="card-sublabel">Aggregate platform stats</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <span class="bold">HMS Enterprise — By the Numbers</span> 📊<br><br>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          Here's what HMS Enterprise has achieved across our network:<br><br>
+          🏥 <span class="bold">50+</span> hospitals live<br>
+          👨‍⚕️ <span class="bold">3,000+</span> doctors on platform<br>
+          🏃 <span class="bold">2.5M+</span> patient visits processed<br>
+          💊 <span class="bold">8M+</span> prescriptions dispensed<br>
+          🧪 <span class="bold">1.2M+</span> lab reports generated<br>
+          💰 <span class="bold">₹500Cr+</span> billing processed<br>
+          ⬆️ <span class="bold">99.97%</span> uptime (last 12 months)<br>
+          ⭐ <span class="bold">4.8/5</span> customer satisfaction<br><br>
+          <span class="bold">Join the fastest-growing HMS ecosystem in India.</span>
+          <span class="timestamp">2:00 PM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">🌐 See Live Hospitals</a>
+          <a class="wa-cta-btn">📅 Join the Network</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div><span class="var-tag">{{1}} Name</span></div>
+          <span class="lang">EN / HI</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════════╗
+     ║  CAMPAIGN 6 — COMPLIANCE                    ║
+     ╚══════════════════════════════════════════════╝ -->
+<div class="campaign-section" id="tab-compliance">
+  <div class="section-header">
+    <div class="section-icon" style="background:linear-gradient(135deg,#065F46,#059669);color:#fff">🔒</div>
+    <div>
+      <h2>Compliance & Security Campaign</h2>
+      <p>DISHA, ABDM, NABH, and data security messaging for compliance-conscious buyers</p>
+    </div>
+  </div>
+  <div class="section-meta">
+    <div class="meta-pill">🎯 <strong>Audience:</strong> Compliance Officers, Hospital Legal, IT Security</div>
+    <div class="meta-pill">📈 <strong>Goal:</strong> Remove security objections</div>
+  </div>
+
+  <div class="templates-grid">
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T6.1 — DISHA Compliance</div>
+          <div class="card-sublabel">Data privacy regulations</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <span class="bold">🔒 Is Your Hospital DISHA-Ready?</span><br><br>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          The <span class="bold">DISHA Act</span> (Digital Information Security in Healthcare) is reshaping how hospitals handle patient data.<br><br>
+          <span class="bold">Non-compliance penalties: Up to ₹5 Crore</span> 😰<br><br>
+          HMS Enterprise is built DISHA-compliant from Day 1:<br><br>
+          🔐 AES-256 encryption at rest & in transit<br>
+          📋 Patient consent management (opt-in/opt-out)<br>
+          🗂️ Data localization — India-only servers (Mumbai + DR in Singapore)<br>
+          📊 Audit trail for every data access<br>
+          ⏰ 72-hour breach notification workflow<br>
+          🗑️ Right to erasure compliance<br><br>
+          <span class="bold">Don't wait for a compliance notice.</span> Get compliant today.
+          <span class="timestamp">10:00 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">📄 DISHA Compliance Checklist</a>
+          <a class="wa-cta-btn">📅 Security Consultation</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div><span class="var-tag">{{1}} Name</span></div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T6.2 — ABDM/ABHA Ready</div>
+          <div class="card-sublabel">Government integration messaging</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <div class="msg-img green-img">
+            <div>
+              <span class="img-icon">🇮🇳</span>
+              ABDM Integration<br>
+              <small>Ayushman Bharat Digital Mission</small>
+            </div>
+          </div>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          <span class="bold">ABDM integration is no longer optional</span> — the government is making it mandatory for all hospitals.<br><br>
+          HMS Enterprise supports:<br><br>
+          🆔 <span class="bold">ABHA ID</span> — Create & verify 14-digit health IDs<br>
+          📋 <span class="bold">Health Records</span> — Push to patient's digital locker<br>
+          🔗 <span class="bold">HIP/HIU</span> — Health Information Provider & User flows<br>
+          📱 <span class="bold">PHR App</span> — Patient health record integration<br>
+          🏥 <span class="bold">HFR</span> — Health Facility Registry linkage<br><br>
+          <span class="bold">Be among the first hospitals in {{2}} to go live with ABDM.</span>
+          <span class="timestamp">11:30 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-quick-replies">
+          <span class="wa-qr">📅 ABDM Demo</span>
+          <span class="wa-qr">📄 Integration Guide</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} City</span>
+          </div>
+          <span class="lang">EN / HI</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T6.3 — Security Architecture</div>
+          <div class="card-sublabel">For IT decision-makers</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <span class="bold">🛡️ Enterprise-Grade Security for Your Hospital</span><br><br>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          Your patients trust you with their most sensitive data. HMS protects it with <span class="bold">10 security layers</span>:<br><br>
+          🔐 OAuth 2.0 + JWT authentication<br>
+          🛡️ 6-tier RBAC (200+ permissions)<br>
+          🔑 AES-256 encryption everywhere<br>
+          📋 Complete audit trail (CERT-In compliant)<br>
+          🧪 Annual VAPT + SOC-2 alignment<br>
+          🌐 WAF + DDoS protection<br>
+          💾 15-min RPO, 4-hour RTO disaster recovery<br>
+          🏴 Data residency in India (Mumbai region)<br>
+          🔍 Real-time intrusion detection<br>
+          📱 2FA for all admin access<br><br>
+          <span class="italic">Your IT team will love our architecture.</span>
+          <span class="timestamp">3:00 PM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">📄 Security Whitepaper</a>
+          <a class="wa-cta-btn">🔒 Request Security Audit</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div><span class="var-tag">{{1}} Name</span></div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════════╗
+     ║  CAMPAIGN 7 — LEAD NURTURE                  ║
+     ╚══════════════════════════════════════════════╝ -->
+<div class="campaign-section" id="tab-nurture">
+  <div class="section-header">
+    <div class="section-icon" style="background:linear-gradient(135deg,#5B21B6,#7C3AED);color:#fff">🤝</div>
+    <div>
+      <h2>Lead Nurture & Re-Engagement</h2>
+      <p>Warm follow-ups, re-engagement, and drip sequences for cold/warm leads</p>
+    </div>
+  </div>
+  <div class="section-meta">
+    <div class="meta-pill">🎯 <strong>Audience:</strong> Leads who went cold or need nudging</div>
+    <div class="meta-pill">📈 <strong>Goal:</strong> Re-engage → Demo/Proposal</div>
+  </div>
+
+  <div class="templates-grid">
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T7.1 — Gentle Check-In</div>
+          <div class="card-sublabel">7-day no-response follow-up</div>
+        </div>
+        <span class="card-type type-remarketing">Remarketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          Just checking in! 🙂<br><br>
+          I shared information about HMS Enterprise last week for <span class="highlight">{{2}}</span>. I understand things get busy in hospital management — no one knows that better than us!<br><br>
+          In case it helps, here's a <span class="bold">quick 2-minute read</span> on how similar hospitals benefited:<br><br>
+          🏥 100-bed hospital → ₹28L saved in Year 1<br>
+          🏥 250-bed hospital → ₹67L saved in Year 1<br><br>
+          No pressure — just here when you're ready. 🙏
+          <span class="timestamp">10:00 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-quick-replies">
+          <span class="wa-qr">📅 Let's Talk</span>
+          <span class="wa-qr">📄 Send Info</span>
+          <span class="wa-qr">⏰ Remind Later</span>
+          <span class="wa-qr">🚫 Not Interested</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} Hospital</span>
+          </div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T7.2 — New Feature Alert</div>
+          <div class="card-sublabel">Re-engage with product updates</div>
+        </div>
+        <span class="card-type type-remarketing">Remarketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <span class="bold">🆕 New in HMS Enterprise!</span><br><br>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          Since we last spoke, we've added some exciting features to HMS:<br><br>
+          ✨ <span class="bold">Patient Portal PWA</span><br>
+          &nbsp;&nbsp;&nbsp;Your patients get their own mobile app — no app store needed!<br><br>
+          ✨ <span class="bold">Doctor Profile Directory</span><br>
+          &nbsp;&nbsp;&nbsp;Seamless doctor ↔ appointment scheduling<br><br>
+          ✨ <span class="bold">Pharmacy Billing Engine</span><br>
+          &nbsp;&nbsp;&nbsp;Auto-invoicing with GST, substitution suggestions<br><br>
+          ✨ <span class="bold">WhatsApp Notifications</span><br>
+          &nbsp;&nbsp;&nbsp;Patients get reports, reminders, and bills on WhatsApp<br><br>
+          Worth another look? 😊
+          <span class="timestamp">2:00 PM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">🆕 See What's New</a>
+          <a class="wa-cta-btn">📅 Updated Demo</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div><span class="var-tag">{{1}} Name</span></div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T7.3 — Webinar Invitation</div>
+          <div class="card-sublabel">Educational content marketing</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <div class="msg-img purple-img">
+            <div>
+              <span class="img-icon">🎓</span>
+              Free Webinar<br>
+              <small>Hospital Digitization Masterclass</small>
+            </div>
+          </div>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          Join our <span class="bold">FREE webinar</span> 🎓<br><br>
+          📌 <span class="bold">"{{2}}"</span><br><br>
+          📅 {{3}}<br>
+          ⏰ {{4}}<br>
+          ⏱️ 45 min + 15 min Q&A<br>
+          👤 Speaker: {{5}}<br><br>
+          <span class="bold">You'll learn:</span><br>
+          ✅ Top 5 mistakes hospitals make going digital<br>
+          ✅ How to get staff buy-in for new technology<br>
+          ✅ ROI calculation framework for HMS<br>
+          ✅ Live Q&A with hospital technology experts<br><br>
+          <span class="bold">Limited to 100 seats</span> — register now!
+          <span class="timestamp">9:00 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">✅ Register Free</a>
+          <a class="wa-cta-btn">🔗 Share with Colleague</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} Topic</span>
+            <span class="var-tag">{{3}} Date</span>
+            <span class="var-tag">{{4}} Time</span>
+            <span class="var-tag">{{5}} Speaker</span>
+          </div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T7.4 — Feedback Request</div>
+          <div class="card-sublabel">Post-interaction survey</div>
+        </div>
+        <span class="card-type type-utility">Utility</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          Thank you for exploring HMS Enterprise for <span class="highlight">{{2}}</span>! 🙏<br><br>
+          We'd love your candid feedback to improve:<br><br>
+          On a scale of 1-10, how would you rate:<br><br>
+          ⭐ Product capabilities<br>
+          ⭐ Demo experience<br>
+          ⭐ Our team's responsiveness<br><br>
+          Also, what's the <span class="bold">one thing</span> that would make you say "yes" to HMS?<br><br>
+          <span class="italic">Your feedback helps us serve hospitals like yours better.</span>
+          <span class="timestamp">4:00 PM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-quick-replies">
+          <span class="wa-qr">⭐ Share Feedback</span>
+          <span class="wa-qr">📅 Revisit Later</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} Hospital</span>
+          </div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════════╗
+     ║  CAMPAIGN 8 — SEASONAL & EVENT              ║
+     ╚══════════════════════════════════════════════╝ -->
+<div class="campaign-section" id="tab-seasonal">
+  <div class="section-header">
+    <div class="section-icon" style="background:linear-gradient(135deg,#C05621,#ED8936);color:#fff">🎯</div>
+    <div>
+      <h2>Seasonal & Event Campaign</h2>
+      <p>Festival offers, healthcare events, government announcements, and time-sensitive campaigns</p>
+    </div>
+  </div>
+  <div class="section-meta">
+    <div class="meta-pill">🎯 <strong>Audience:</strong> All database contacts</div>
+    <div class="meta-pill">📈 <strong>Goal:</strong> Urgency → Action</div>
+  </div>
+
+  <div class="templates-grid">
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T8.1 — Diwali Offer</div>
+          <div class="card-sublabel">Festival season promotion</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <div class="msg-img gold-img">
+            <div>
+              <span class="img-icon">🪔</span>
+              Diwali Special Offer<br>
+              <small>Light Up Your Hospital Operations</small>
+            </div>
+          </div>
+          <span class="bold">🪔 Diwali Special: Light Up Your Hospital!</span><br><br>
+          शुभ दीपावली <span class="highlight">{{1}}</span> जी! 🙏<br><br>
+          This Diwali, we're celebrating with an <span class="bold">exclusive offer</span> for hospitals:<br><br>
+          🎁 <span class="bold">20% OFF</span> on HMS Enterprise implementation<br>
+          🆓 <span class="bold">6 months FREE</span> AMC (instead of 3)<br>
+          📱 <span class="bold">FREE</span> Patient Portal PWA setup<br>
+          🎓 <span class="bold">FREE</span> advanced admin training (worth ₹2L)<br><br>
+          ⏰ <span class="bold">Offer valid till {{2}}</span><br><br>
+          <span class="italic">Start 2026 with a fully digital hospital! 🏥✨</span>
+          <div class="msg-footer">TGWT Solutions | T&C Apply</div>
+          <span class="timestamp">9:00 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">🎁 Claim Diwali Offer</a>
+          <a class="wa-cta-btn">📅 Book Demo Today</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} Deadline</span>
+          </div>
+          <span class="lang">EN / HI</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T8.2 — Financial Year-End</div>
+          <div class="card-sublabel">Budget utilization urgency</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <span class="bold">📅 FY Ending March 31 — Use Your IT Budget!</span><br><br>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          <span class="bold">Only {{2}} days left</span> before your IT budget lapses! 💸<br><br>
+          Smart hospitals are using remaining FY budget for:<br><br>
+          ✅ HMS Enterprise license<br>
+          ✅ First 3 modules implementation<br>
+          ✅ Cloud infrastructure setup<br>
+          ✅ Staff training program<br><br>
+          <span class="bold">Special FY-end offer:</span><br>
+          🎁 Pay now, implement in Q1 FY27<br>
+          🎁 Lock current pricing (10% hike from April)<br>
+          🎁 Bonus: Free security audit (worth ₹3L)<br><br>
+          <span class="bold">Don't let your budget go to waste!</span>
+          <span class="timestamp">11:00 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-quick-replies">
+          <span class="wa-qr">💰 Get Quote</span>
+          <span class="wa-qr">📅 Discuss Budget</span>
+          <span class="wa-qr">📄 Send Proposal</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} Days Left</span>
+          </div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T8.3 — Healthcare Expo</div>
+          <div class="card-sublabel">Event / conference meetup</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <div class="msg-img" style="background:linear-gradient(135deg,#1A365D,#2B6CB0)">
+            <div>
+              <span class="img-icon">🎪</span>
+              Meet Us at {{2}}<br>
+              <small>Booth #{{3}}</small>
+            </div>
+          </div>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          We're at <span class="bold">{{2}}</span>! 🎪<br><br>
+          📍 <span class="bold">Booth #{{3}}</span><br>
+          📅 {{4}}<br>
+          📌 {{5}}<br><br>
+          <span class="bold">Visit us for:</span><br>
+          🖥️ Live HMS Enterprise demo<br>
+          📊 Free ROI assessment for your hospital<br>
+          🎁 Exclusive expo-only pricing<br>
+          ☕ Coffee & networking with hospital tech leaders<br><br>
+          <span class="bold">Book a VIP slot</span> to skip the queue and get a dedicated 15-min consultation!
+          <span class="timestamp">8:00 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">📅 Book VIP Slot</a>
+          <a class="wa-cta-btn">📍 Get Directions</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div>
+            <span class="var-tag">{{1}} Name</span>
+            <span class="var-tag">{{2}} Event</span>
+            <span class="var-tag">{{3}} Booth</span>
+            <span class="var-tag">{{4}} Dates</span>
+            <span class="var-tag">{{5}} Venue</span>
+          </div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="card-top">
+        <div>
+          <div class="card-label">T8.4 — NABH Deadline Alert</div>
+          <div class="card-sublabel">Regulatory urgency trigger</div>
+        </div>
+        <span class="card-type type-marketing">Marketing</span>
+      </div>
+      <div class="wa-preview">
+        <div class="wa-bubble">
+          <span class="bold">⚠️ NABH Accreditation: Is Your Hospital Ready?</span><br><br>
+          Hi <span class="highlight">{{1}}</span>,<br><br>
+          NABH 5th Edition standards now <span class="bold">require digital health records</span> for accreditation.<br><br>
+          Without a compliant HMS, your hospital may face:<br><br>
+          ❌ Accreditation delays or rejection<br>
+          ❌ Insurance empanelment issues<br>
+          ❌ CGHS/ECHS enrollment blocks<br>
+          ❌ Patient trust erosion<br><br>
+          HMS Enterprise is <span class="bold">NABH-aligned out of the box</span>:<br><br>
+          ✅ Digital EMR with SOAP notes<br>
+          ✅ Medication safety protocols<br>
+          ✅ Infection control tracking<br>
+          ✅ Quality indicator dashboards<br>
+          ✅ Complete audit trail<br><br>
+          <span class="bold">Get NABH-ready in 16 weeks.</span>
+          <span class="timestamp">10:30 AM <span class="read">✓✓</span></span>
+        </div>
+        <div class="wa-cta">
+          <a class="wa-cta-btn">📋 NABH Readiness Assessment</a>
+          <a class="wa-cta-btn">📅 Compliance Consultation</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-row">
+          <div><span class="var-tag">{{1}} Name</span></div>
+          <span class="lang">EN</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CAMPAIGN AUTOMATION FLOW ═══════════ -->
+<div class="flow-section">
+  <h3>📊 Recommended Campaign Automation Flow</h3>
+  <div class="flow-steps">
+    <div class="flow-step">
+      <div class="flow-node" style="background:#EBF8FF;color:#2B6CB0">📥</div>
+      <div class="flow-label">Lead Captured</div>
+      <div class="flow-time">Day 0</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-node" style="background:#F0FFF4;color:#276749">🚀</div>
+      <div class="flow-label">Launch Msg</div>
+      <div class="flow-time">Day 0 (T1.1)</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-node" style="background:#FAF5FF;color:#553C9A">✨</div>
+      <div class="flow-label">Feature Drip</div>
+      <div class="flow-time">Day 2, 4, 6</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-node" style="background:#FFFAF0;color:#C05621">📊</div>
+      <div class="flow-label">ROI Message</div>
+      <div class="flow-time">Day 5 (T4.1)</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-node" style="background:#EBF8FF;color:#2B6CB0">📅</div>
+      <div class="flow-label">Demo Invite</div>
+      <div class="flow-time">Day 7 (T3.1)</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-node" style="background:#F0FFF4;color:#276749">✅</div>
+      <div class="flow-label">Confirm</div>
+      <div class="flow-time">On Booking</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-node" style="background:#FFF5F5;color:#C53030">⏰</div>
+      <div class="flow-label">Reminder</div>
+      <div class="flow-time">1hr Before</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-node" style="background:#FAF5FF;color:#553C9A">🤝</div>
+      <div class="flow-label">Follow-Up</div>
+      <div class="flow-time">Post Demo</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-node" style="background:#FFFAF0;color:#C05621">🏆</div>
+      <div class="flow-label">Testimonial</div>
+      <div class="flow-time">Day 10</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-node" style="background:#F0FFF4;color:#276749">📝</div>
+      <div class="flow-label">Proposal</div>
+      <div class="flow-time">Day 12</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ EXPECTED KPIs ═══════════ -->
+<div class="flow-section" style="margin-top:24px">
+  <h3>📈 Expected Campaign KPIs</h3>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-val" style="color:var(--wa-dark)">98%</div>
+      <div class="kpi-label">Delivery Rate</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val" style="color:var(--wa-green)">85%</div>
+      <div class="kpi-label">Open Rate</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val" style="color:var(--teal)">45%</div>
+      <div class="kpi-label">Click-Through</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val" style="color:var(--gold)">12%</div>
+      <div class="kpi-label">Demo Booking</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val" style="color:var(--navy)">8%</div>
+      <div class="kpi-label">Conversion</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val" style="color:var(--red)">< 2%</div>
+      <div class="kpi-label">Opt-Out Rate</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<div style="background:var(--dark-navy);padding:30px 40px;text-align:center">
+  <div style="color:rgba(255,255,255,0.4);font-size:12px">
+    HMS Enterprise WhatsApp Marketing Templates v1.0 | TGWT Solutions Pvt. Ltd. | March 2026<br>
+    <span style="color:var(--gold);font-weight:600">CONFIDENTIAL</span> — For internal marketing team use only
+  </div>
+</div>
+
+<script>
+function showTab(id) {
+  // Hide all sections
+  document.querySelectorAll('.campaign-section').forEach(s => s.classList.remove('active'));
+  // Deactivate all tabs
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  // Show target
+  document.getElementById('tab-' + id).classList.add('active');
+  // Activate clicked tab
+  event.currentTarget.classList.add('active');
+  // Scroll to top of section
+  document.getElementById('tab-' + id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+</body>
+</html>
