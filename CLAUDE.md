@@ -22,9 +22,11 @@ HMS Enterprise is a multi-tenant SaaS Hospital Management System by TGWT Solutio
 - Always commit and push completed artifacts immediately
 
 ## File Structure
-- `*.html` — Interactive wireframes, workflows, marketing templates
-- `*.docx` — SOW, project plans, PRD, TSD, API specs, build plans
-- `*.pptx` — Executive decks, pitch decks
-- `*.py` — Document generators (python-docx based)
-- `/files/` — Marketing images
-- `/New Reserach/` — Research documents (PRD, TSD, API spec, strategy)
+- `docs/enterprise/` — SOW, project plans, build plans
+- `docs/research/` — PRD, TSD, API specs, product strategy
+- `docs/presentations/` — Executive decks, pitch decks
+- `wireframes/` — Interactive HTML wireframes and workflows (64+ screens)
+- `marketing/` — WhatsApp templates, campaign assets
+- `marketing/assets/` — Marketing images (WhatsApp, hero, etc.)
+- `scripts/` — Python document generators (python-docx based)
+- `archives/` — Zip backups
