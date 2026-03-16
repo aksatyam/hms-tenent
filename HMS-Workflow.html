@@ -1,0 +1,2663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise HMS — Complete Application Workflow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   CSS VARIABLES & RESET
+═══════════════════════════════════════════════════════ */
+:root {
+  --navy:       #0D1F35;
+  --navy-mid:   #152840;
+  --navy-light: #1E3A5F;
+  --teal:       #0E8E8E;
+  --teal-bright:#14B8B8;
+  --teal-pale:  #E0F7F7;
+  --amber:      #F59E0B;
+  --rose:       #F43F5E;
+  --green:      #10B981;
+  --purple:     #8B5CF6;
+  --slate:      #64748B;
+  --slate-light:#94A3B8;
+  --bg:         #F0F4F8;
+  --white:      #FFFFFF;
+  --border:     rgba(14,142,142,0.15);
+  --shadow-sm:  0 1px 3px rgba(13,31,53,0.08), 0 1px 2px rgba(13,31,53,0.04);
+  --shadow-md:  0 4px 16px rgba(13,31,53,0.10), 0 2px 6px rgba(13,31,53,0.06);
+  --shadow-lg:  0 12px 40px rgba(13,31,53,0.14), 0 4px 12px rgba(13,31,53,0.08);
+  --font-main:  'Sora', sans-serif;
+  --font-mono:  'JetBrains Mono', monospace;
+  --font-serif: 'Crimson Pro', serif;
+  --sidebar-w:  280px;
+  --radius:     12px;
+  --radius-sm:  8px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-main);
+  background: var(--bg);
+  color: var(--navy);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SIDEBAR NAVIGATION
+═══════════════════════════════════════════════════════ */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: var(--navy);
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: thin;
+  scrollbar-color: var(--teal) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 2px; }
+
+.sidebar-brand {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.sidebar-logo {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 8px;
+}
+.logo-mark {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--teal), var(--teal-bright));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 800; color: white;
+  flex-shrink: 0;
+}
+.logo-text { font-size: 13px; font-weight: 700; color: white; line-height: 1.2; }
+.logo-sub { font-size: 10px; color: var(--slate-light); font-family: var(--font-mono); }
+.sidebar-badge {
+  display: inline-block;
+  background: rgba(14,142,142,0.2);
+  color: var(--teal-bright);
+  font-size: 9px; font-weight: 600;
+  padding: 2px 8px; border-radius: 20px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+}
+
+.sidebar-section { padding: 16px 12px 8px; }
+.sidebar-section-label {
+  font-size: 9px; font-weight: 700;
+  color: var(--slate);
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 0 8px; margin-bottom: 6px;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  cursor: pointer; text-decoration: none;
+  transition: all 0.2s ease;
+  margin-bottom: 2px;
+  position: relative;
+}
+.nav-item:hover { background: rgba(255,255,255,0.06); }
+.nav-item.active { background: rgba(14,142,142,0.18); }
+.nav-item.active::before {
+  content: ''; position: absolute; left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 60%; background: var(--teal-bright);
+  border-radius: 0 3px 3px 0;
+}
+
+.nav-badge {
+  width: 26px; height: 20px;
+  background: rgba(14,142,142,0.25);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700; color: var(--teal-bright);
+  font-family: var(--font-mono); flex-shrink: 0;
+}
+.nav-item.active .nav-badge { background: var(--teal); color: white; }
+
+.nav-label { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.7); line-height: 1.2; }
+.nav-sub { font-size: 10px; color: var(--slate); display: block; margin-top: 1px; }
+.nav-item.active .nav-label { color: white; }
+
+.nav-item-system {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: 8px;
+  cursor: pointer; text-decoration: none;
+  margin-bottom: 2px;
+  transition: background 0.2s;
+}
+.nav-item-system:hover { background: rgba(255,255,255,0.05); }
+.nav-label-sm { font-size: 11px; color: rgba(255,255,255,0.55); }
+.nav-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--slate); flex-shrink: 0;
+}
+.nav-dot.teal { background: var(--teal); }
+.nav-dot.amber { background: var(--amber); }
+.nav-dot.purple { background: var(--purple); }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.sidebar-footer-text {
+  font-size: 10px; color: var(--slate);
+  font-family: var(--font-mono); line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════════════════ */
+.main {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════════════
+   HERO SECTION
+═══════════════════════════════════════════════════════ */
+.hero {
+  background: var(--navy);
+  padding: 64px 56px 56px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -120px; right: -80px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(14,142,142,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute; bottom: -60px; left: 200px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px;
+}
+.hero-chip {
+  background: rgba(14,142,142,0.2);
+  border: 1px solid rgba(14,142,142,0.4);
+  color: var(--teal-bright);
+  font-size: 11px; font-weight: 600;
+  padding: 4px 12px; border-radius: 20px;
+  font-family: var(--font-mono); letter-spacing: 0.5px;
+}
+.hero-divider-line {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, rgba(14,142,142,0.3), transparent);
+}
+
+.hero-title {
+  font-size: 48px; font-weight: 800;
+  color: white; line-height: 1.1;
+  margin-bottom: 16px;
+  letter-spacing: -1px;
+}
+.hero-title span { color: var(--teal-bright); }
+
+.hero-subtitle {
+  font-family: var(--font-serif);
+  font-size: 18px; font-weight: 300;
+  color: rgba(255,255,255,0.55);
+  max-width: 640px; line-height: 1.7;
+  margin-bottom: 40px;
+}
+
+.hero-stats {
+  display: flex; flex-wrap: wrap; gap: 12px;
+}
+.stat-chip {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 12px 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.stat-val {
+  font-size: 22px; font-weight: 800; color: var(--teal-bright);
+  line-height: 1;
+}
+.stat-lbl { font-size: 11px; color: rgba(255,255,255,0.45); font-weight: 500; }
+
+/* ═══════════════════════════════════════════════════════
+   ARCHITECTURE STRIP
+═══════════════════════════════════════════════════════ */
+.arch-strip {
+  background: #0A1829;
+  padding: 0 56px;
+  overflow-x: auto;
+  display: flex; align-items: stretch;
+  border-bottom: 1px solid rgba(14,142,142,0.15);
+}
+.arch-strip::-webkit-scrollbar { height: 3px; }
+.arch-strip::-webkit-scrollbar-thumb { background: var(--teal); }
+
+.arch-layer {
+  padding: 14px 20px 12px;
+  border-right: 1px solid rgba(255,255,255,0.04);
+  min-width: 180px;
+  flex-shrink: 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.arch-layer:last-child { border-right: none; }
+.arch-layer-name {
+  font-size: 10px; font-weight: 700;
+  color: var(--teal-bright);
+  letter-spacing: 1px; text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+.arch-layer-sub {
+  font-size: 9px; color: var(--slate);
+  font-family: var(--font-mono);
+}
+.arch-pills { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+.arch-pill {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.6);
+  font-size: 9px; padding: 2px 7px;
+  border-radius: 3px; white-space: nowrap;
+  font-family: var(--font-mono);
+}
+.arch-pill.highlight {
+  background: rgba(14,142,142,0.2);
+  color: var(--teal-bright);
+}
+
+/* ═══════════════════════════════════════════════════════
+   CONTENT AREA
+═══════════════════════════════════════════════════════ */
+.content { padding: 0 56px 80px; }
+
+/* ═══════════════════════════════════════════════════════
+   MODULE SECTION
+═══════════════════════════════════════════════════════ */
+.module-section {
+  padding-top: 64px;
+  border-bottom: 1px solid rgba(14,142,142,0.1);
+  padding-bottom: 64px;
+}
+
+.module-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px; margin-bottom: 36px;
+  flex-wrap: wrap;
+}
+
+.module-header-left { flex: 1; min-width: 300px; }
+
+.module-number-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+}
+.module-num {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800;
+  font-family: var(--font-mono);
+  color: white; flex-shrink: 0;
+}
+.module-type-tag {
+  background: var(--teal-pale);
+  color: var(--teal);
+  font-size: 10px; font-weight: 700;
+  padding: 4px 10px; border-radius: 4px;
+  font-family: var(--font-mono); letter-spacing: 0.5px;
+}
+
+.module-title {
+  font-size: 30px; font-weight: 800;
+  color: var(--navy); line-height: 1.1;
+  margin-bottom: 8px; letter-spacing: -0.5px;
+}
+.module-tagline {
+  font-family: var(--font-serif);
+  font-size: 16px; color: var(--slate);
+  font-weight: 300; line-height: 1.6;
+}
+
+.module-meta {
+  display: flex; flex-direction: column;
+  align-items: flex-end; gap: 8px;
+}
+.integration-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.int-tag {
+  display: flex; align-items: center; gap: 5px;
+  background: white; border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 10px;
+  font-size: 11px; font-weight: 600; color: var(--navy);
+  box-shadow: var(--shadow-sm);
+}
+.int-tag-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--teal);
+}
+.int-arrow { color: var(--teal); font-size: 10px; }
+
+/* ═══════════════════════════════════════════════════════
+   WORKFLOW STEPS
+═══════════════════════════════════════════════════════ */
+.workflow-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+  align-items: start;
+}
+
+.steps-container { display: flex; flex-direction: column; gap: 0; }
+
+.step-card {
+  display: flex; gap: 0;
+  position: relative;
+}
+.step-card:not(:last-child) .step-connector {
+  position: absolute; left: 20px; top: 56px;
+  width: 2px; height: calc(100% - 56px);
+  background: linear-gradient(180deg, var(--teal) 0%, rgba(14,142,142,0.1) 100%);
+  z-index: 0;
+}
+
+.step-left {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 24px 20px 0 0;
+  z-index: 1;
+}
+.step-num {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--navy);
+  border: 2px solid var(--teal);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800;
+  color: var(--teal); flex-shrink: 0;
+  font-family: var(--font-mono);
+  position: relative; z-index: 1;
+  transition: all 0.25s;
+}
+.step-card:hover .step-num {
+  background: var(--teal);
+  color: white;
+  transform: scale(1.1);
+}
+
+.step-body {
+  flex: 1;
+  background: white;
+  border: 1px solid rgba(13,31,53,0.07);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s ease;
+  position: relative; overflow: hidden;
+}
+.step-body::before {
+  content: '';
+  position: absolute; left: 0; top: 0;
+  width: 3px; height: 100%;
+  background: var(--teal);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.step-card:hover .step-body {
+  box-shadow: var(--shadow-md);
+  border-color: rgba(14,142,142,0.25);
+  transform: translateX(2px);
+}
+.step-card:hover .step-body::before { opacity: 1; }
+
+.step-title {
+  font-size: 15px; font-weight: 700;
+  color: var(--navy); margin-bottom: 6px;
+  display: flex; align-items: center; gap: 8px;
+}
+.step-detail {
+  font-size: 13px; color: var(--slate);
+  line-height: 1.6;
+}
+.step-detail .highlight {
+  color: var(--teal); font-weight: 600;
+  font-family: var(--font-mono); font-size: 12px;
+  background: var(--teal-pale);
+  padding: 1px 5px; border-radius: 3px;
+}
+
+.step-meta {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+}
+.step-tag {
+  font-size: 10px; font-weight: 600;
+  padding: 3px 8px; border-radius: 4px;
+  font-family: var(--font-mono);
+  border: 1px solid;
+}
+.step-tag.kafka { 
+  color: #E35A1A; border-color: rgba(227,90,26,0.25);
+  background: rgba(227,90,26,0.06);
+}
+.step-tag.realtime { 
+  color: var(--teal); border-color: rgba(14,142,142,0.25);
+  background: rgba(14,142,142,0.06);
+}
+.step-tag.rbac { 
+  color: var(--purple); border-color: rgba(139,92,246,0.25);
+  background: rgba(139,92,246,0.06);
+}
+.step-tag.db { 
+  color: #0369A1; border-color: rgba(3,105,161,0.25);
+  background: rgba(3,105,161,0.06);
+}
+.step-tag.api { 
+  color: var(--green); border-color: rgba(16,185,129,0.25);
+  background: rgba(16,185,129,0.06);
+}
+.step-tag.notify {
+  color: var(--amber); border-color: rgba(245,158,11,0.25);
+  background: rgba(245,158,11,0.06);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SIDEBAR PANEL (Key Components & Events)
+═══════════════════════════════════════════════════════ */
+.module-panel {
+  display: flex; flex-direction: column; gap: 16px;
+  position: sticky; top: 24px;
+}
+
+.panel-card {
+  background: white;
+  border: 1px solid rgba(13,31,53,0.07);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.panel-header {
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid rgba(13,31,53,0.06);
+}
+.panel-title {
+  font-size: 11px; font-weight: 700;
+  color: var(--navy); letter-spacing: 0.8px;
+  text-transform: uppercase; font-family: var(--font-mono);
+}
+.panel-icon {
+  width: 20px; height: 20px;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+}
+
+.component-list { padding: 12px 16px; }
+.component-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(13,31,53,0.05);
+  font-size: 12px; color: var(--navy);
+  font-weight: 500; line-height: 1.3;
+}
+.component-item:last-child { border-bottom: none; }
+.comp-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--teal); margin-top: 4px; flex-shrink: 0;
+}
+
+.event-list { padding: 12px 16px; }
+.event-item {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(13,31,53,0.05);
+}
+.event-item:last-child { border-bottom: none; }
+.event-name {
+  font-family: var(--font-mono);
+  font-size: 11px; font-weight: 600;
+  color: #E35A1A; margin-bottom: 2px;
+}
+.event-desc { font-size: 11px; color: var(--slate); }
+
+.rbac-list { padding: 12px 16px; }
+.rbac-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 0; font-size: 12px;
+  border-bottom: 1px solid rgba(13,31,53,0.05);
+}
+.rbac-item:last-child { border-bottom: none; }
+.rbac-role {
+  font-weight: 600; color: var(--navy);
+  min-width: 110px; font-size: 11px;
+}
+.rbac-perm { color: var(--slate); font-size: 11px; font-family: var(--font-mono); }
+
+/* ═══════════════════════════════════════════════════════
+   KAFKA EVENT FLOW SECTION
+═══════════════════════════════════════════════════════ */
+.kafka-section {
+  padding-top: 64px; padding-bottom: 64px;
+  border-bottom: 1px solid rgba(14,142,142,0.1);
+}
+.section-eyebrow {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+}
+.eyebrow-badge {
+  background: rgba(227,90,26,0.1);
+  color: #E35A1A;
+  font-size: 10px; font-weight: 700;
+  padding: 3px 10px; border-radius: 20px;
+  font-family: var(--font-mono); letter-spacing: 0.5px;
+  border: 1px solid rgba(227,90,26,0.2);
+}
+.section-title {
+  font-size: 26px; font-weight: 800;
+  color: var(--navy); letter-spacing: -0.3px;
+  margin-bottom: 6px;
+}
+.section-sub {
+  font-family: var(--font-serif);
+  font-size: 15px; color: var(--slate);
+  margin-bottom: 32px;
+}
+
+.kafka-flow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0;
+  align-items: stretch;
+  background: white;
+  border: 1px solid rgba(13,31,53,0.08);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.kafka-col-header {
+  padding: 14px 20px;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  font-family: var(--font-mono);
+  text-align: center;
+}
+.kafka-producers-header { background: #FFF7ED; color: #C2410C; border-bottom: 2px solid #FED7AA; }
+.kafka-bus-header { background: var(--navy); color: var(--teal-bright); border-bottom: 2px solid rgba(14,142,142,0.3); }
+.kafka-consumers-header { background: #F0FDF4; color: #15803D; border-bottom: 2px solid #BBF7D0; }
+
+.kafka-producers, .kafka-consumers {
+  display: flex; flex-direction: column; gap: 0;
+  padding: 0;
+}
+.kafka-actor {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(13,31,53,0.05);
+}
+.kafka-actor:last-child { border-bottom: none; }
+.kafka-actor-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+  background: var(--bg);
+}
+.kafka-actor-name { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+.kafka-events-list { display: flex; flex-direction: column; gap: 3px; }
+.kafka-event-pill {
+  font-family: var(--font-mono); font-size: 10px;
+  background: rgba(227,90,26,0.08);
+  color: #C2410C;
+  padding: 2px 7px; border-radius: 3px;
+  display: inline-block; width: fit-content;
+}
+.kafka-event-pill.consumer {
+  background: rgba(16,185,129,0.08);
+  color: #047857;
+}
+
+.kafka-bus {
+  background: var(--navy);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 24px 16px; gap: 12px;
+  min-width: 160px;
+}
+.kafka-bus-icon { font-size: 28px; }
+.kafka-bus-name {
+  font-size: 11px; font-weight: 800;
+  color: white; letter-spacing: 1px;
+  font-family: var(--font-mono); text-transform: uppercase;
+}
+.kafka-bus-pills { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.kafka-tech-pill {
+  background: rgba(14,142,142,0.2);
+  border: 1px solid rgba(14,142,142,0.3);
+  color: var(--teal-bright);
+  font-size: 9px; font-weight: 600;
+  padding: 4px 10px; border-radius: 4px;
+  text-align: center; font-family: var(--font-mono);
+}
+.kafka-arrow {
+  color: rgba(255,255,255,0.2); font-size: 18px; text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RBAC OVERVIEW TABLE
+═══════════════════════════════════════════════════════ */
+.rbac-section {
+  padding-top: 64px; padding-bottom: 64px;
+  border-bottom: 1px solid rgba(14,142,142,0.1);
+}
+.rbac-table-wrap {
+  background: white;
+  border: 1px solid rgba(13,31,53,0.08);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.rbac-table-header-row {
+  display: grid; grid-template-columns: 80px 160px 140px 1fr;
+  background: var(--navy); padding: 12px 20px;
+}
+.rbac-th {
+  font-size: 10px; font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 1px; text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+.rbac-row {
+  display: grid; grid-template-columns: 80px 160px 140px 1fr;
+  padding: 14px 20px; align-items: center;
+  border-bottom: 1px solid rgba(13,31,53,0.05);
+  transition: background 0.15s;
+}
+.rbac-row:hover { background: var(--bg); }
+.rbac-row:last-child { border-bottom: none; }
+.rbac-lvl-badge {
+  width: 36px; height: 22px;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800;
+  font-family: var(--font-mono); color: white;
+}
+.rbac-role-name { font-size: 13px; font-weight: 700; color: var(--navy); }
+.rbac-role-scope { font-size: 11px; color: var(--slate); font-family: var(--font-mono); }
+.rbac-scope-badge {
+  font-size: 10px; font-weight: 600; padding: 3px 8px;
+  border-radius: 4px; font-family: var(--font-mono); display: inline-block;
+}
+.rbac-perms-list { display: flex; flex-wrap: wrap; gap: 5px; }
+.perm-badge {
+  font-size: 10px; font-family: var(--font-mono);
+  padding: 2px 7px; border-radius: 3px;
+  background: var(--bg); color: var(--navy);
+  border: 1px solid rgba(13,31,53,0.1);
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════
+   MODULE COLORS
+═══════════════════════════════════════════════════════ */
+.m01 { background: #0E8E8E; }
+.m02 { background: #7C3AED; }
+.m03 { background: #0369A1; }
+.m04 { background: #B45309; }
+.m05 { background: #BE185D; }
+.m06 { background: #065F46; }
+.m07 { background: #1D4ED8; }
+.m08 { background: #0E8E8E; }
+.m09 { background: #991B1B; }
+.m10 { background: #6D28D9; }
+.m11 { background: #0369A1; }
+.m12 { background: #374151; }
+
+/* ═══════════════════════════════════════════════════════
+   SECTION DIVIDERS
+═══════════════════════════════════════════════════════ */
+.section-divider {
+  background: var(--navy);
+  padding: 48px 56px;
+  position: relative; overflow: hidden;
+}
+.section-divider::after {
+  content: '';
+  position: absolute; right: -40px; top: -40px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(14,142,142,0.08);
+}
+.section-divider-label {
+  font-size: 11px; font-weight: 700;
+  color: var(--teal); letter-spacing: 2px;
+  text-transform: uppercase; font-family: var(--font-mono);
+  margin-bottom: 8px;
+}
+.section-divider-title {
+  font-size: 36px; font-weight: 800;
+  color: white; letter-spacing: -0.5px;
+}
+.section-divider-sub {
+  font-family: var(--font-serif);
+  font-size: 16px; color: rgba(255,255,255,0.45);
+  margin-top: 6px;
+}
+.section-divider-modules {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px;
+}
+.sd-mod-tag {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.7);
+  font-size: 11px; font-weight: 600;
+  padding: 5px 12px; border-radius: 6px;
+  font-family: var(--font-mono);
+}
+
+/* ═══════════════════════════════════════════════════════
+   DELIVERY TIMELINE
+═══════════════════════════════════════════════════════ */
+.timeline-section {
+  padding-top: 64px; padding-bottom: 64px;
+  border-bottom: 1px solid rgba(14,142,142,0.1);
+}
+.timeline-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px; margin-bottom: 12px;
+}
+.phase-card {
+  background: white;
+  border: 1px solid rgba(13,31,53,0.07);
+  border-radius: var(--radius-sm);
+  padding: 14px 12px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+.phase-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.phase-id {
+  font-family: var(--font-mono); font-size: 10px;
+  font-weight: 800; color: white;
+  padding: 3px 7px; border-radius: 4px;
+  display: inline-block; margin-bottom: 8px;
+}
+.phase-title {
+  font-size: 12px; font-weight: 700;
+  color: var(--navy); margin-bottom: 6px; line-height: 1.2;
+}
+.phase-meta {
+  font-family: var(--font-mono); font-size: 9px;
+  color: var(--slate); margin-bottom: 8px;
+}
+.phase-items { display: flex; flex-direction: column; gap: 3px; }
+.phase-item {
+  font-size: 10px; color: var(--slate);
+  display: flex; align-items: flex-start; gap: 4px;
+}
+.phase-item::before {
+  content: '→'; color: var(--teal); font-size: 10px; flex-shrink: 0; margin-top: 0px;
+}
+.timeline-footer {
+  background: var(--teal);
+  color: white; text-align: center;
+  padding: 14px; border-radius: var(--radius-sm);
+  font-size: 12px; font-weight: 700;
+  font-family: var(--font-mono); letter-spacing: 0.5px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   KPI SECTION
+═══════════════════════════════════════════════════════ */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.kpi-card {
+  background: white;
+  border: 1px solid rgba(13,31,53,0.07);
+  border-radius: var(--radius); padding: 20px;
+  box-shadow: var(--shadow-sm); position: relative;
+  overflow: hidden; transition: all 0.2s;
+}
+.kpi-card::before {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--teal), var(--teal-bright));
+}
+.kpi-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.kpi-label { font-size: 11px; font-weight: 600; color: var(--slate); margin-bottom: 8px; }
+.kpi-value { font-size: 28px; font-weight: 800; color: var(--teal); line-height: 1; margin-bottom: 8px; }
+.kpi-desc { font-size: 11px; color: var(--slate); line-height: 1.4; }
+
+/* ═══════════════════════════════════════════════════════
+   RISK REGISTER
+═══════════════════════════════════════════════════════ */
+.risk-list { display: flex; flex-direction: column; gap: 8px; }
+.risk-row {
+  display: grid; grid-template-columns: 90px 1fr 2fr;
+  gap: 16px; align-items: start;
+  background: white; border-radius: var(--radius-sm);
+  padding: 14px 20px; border: 1px solid rgba(13,31,53,0.07);
+  box-shadow: var(--shadow-sm); transition: all 0.2s;
+}
+.risk-row:hover { box-shadow: var(--shadow-md); }
+.sev-badge {
+  font-size: 10px; font-weight: 800;
+  padding: 4px 10px; border-radius: 4px;
+  text-align: center; font-family: var(--font-mono);
+  letter-spacing: 0.5px; display: inline-block;
+}
+.sev-critical { background: rgba(244,63,94,0.12); color: #BE123C; border: 1px solid rgba(244,63,94,0.2); }
+.sev-high { background: rgba(249,115,22,0.12); color: #C2410C; border: 1px solid rgba(249,115,22,0.2); }
+.sev-medium { background: rgba(245,158,11,0.12); color: #B45309; border: 1px solid rgba(245,158,11,0.2); }
+.risk-name { font-size: 13px; font-weight: 700; color: var(--navy); }
+.risk-mitigation { font-size: 12px; color: var(--slate); line-height: 1.5; }
+
+/* ═══════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════ */
+.page-footer {
+  background: var(--navy);
+  padding: 40px 56px;
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 24px; align-items: center;
+}
+.footer-brand { font-size: 14px; font-weight: 700; color: white; margin-bottom: 4px; }
+.footer-meta { font-size: 11px; color: var(--slate); font-family: var(--font-mono); }
+.footer-right { text-align: right; }
+.footer-badge {
+  display: inline-block;
+  background: rgba(14,142,142,0.2);
+  border: 1px solid rgba(14,142,142,0.3);
+  color: var(--teal-bright);
+  font-size: 10px; font-weight: 600;
+  padding: 5px 12px; border-radius: 6px;
+  font-family: var(--font-mono);
+}
+
+/* ═══════════════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════════════ */
+.two-col-steps {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+.compact-step {
+  background: white; border: 1px solid rgba(13,31,53,0.07);
+  border-radius: var(--radius-sm); padding: 16px;
+  box-shadow: var(--shadow-sm); transition: all 0.2s;
+}
+.compact-step:hover { box-shadow: var(--shadow-md); border-color: rgba(14,142,142,0.2); }
+.compact-step-num {
+  width: 24px; height: 24px; border-radius: 6px;
+  background: var(--navy); color: var(--teal);
+  font-size: 11px; font-weight: 800;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); margin-bottom: 8px;
+}
+.compact-step-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; }
+.compact-step-detail { font-size: 12px; color: var(--slate); line-height: 1.5; }
+
+.overview-bar {
+  background: white;
+  border: 1px solid rgba(13,31,53,0.07);
+  border-radius: var(--radius); padding: 20px 24px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+  display: flex; align-items: flex-start; gap: 16px;
+}
+.overview-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.overview-text { flex: 1; }
+.overview-text strong { font-size: 13px; font-weight: 700; color: var(--navy); display: block; margin-bottom: 4px; }
+.overview-text p { font-size: 13px; color: var(--slate); line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-logo">
+      <div class="logo-mark">H</div>
+      <div>
+        <div class="logo-text">Enterprise HMS</div>
+        <div class="logo-sub">TechDigitalWishTree</div>
+      </div>
+    </div>
+    <span class="sidebar-badge">v2.0 · 12 Modules</span>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Platform</div>
+    <a class="nav-item active" href="#overview">
+      <div class="nav-badge">00</div>
+      <div><span class="nav-label">Overview & Architecture</span></div>
+    </a>
+    <a class="nav-item" href="#rbac">
+      <div class="nav-badge">01</div>
+      <div><span class="nav-label">RBAC Framework</span><span class="nav-sub">6-Tier · 200+ Permissions</span></div>
+    </a>
+    <a class="nav-item" href="#kafka">
+      <div class="nav-badge">02</div>
+      <div><span class="nav-label">Kafka Event Bus</span><span class="nav-sub">Real-Time Integration</span></div>
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Clinical Modules</div>
+    <a class="nav-item" href="#m01">
+      <div class="nav-badge m01" style="color:white;background:#0E8E8E">M1</div>
+      <div><span class="nav-label">OPD</span><span class="nav-sub">Outpatient Department</span></div>
+    </a>
+    <a class="nav-item" href="#m02">
+      <div class="nav-badge" style="color:white;background:#7C3AED">M2</div>
+      <div><span class="nav-label">Pharmacy</span><span class="nav-sub">Drug Management</span></div>
+    </a>
+    <a class="nav-item" href="#m03">
+      <div class="nav-badge" style="color:white;background:#0369A1">M3</div>
+      <div><span class="nav-label">Laboratory</span><span class="nav-sub">Diagnostics & Reports</span></div>
+    </a>
+    <a class="nav-item" href="#m10">
+      <div class="nav-badge" style="color:white;background:#6D28D9">M10</div>
+      <div><span class="nav-label">IPD</span><span class="nav-sub">In-Patient Department</span></div>
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Admin Modules</div>
+    <a class="nav-item" href="#m04">
+      <div class="nav-badge" style="color:white;background:#B45309">M4</div>
+      <div><span class="nav-label">Finance & Billing</span><span class="nav-sub">GST · TPA · Payments</span></div>
+    </a>
+    <a class="nav-item" href="#m05">
+      <div class="nav-badge" style="color:white;background:#BE185D">M5</div>
+      <div><span class="nav-label">HR & Payroll</span><span class="nav-sub">Biometric · Compliance</span></div>
+    </a>
+    <a class="nav-item" href="#m06">
+      <div class="nav-badge" style="color:white;background:#065F46">M6</div>
+      <div><span class="nav-label">Inventory</span><span class="nav-sub">Procurement · GRN</span></div>
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Platform Modules</div>
+    <a class="nav-item" href="#m07">
+      <div class="nav-badge" style="color:white;background:#1D4ED8">M7</div>
+      <div><span class="nav-label">BI & Reports</span><span class="nav-sub">Analytics · Dashboards</span></div>
+    </a>
+    <a class="nav-item" href="#m08">
+      <div class="nav-badge" style="color:white;background:#0E8E8E">M8</div>
+      <div><span class="nav-label">Patient Portal</span><span class="nav-sub">PWA · Self-Service</span></div>
+    </a>
+    <a class="nav-item" href="#m09">
+      <div class="nav-badge" style="color:white;background:#991B1B">M9</div>
+      <div><span class="nav-label">Audit & Security</span><span class="nav-sub">DISHA · OWASP</span></div>
+    </a>
+    <a class="nav-item" href="#m11">
+      <div class="nav-badge" style="color:white;background:#0369A1">M11</div>
+      <div><span class="nav-label">Appointment</span><span class="nav-sub">Scheduling Engine</span></div>
+    </a>
+    <a class="nav-item" href="#m12">
+      <div class="nav-badge" style="color:white;background:#374151">M12</div>
+      <div><span class="nav-label">Platform Admin</span><span class="nav-sub">Tenant · SLA · Billing</span></div>
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Delivery</div>
+    <a class="nav-item-system" href="#timeline"><div class="nav-dot teal"></div><span class="nav-label-sm">13-Phase Timeline</span></a>
+    <a class="nav-item-system" href="#kpis"><div class="nav-dot amber"></div><span class="nav-label-sm">Platform KPIs</span></a>
+    <a class="nav-item-system" href="#risks"><div class="nav-dot" style="background:var(--rose)"></div><span class="nav-label-sm">Risk Register</span></a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-text">
+      TGWT-HMS-ENT-2026-001<br>
+      v2.0 Enterprise Edition<br>
+      March 2026 · Confidential
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════ MAIN ═══════ -->
+<div class="main">
+
+  <!-- HERO -->
+  <section class="hero" id="overview">
+    <div class="hero-eyebrow">
+      <span class="hero-chip">ENTERPRISE GRADE · CLOUD-NATIVE · DISHA COMPLIANT</span>
+      <div class="hero-divider-line"></div>
+    </div>
+    <h1 class="hero-title">Hospital Management<br><span>System — Complete</span><br>Application Workflow</h1>
+    <p class="hero-subtitle">Full-stack, multi-tenant SaaS platform for hospital groups and clinic chains. 12 deeply integrated modules, 6-tier RBAC, real-time Kafka event bus, and schema-isolated multi-tenancy — designed for enterprise scale from day one.</p>
+    <div class="hero-stats">
+      <div class="stat-chip"><div class="stat-val">12</div><div class="stat-lbl">Modules</div></div>
+      <div class="stat-chip"><div class="stat-val">6</div><div class="stat-lbl">RBAC Tiers</div></div>
+      <div class="stat-chip"><div class="stat-val">200+</div><div class="stat-lbl">Permissions</div></div>
+      <div class="stat-chip"><div class="stat-val">540</div><div class="stat-lbl">Person-Days</div></div>
+      <div class="stat-chip"><div class="stat-val">53W</div><div class="stat-lbl">Timeline</div></div>
+      <div class="stat-chip"><div class="stat-val">₹31.76L</div><div class="stat-lbl">Budget</div></div>
+      <div class="stat-chip"><div class="stat-val">Apr 2027</div><div class="stat-lbl">Go-Live</div></div>
+    </div>
+  </section>
+
+  <!-- ARCH STRIP -->
+  <div class="arch-strip">
+    <div class="arch-layer">
+      <div class="arch-layer-name">Presentation</div>
+      <div class="arch-layer-sub">CLIENT LAYER</div>
+      <div class="arch-pills">
+        <span class="arch-pill highlight">React 18 + TS</span>
+        <span class="arch-pill">Ant Design Pro</span>
+        <span class="arch-pill">Vite</span>
+        <span class="arch-pill">PWA</span>
+        <span class="arch-pill">React Native P2</span>
+      </div>
+    </div>
+    <div class="arch-layer">
+      <div class="arch-layer-name">API Gateway</div>
+      <div class="arch-layer-sub">AUTH + ROUTING</div>
+      <div class="arch-pills">
+        <span class="arch-pill highlight">Spring Cloud GW</span>
+        <span class="arch-pill">JWT + Refresh</span>
+        <span class="arch-pill">Resilience4j</span>
+        <span class="arch-pill">Spring Security</span>
+      </div>
+    </div>
+    <div class="arch-layer">
+      <div class="arch-layer-name">Business Logic</div>
+      <div class="arch-layer-sub">12 MICROSERVICES</div>
+      <div class="arch-pills">
+        <span class="arch-pill highlight">Spring Boot 3.x</span>
+        <span class="arch-pill">Java 21</span>
+        <span class="arch-pill">DDD + CQRS</span>
+        <span class="arch-pill">OpenAPI 3.0</span>
+      </div>
+    </div>
+    <div class="arch-layer">
+      <div class="arch-layer-name">Real-Time Bus</div>
+      <div class="arch-layer-sub">EVENTS + WS</div>
+      <div class="arch-pills">
+        <span class="arch-pill highlight">Apache Kafka</span>
+        <span class="arch-pill">Socket.IO</span>
+        <span class="arch-pill">Redis Pub/Sub</span>
+        <span class="arch-pill">DLQ</span>
+      </div>
+    </div>
+    <div class="arch-layer">
+      <div class="arch-layer-name">Data Layer</div>
+      <div class="arch-layer-sub">STORAGE + CACHE</div>
+      <div class="arch-pills">
+        <span class="arch-pill highlight">PostgreSQL 15</span>
+        <span class="arch-pill">pgBouncer</span>
+        <span class="arch-pill">Redis 7</span>
+        <span class="arch-pill">Elasticsearch 8</span>
+        <span class="arch-pill">MinIO/S3</span>
+      </div>
+    </div>
+    <div class="arch-layer">
+      <div class="arch-layer-name">DevOps</div>
+      <div class="arch-layer-sub">INFRA + DEPLOY</div>
+      <div class="arch-pills">
+        <span class="arch-pill highlight">Kubernetes EKS</span>
+        <span class="arch-pill">Terraform IaC</span>
+        <span class="arch-pill">GitHub Actions</span>
+        <span class="arch-pill">Nginx WAF</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ════════════════════════════════════════════════
+         RBAC FRAMEWORK
+    ════════════════════════════════════════════════ -->
+    <section class="rbac-section" id="rbac">
+      <div class="section-eyebrow">
+        <span class="eyebrow-badge" style="background:rgba(139,92,246,0.1);color:#7C3AED;border-color:rgba(139,92,246,0.2)">SECURITY · AUTHORIZATION</span>
+      </div>
+      <h2 class="section-title">6-Tier RBAC Framework</h2>
+      <p class="section-sub">Guard Logic: tenantId match · branchId ∈ allowedBranches · permissions.includes('resource:action') — enforced via Spring Security @PreAuthorize on every API endpoint</p>
+
+      <div class="rbac-table-wrap">
+        <div class="rbac-table-header-row">
+          <span class="rbac-th">Level</span>
+          <span class="rbac-th">Role</span>
+          <span class="rbac-th">Scope</span>
+          <span class="rbac-th">Key Permissions</span>
+        </div>
+        <div class="rbac-row">
+          <div><span class="rbac-lvl-badge" style="background:#EF4444">L1</span></div>
+          <div><div class="rbac-role-name">Super Admin</div><div class="rbac-role-scope">Platform-wide</div></div>
+          <div><span class="rbac-scope-badge" style="background:rgba(239,68,68,0.08);color:#B91C1C">Platform</span></div>
+          <div class="rbac-perms-list">
+            <span class="perm-badge">tenant:manage</span><span class="perm-badge">billing:configure</span><span class="perm-badge">analytics:cross-tenant</span><span class="perm-badge">infra:monitor</span><span class="perm-badge">sla:manage</span>
+          </div>
+        </div>
+        <div class="rbac-row">
+          <div><span class="rbac-lvl-badge" style="background:#F97316">L2</span></div>
+          <div><div class="rbac-role-name">Tenant Admin</div><div class="rbac-role-scope">Organization-wide</div></div>
+          <div><span class="rbac-scope-badge" style="background:rgba(249,115,22,0.08);color:#C2410C">Organization</span></div>
+          <div class="rbac-perms-list">
+            <span class="perm-badge">branch:create</span><span class="perm-badge">user:manage</span><span class="perm-badge">module:configure</span><span class="perm-badge">report:consolidated</span><span class="perm-badge">plan:upgrade</span>
+          </div>
+        </div>
+        <div class="rbac-row">
+          <div><span class="rbac-lvl-badge" style="background:#0E8E8E">L3</span></div>
+          <div><div class="rbac-role-name">Branch Admin</div><div class="rbac-role-scope">Single Branch</div></div>
+          <div><span class="rbac-scope-badge" style="background:rgba(14,142,142,0.08);color:#0E8E8E">Branch</span></div>
+          <div class="rbac-perms-list">
+            <span class="perm-badge">staff:manage</span><span class="perm-badge">transaction:approve</span><span class="perm-badge">report:branch</span><span class="perm-badge">shift:configure</span><span class="perm-badge">day-close:approve</span>
+          </div>
+        </div>
+        <div class="rbac-row">
+          <div><span class="rbac-lvl-badge" style="background:#1D4ED8">L4</span></div>
+          <div><div class="rbac-role-name">Dept Head</div><div class="rbac-role-scope">Branch + Dept</div></div>
+          <div><span class="rbac-scope-badge" style="background:rgba(29,78,216,0.08);color:#1D4ED8">Dept</span></div>
+          <div class="rbac-perms-list">
+            <span class="perm-badge">dept:manage</span><span class="perm-badge">schedule:set</span><span class="perm-badge">transaction:dept-approve</span><span class="perm-badge">report:dept</span><span class="perm-badge">staff:review</span>
+          </div>
+        </div>
+        <div class="rbac-row">
+          <div><span class="rbac-lvl-badge" style="background:#6D28D9">L5</span></div>
+          <div><div class="rbac-role-name">Dept Staff</div><div class="rbac-role-scope">Role-Scoped</div></div>
+          <div><span class="rbac-scope-badge" style="background:rgba(109,40,217,0.08);color:#6D28D9">Role</span></div>
+          <div class="rbac-perms-list">
+            <span class="perm-badge">patient:register</span><span class="perm-badge">consultation:write</span><span class="perm-badge">drug:dispense</span><span class="perm-badge">result:enter</span><span class="perm-badge">bill:generate</span>
+          </div>
+        </div>
+        <div class="rbac-row">
+          <div><span class="rbac-lvl-badge" style="background:#10B981">L6</span></div>
+          <div><div class="rbac-role-name">Patient (Portal)</div><div class="rbac-role-scope">Self Only</div></div>
+          <div><span class="rbac-scope-badge" style="background:rgba(16,185,129,0.08);color:#059669">Self</span></div>
+          <div class="rbac-perms-list">
+            <span class="perm-badge">appointment:book</span><span class="perm-badge">report:download-own</span><span class="perm-badge">bill:pay-own</span><span class="perm-badge">prescription:view-own</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         CLINICAL MODULES DIVIDER
+    ════════════════════════════════════════════════ -->
+  </div><!-- end content -->
+
+  <div class="section-divider">
+    <div class="section-divider-label">Section 01</div>
+    <div class="section-divider-title">Clinical Modules</div>
+    <div class="section-divider-sub">Patient-facing workflows — OPD · Pharmacy · Laboratory · IPD</div>
+    <div class="section-divider-modules">
+      <span class="sd-mod-tag">M01 OPD</span>
+      <span class="sd-mod-tag">M02 Pharmacy</span>
+      <span class="sd-mod-tag">M03 Laboratory</span>
+      <span class="sd-mod-tag">M10 IPD</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ════════════════════════════════════════════════
+         M01 — OPD
+    ════════════════════════════════════════════════ -->
+    <section class="module-section" id="m01">
+      <div class="module-header">
+        <div class="module-header-left">
+          <div class="module-number-badge">
+            <div class="module-num m01">M01</div>
+            <span class="module-type-tag">CLINICAL</span>
+          </div>
+          <h2 class="module-title">OPD — Outpatient Department</h2>
+          <p class="module-tagline">Patient entry point — UHID creation, EMR consultation, e-prescription generation, and seamless cross-module event dispatch via Kafka.</p>
+        </div>
+        <div class="module-meta">
+          <div class="integration-tags">
+            <span class="int-tag"><span class="int-tag-dot"></span>Pharmacy <span class="int-arrow">→</span></span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Lab <span class="int-arrow">→</span></span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Finance <span class="int-arrow">→</span></span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Portal <span class="int-arrow">→</span></span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Audit</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="overview-bar">
+        <div class="overview-icon" style="background:#E0F7F7">🏥</div>
+        <div class="overview-text">
+          <strong>Module Purpose</strong>
+          <p>The OPD module is the primary entry point for all patient interactions. It handles walk-in registration, appointment check-in, digital queue management, clinical consultation with SOAP-based EMR, e-prescription with real-time drug interaction checking, lab order dispatch, and final discharge with automated billing. All events are published to Kafka for downstream module consumption.</p>
+        </div>
+      </div>
+
+      <div class="workflow-grid">
+        <div class="steps-container">
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">1</div></div>
+            <div class="step-body">
+              <div class="step-title">Patient Registration & UHID Generation</div>
+              <div class="step-detail">Walk-in or appointment check-in triggers registration. System queries existing UHID by name + DOB + mobile — returning patients auto-populated. New patients: demographics (name, DOB, gender, address), insurance details, known allergies, and emergency contact captured. <span class="highlight">UHID</span> generated as tenant-scoped unique identifier (format: <span class="highlight">TENANTID-YYYYMMDD-SEQ</span>). Consent form presented and digitally signed (DISHA compliant).</div>
+              <div class="step-meta">
+                <span class="step-tag db">PostgreSQL Write</span>
+                <span class="step-tag rbac">L3–L5 Required</span>
+                <span class="step-tag kafka">patient.registered</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">2</div></div>
+            <div class="step-body">
+              <div class="step-title">Token & Digital Queue Management</div>
+              <div class="step-detail">Digital token issued for the selected doctor/department. <span class="highlight">WebSocket</span> pushes live queue updates to lobby display screens and reception desk. Queue system supports: Regular, Emergency, Senior Citizen (65+), and Pregnant Woman priority lanes. Patient receives SMS with token number and estimated wait time. Doctor's workstation shows real-time patient queue with current token highlighted.</div>
+              <div class="step-meta">
+                <span class="step-tag realtime">Socket.IO Live</span>
+                <span class="step-tag notify">SMS Alert</span>
+                <span class="step-tag kafka">token.issued</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">3</div></div>
+            <div class="step-body">
+              <div class="step-title">Doctor Consultation — SOAP EMR</div>
+              <div class="step-detail">Doctor opens patient record showing: past visit history, active medications, known allergies, lab history, and vitals trend. Consultation recorded in <span class="highlight">SOAP format</span> (Subjective, Objective, Assessment, Plan). Vitals entry: BP, pulse, temperature, SpO2, weight, height, BMI auto-calculated. <span class="highlight">ICD-10</span> diagnosis picker with search and multi-diagnosis support. Allergy warnings cross-checked against drug master in real-time. Consultation notes auto-saved with 30-second draft intervals.</div>
+              <div class="step-meta">
+                <span class="step-tag db">EMR Write</span>
+                <span class="step-tag rbac">Doctor Role</span>
+                <span class="step-tag realtime">Auto-save WS</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">4</div></div>
+            <div class="step-body">
+              <div class="step-title">E-Prescription & Lab Order Generation</div>
+              <div class="step-detail">Doctor selects drugs from formulary — <span class="highlight">drug interaction engine</span> fires in real-time for any combination (Rxnorm cross-reference). Dosage, frequency, duration, and instructions captured per drug. Prescription finalised → Kafka event <span class="highlight">prescription.created</span> published → Pharmacy worklist updated within &lt;1 second via Socket.IO. Lab orders created with test names, specimen type, urgency flag, and clinical notes → <span class="highlight">laborder.created</span> Kafka event → Lab worklist populated instantly. Referral orders to other specialists tracked separately.</div>
+              <div class="step-meta">
+                <span class="step-tag kafka">prescription.created</span>
+                <span class="step-tag kafka">laborder.created</span>
+                <span class="step-tag realtime">&lt;1s Propagation</span>
+                <span class="step-tag api">Drug Interaction API</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-left"><div class="step-num">5</div></div>
+            <div class="step-body">
+              <div class="step-title">Discharge & Automated Bill Generation</div>
+              <div class="step-detail">Doctor marks consultation complete → discharge summary auto-populated from EMR (diagnosis, prescribed drugs, investigations done, follow-up instructions). All charges aggregated: consultation fee + pharmacy charges (from <span class="highlight">drug.dispensed</span> event) + lab charges (from <span class="highlight">result.validated</span> event) → single consolidated bill in Finance module. Patient notified via SMS/WhatsApp with discharge summary PDF link (secure, time-limited presigned S3 URL). Next appointment suggestion prompted based on diagnosis.</div>
+              <div class="step-meta">
+                <span class="step-tag kafka">discharge.generated</span>
+                <span class="step-tag notify">SMS + WhatsApp</span>
+                <span class="step-tag db">S3 PDF Upload</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="module-panel">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-icon" style="background:#E0F7F7">⚙</div>
+              <span class="panel-title">Key Components</span>
+            </div>
+            <div class="component-list">
+              <div class="component-item"><div class="comp-dot"></div>Patient Registration & UHID Mgmt</div>
+              <div class="component-item"><div class="comp-dot"></div>Digital Token Queue Engine</div>
+              <div class="component-item"><div class="comp-dot"></div>SOAP EMR Consultation Interface</div>
+              <div class="component-item"><div class="comp-dot"></div>ICD-10 Diagnosis Picker</div>
+              <div class="component-item"><div class="comp-dot"></div>Drug Interaction Checker (Rxnorm)</div>
+              <div class="component-item"><div class="comp-dot"></div>E-Prescription Engine</div>
+              <div class="component-item"><div class="comp-dot"></div>Lab Order Dispatch Engine</div>
+              <div class="component-item"><div class="comp-dot"></div>Discharge Summary Generator</div>
+            </div>
+          </div>
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-icon" style="background:#FFF4ED">⚡</div>
+              <span class="panel-title">Kafka Events Published</span>
+            </div>
+            <div class="event-list">
+              <div class="event-item"><div class="event-name">patient.registered</div><div class="event-desc">New UHID created, profile complete</div></div>
+              <div class="event-item"><div class="event-name">token.issued</div><div class="event-desc">Queue position assigned</div></div>
+              <div class="event-item"><div class="event-name">consultation.started</div><div class="event-desc">Doctor opened patient record</div></div>
+              <div class="event-item"><div class="event-name">prescription.created</div><div class="event-desc">→ Pharmacy worklist update</div></div>
+              <div class="event-item"><div class="event-name">laborder.created</div><div class="event-desc">→ Lab worklist population</div></div>
+              <div class="event-item"><div class="event-name">consultation.closed</div><div class="event-desc">EMR finalised</div></div>
+              <div class="event-item"><div class="event-name">discharge.generated</div><div class="event-desc">→ Finance billing trigger</div></div>
+            </div>
+          </div>
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-icon" style="background:rgba(139,92,246,0.1)">🔐</div>
+              <span class="panel-title">Access Control</span>
+            </div>
+            <div class="rbac-list">
+              <div class="rbac-item"><span class="rbac-role">Receptionist (L5)</span><span class="rbac-perm">patient:register</span></div>
+              <div class="rbac-item"><span class="rbac-role">Doctor (L5)</span><span class="rbac-perm">consultation:write</span></div>
+              <div class="rbac-item"><span class="rbac-role">Dept Head (L4)</span><span class="rbac-perm">queue:manage</span></div>
+              <div class="rbac-item"><span class="rbac-role">Branch Admin (L3)</span><span class="rbac-perm">opd:configure</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         M02 — PHARMACY
+    ════════════════════════════════════════════════ -->
+    <section class="module-section" id="m02">
+      <div class="module-header">
+        <div class="module-header-left">
+          <div class="module-number-badge">
+            <div class="module-num m02">M02</div>
+            <span class="module-type-tag">CLINICAL</span>
+          </div>
+          <h2 class="module-title">Pharmacy & Drug Management</h2>
+          <p class="module-tagline">FIFO dispensing engine, real-time drug interaction alerts, automated stock reorder, and seamless billing integration via Kafka event consumption.</p>
+        </div>
+        <div class="module-meta">
+          <div class="integration-tags">
+            <span class="int-tag"><span class="int-tag-dot"></span>OPD (Prescriptions)</span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Finance <span class="int-arrow">→</span></span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Inventory <span class="int-arrow">→</span></span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Audit</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="overview-bar">
+        <div class="overview-icon" style="background:#F3F0FF">💊</div>
+        <div class="overview-text">
+          <strong>Module Purpose</strong>
+          <p>The Pharmacy module receives prescriptions in real-time via Kafka, manages drug dispensing with FIFO batch logic, enforces allergy and drug-interaction safety checks, maintains full batch traceability, automatically posts drug charges to Finance, and triggers procurement reorder workflows when stock falls below threshold. Multi-branch inter-transfer capabilities ensure stock availability across the hospital group.</p>
+        </div>
+      </div>
+
+      <div class="workflow-grid">
+        <div class="steps-container">
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">1</div></div>
+            <div class="step-body">
+              <div class="step-title">Prescription Receipt & Worklist Update</div>
+              <div class="step-detail">Kafka consumer listens on <span class="highlight">prescription.created</span> topic. On event receipt, prescription details decoded: patient UHID, drug list, dosage, duration, prescribing doctor. Pharmacist worklist updated via <span class="highlight">Socket.IO</span> — prescription appears at top of queue within &lt;1 second. Urgent prescriptions (flagged by doctor) highlighted in red with audio alert. Walk-in OTC requests handled separately through manual entry workflow. Prescription printed/displayed on pharmacist screen with patient allergy banner.</div>
+              <div class="step-meta">
+                <span class="step-tag kafka">prescription.created (consume)</span>
+                <span class="step-tag realtime">Socket.IO &lt;1s</span>
+                <span class="step-tag rbac">Pharmacist (L5)</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">2</div></div>
+            <div class="step-body">
+              <div class="step-title">Drug Availability Check & FIFO Batch Selection</div>
+              <div class="step-detail">System queries drug master for each prescribed item. <span class="highlight">FIFO engine</span> auto-selects oldest expiry batch first — batch number, expiry date, supplier, and MRP displayed. If requested quantity unavailable in current branch → inter-branch transfer check performed across all branches in tenant. <span class="highlight">Drug-allergy cross-check</span> against patient allergy profile (from UHID record) fires automatically — alerts shown with severity level. Drug-drug interaction matrix checked for all prescribed combinations. Partial fulfillment workflow: pharmacist can dispense available portion, pending items flagged for follow-up.</div>
+              <div class="step-meta">
+                <span class="step-tag db">FIFO Query</span>
+                <span class="step-tag api">Interaction Check</span>
+                <span class="step-tag realtime">Live Stock</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">3</div></div>
+            <div class="step-body">
+              <div class="step-title">Dispensing Confirmation & Stock Ledger Update</div>
+              <div class="step-detail">Pharmacist reviews drug list, batch allocations, and patient details → confirms dispensing. Stock ledger decremented <span class="highlight">atomically</span> in PostgreSQL transaction (prevents oversell race conditions). Full traceability record created: patient UHID + batch number + expiry + supplier + pharmacist ID + timestamp. Label printed with patient name, drug, dosage instructions in vernacular if configured. Controlled substance dispensing triggers mandatory justification entry and additional approval flag for Branch Admin.</div>
+              <div class="step-meta">
+                <span class="step-tag db">Atomic Stock Debit</span>
+                <span class="step-tag kafka">drug.dispensed</span>
+                <span class="step-tag rbac">Controlled Drug: L4 Approval</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">4</div></div>
+            <div class="step-body">
+              <div class="step-title">Automated Billing to Finance Module</div>
+              <div class="step-detail">On dispensing confirmation, <span class="highlight">drug.dispensed</span> Kafka event published with: patient UHID, visit ID, drug name, quantity, unit price, total amount. Finance module's Kafka consumer picks up event and adds drug charge line to patient's running bill — <span class="highlight">zero manual entry</span>. For cashless insurance patients, TPA pre-authorisation reference attached to charge line. Receipt generated and displayed/printed for patient. Inpatient pharmacy charges tracked separately per ward/day for IPD billing.</div>
+              <div class="step-meta">
+                <span class="step-tag kafka">drug.dispensed → Finance</span>
+                <span class="step-tag realtime">Zero Manual Billing</span>
+                <span class="step-tag notify">Receipt Print</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-left"><div class="step-num">5</div></div>
+            <div class="step-body">
+              <div class="step-title">Procurement Reorder & PO Workflow</div>
+              <div class="step-detail">After every dispensing, system compares current stock against <span class="highlight">reorder level</span> set per drug per branch. If stock ≤ reorder level → auto purchase requisition created in Inventory module via API call. Store Manager notified by in-system alert and email. Branch Admin approves requisition → PO auto-generated and emailed to preferred vendor from rate contract. GRN workflow in Inventory updates pharmacy stock when goods received. Expiry alerts run nightly: drugs expiring within 90/60/30 days highlighted in dashboard for return-to-vendor action.</div>
+              <div class="step-meta">
+                <span class="step-tag api">Inventory API</span>
+                <span class="step-tag notify">Email PO to Vendor</span>
+                <span class="step-tag db">Reorder Trigger</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="module-panel">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-icon" style="background:#F3F0FF">⚙</div>
+              <span class="panel-title">Key Components</span>
+            </div>
+            <div class="component-list">
+              <div class="component-item"><div class="comp-dot"></div>Drug Master & Formulary Manager</div>
+              <div class="component-item"><div class="comp-dot"></div>FIFO Dispensing Engine</div>
+              <div class="component-item"><div class="comp-dot"></div>Drug Interaction Checker</div>
+              <div class="component-item"><div class="comp-dot"></div>Stock Ledger (Atomic)</div>
+              <div class="component-item"><div class="comp-dot"></div>PO & GRN Workflow</div>
+              <div class="component-item"><div class="comp-dot"></div>Inter-Branch Transfer</div>
+              <div class="component-item"><div class="comp-dot"></div>Expiry Alert Engine</div>
+              <div class="component-item"><div class="comp-dot"></div>Batch Traceability Log</div>
+            </div>
+          </div>
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-icon" style="background:#FFF4ED">⚡</div>
+              <span class="panel-title">Kafka Events</span>
+            </div>
+            <div class="event-list">
+              <div class="event-item"><div class="event-name" style="color:#059669">▼ prescription.created</div><div class="event-desc">Consumed from OPD</div></div>
+              <div class="event-item"><div class="event-name">drug.dispensed</div><div class="event-desc">→ Finance billing trigger</div></div>
+              <div class="event-item"><div class="event-name">stock.low</div><div class="event-desc">→ Inventory reorder alert</div></div>
+              <div class="event-item"><div class="event-name">po.approved</div><div class="event-desc">→ Vendor PO dispatch</div></div>
+              <div class="event-item"><div class="event-name">drug.expiry.alert</div><div class="event-desc">→ Dashboard warning</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         M03 — LABORATORY
+    ════════════════════════════════════════════════ -->
+    <section class="module-section" id="m03">
+      <div class="module-header">
+        <div class="module-header-left">
+          <div class="module-number-badge">
+            <div class="module-num m03">M03</div>
+            <span class="module-type-tag">CLINICAL</span>
+          </div>
+          <h2 class="module-title">Laboratory & Diagnostics</h2>
+          <p class="module-tagline">Barcode-tracked sample management, HL7/ASTM analyzer integration, dual-validation pathology workflow, and instant report delivery to EMR and patient portal.</p>
+        </div>
+        <div class="module-meta">
+          <div class="integration-tags">
+            <span class="int-tag"><span class="int-tag-dot"></span>OPD (Orders)</span>
+            <span class="int-tag"><span class="int-tag-dot"></span>OPD EMR <span class="int-arrow">→</span></span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Finance <span class="int-arrow">→</span></span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Patient Portal <span class="int-arrow">→</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="overview-bar">
+        <div class="overview-icon" style="background:#EFF6FF">🔬</div>
+        <div class="overview-text">
+          <strong>Module Purpose</strong>
+          <p>The Laboratory module handles the complete diagnostics lifecycle: test order receipt from OPD or walk-in, sample collection with barcode tracking, HL7/ASTM analyzer interface for auto-capture of results, multi-tier pathologist validation with critical value escalation, branded PDF report generation, and secure delivery to the OPD EMR and patient portal simultaneously.</p>
+        </div>
+      </div>
+
+      <div class="workflow-grid">
+        <div class="steps-container">
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">1</div></div>
+            <div class="step-body">
+              <div class="step-title">Test Order Receipt & Worklist Population</div>
+              <div class="step-detail">Lab order from OPD arrives via Kafka <span class="highlight">laborder.created</span> event (patient UHID, ordered tests, urgency, clinical notes, prescribing doctor). Walk-in requests entered manually with UHID lookup. Lab technician worklist populated automatically — sorted by urgency and order time. Test TAT commitments loaded from <span class="highlight">test catalogue</span> (CBC: 2h, culture: 72h, etc.). External referral orders from other labs tracked with promised TAT. Patient informed via SMS/portal of expected report time.</div>
+              <div class="step-meta">
+                <span class="step-tag kafka">laborder.created (consume)</span>
+                <span class="step-tag realtime">Live Worklist</span>
+                <span class="step-tag notify">TAT SMS</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">2</div></div>
+            <div class="step-body">
+              <div class="step-title">Sample Collection & Barcode Tracking</div>
+              <div class="step-detail">Lab technician calls patient for sample collection. Unique <span class="highlight">barcode label</span> printed per specimen (blood, urine, culture, etc.) with patient name, UHID, test name, and timestamp. Sample tube labelled and scanned — status changes to <span class="highlight">COLLECTED</span>. Multi-specimen tests managed: one order can generate multiple labelled tubes. Sample tracked through status stages: <span class="highlight">Collected → In Transit → Received at Lab → In Analysis → Completed</span>. Lost sample workflow: re-collection request raised with justification. Temperature-sensitive samples flagged with handling instructions.</div>
+              <div class="step-meta">
+                <span class="step-tag db">Barcode Scan Log</span>
+                <span class="step-tag realtime">Status Tracking</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">3</div></div>
+            <div class="step-body">
+              <div class="step-title">Analysis & Result Entry (HL7/ASTM)</div>
+              <div class="step-detail"><span class="highlight">HL7/ASTM interface</span> connects to lab analyzers (Sysmex, Mindray, Beckman Coulter, etc.) — results auto-captured via HL7 v2.x or ASTM E1394 protocol and mapped to order line items. For analyzers without interface, manual result entry with unit and reference range pre-filled from test catalogue. System compares result against <span class="highlight">age/gender-specific reference ranges</span> — values outside range automatically flagged as L (Low), H (High), LL (Critical Low), HH (Critical High) with visual colour coding. Multiple result types supported: numeric, text, ratio, dilution, morphology descriptors.</div>
+              <div class="step-meta">
+                <span class="step-tag api">HL7/ASTM Protocol</span>
+                <span class="step-tag db">Reference Range</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">4</div></div>
+            <div class="step-body">
+              <div class="step-title">Pathologist Validation & Critical Value Escalation</div>
+              <div class="step-detail">Results submitted for validation queue. <span class="highlight">Dual-validation workflow</span>: junior technician reviews → senior pathologist approves for complex panels. Critical values (HH/LL flags) require mandatory senior pathologist digital sign-off before release. On critical result validation → <span class="highlight">result.critical.alert</span> Kafka event → duty doctor receives mandatory in-app notification requiring acknowledgement within 15 minutes. Non-acknowledged critical alerts escalate to Dept Head. Amended reports tracked with previous/current values and reason for amendment. All validations timestamped with validator identity for audit trail.</div>
+              <div class="step-meta">
+                <span class="step-tag kafka">result.critical.alert</span>
+                <span class="step-tag realtime">Doctor Notification</span>
+                <span class="step-tag rbac">Senior Pathologist Sign-off</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-left"><div class="step-num">5</div></div>
+            <div class="step-body">
+              <div class="step-title">Report Delivery — EMR, Portal & Finance</div>
+              <div class="step-detail">After validation, <span class="highlight">branded PDF report</span> auto-generated: hospital logo, patient demographics, test panel, results with reference ranges, interpretation notes, pathologist signature and credentials, QR code for result verification. Kafka event <span class="highlight">result.validated</span> published → OPD EMR updated via WebSocket (lab result tab lights up on doctor's screen) + Patient portal push notification + secure time-limited S3 download link via SMS. Finance module billed automatically from <span class="highlight">labcharge.generated</span> event. Report delivered to referring doctor email if external referral. Elasticsearch indexed for BI analytics.</div>
+              <div class="step-meta">
+                <span class="step-tag kafka">result.validated → OPD + Portal</span>
+                <span class="step-tag realtime">WebSocket EMR Update</span>
+                <span class="step-tag notify">SMS Download Link</span>
+                <span class="step-tag db">S3 PDF Storage</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="module-panel">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-icon" style="background:#EFF6FF">⚙</div>
+              <span class="panel-title">Key Components</span>
+            </div>
+            <div class="component-list">
+              <div class="component-item"><div class="comp-dot"></div>Test Catalogue & Pricing Engine</div>
+              <div class="component-item"><div class="comp-dot"></div>Sample Barcode Tracker</div>
+              <div class="component-item"><div class="comp-dot"></div>HL7/ASTM Analyzer Interface</div>
+              <div class="component-item"><div class="comp-dot"></div>Reference Range Engine</div>
+              <div class="component-item"><div class="comp-dot"></div>Result Validation Workflow</div>
+              <div class="component-item"><div class="comp-dot"></div>Critical Value Escalation</div>
+              <div class="component-item"><div class="comp-dot"></div>PDF Report Generator</div>
+              <div class="component-item"><div class="comp-dot"></div>TAT Monitoring Engine</div>
+            </div>
+          </div>
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-icon" style="background:#FFF4ED">⚡</div>
+              <span class="panel-title">Kafka Events</span>
+            </div>
+            <div class="event-list">
+              <div class="event-item"><div class="event-name" style="color:#059669">▼ laborder.created</div><div class="event-desc">Consumed from OPD</div></div>
+              <div class="event-item"><div class="event-name">result.validated</div><div class="event-desc">→ OPD EMR + Patient Portal</div></div>
+              <div class="event-item"><div class="event-name">result.critical.alert</div><div class="event-desc">→ Duty doctor mandatory ack</div></div>
+              <div class="event-item"><div class="event-name">report.generated</div><div class="event-desc">→ S3 + SMS notification</div></div>
+              <div class="event-item"><div class="event-name">labcharge.generated</div><div class="event-desc">→ Finance billing</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+</div><!-- end content -->
+
+  <!-- ADMIN MODULES DIVIDER -->
+  <div class="section-divider">
+    <div class="section-divider-label">Section 02</div>
+    <div class="section-divider-title">Administrative Modules</div>
+    <div class="section-divider-sub">Financial, HR, and supply chain operations — Finance · HR & Payroll · Inventory</div>
+    <div class="section-divider-modules">
+      <span class="sd-mod-tag">M04 Finance & Billing</span>
+      <span class="sd-mod-tag">M05 HR & Payroll</span>
+      <span class="sd-mod-tag">M06 Inventory & Procurement</span>
+    </div>
+  </div>
+
+<div class="content">
+
+    <!-- ════════════════════════════════════════════════
+         M04 — FINANCE
+    ════════════════════════════════════════════════ -->
+    <section class="module-section" id="m04">
+      <div class="module-header">
+        <div class="module-header-left">
+          <div class="module-number-badge">
+            <div class="module-num m04">M04</div>
+            <span class="module-type-tag">ADMIN</span>
+          </div>
+          <h2 class="module-title">Finance & Billing Engine</h2>
+          <p class="module-tagline">Auto-aggregating multi-module bill engine with GST compliance, TPA/insurance pre-authorisation, multi-mode payment gateway, and day-end close automation.</p>
+        </div>
+        <div class="module-meta">
+          <div class="integration-tags">
+            <span class="int-tag"><span class="int-tag-dot"></span>All Modules (Charges)</span>
+            <span class="int-tag"><span class="int-tag-dot"></span>BI Reports <span class="int-arrow">→</span></span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Patient Portal <span class="int-arrow">→</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="overview-bar">
+        <div class="overview-icon" style="background:#FFFBEB">💰</div>
+        <div class="overview-text">
+          <strong>Module Purpose</strong>
+          <p>Finance is the central billing aggregator. All charges from OPD, Pharmacy, Lab, and IPD flow in automatically via Kafka events — zero manual charge entry. The module handles insurance TPA pre-authorization, multi-mode payment collection (cash, card, UPI, bank transfer), GST invoice generation, GSTR-1 export, refunds, credit notes, advance management, and automated day-end close with branch consolidation reports.</p>
+        </div>
+      </div>
+
+      <div class="workflow-grid">
+        <div class="steps-container">
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">1</div></div>
+            <div class="step-body">
+              <div class="step-title">Automated Charge Aggregation from All Modules</div>
+              <div class="step-detail">Finance Kafka consumers subscribe to charge events across all modules: <span class="highlight">consultation.fee</span> (OPD), <span class="highlight">drug.dispensed</span> (Pharmacy), <span class="highlight">labcharge.generated</span> (Lab), <span class="highlight">bed.rent.daily</span> + <span class="highlight">procedure.done</span> (IPD). Each event adds a line item to the patient's running bill automatically. Charge master validates: service code, category, GST slab, applicable discounts. Advance payments (pre-admission deposits for IPD) tracked separately and adjusted at billing. Tariff plans support multi-tier pricing: General, Insurance, CGHS, corporate empanelment rates — auto-applied based on patient category.</div>
+              <div class="step-meta">
+                <span class="step-tag kafka">Multi-event Consumption</span>
+                <span class="step-tag realtime">Zero Manual Entry</span>
+                <span class="step-tag db">Charge Master</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">2</div></div>
+            <div class="step-body">
+              <div class="step-title">Insurance / TPA Pre-Authorisation</div>
+              <div class="step-detail">For insurance patients, <span class="highlight">TPA master</span> database queried: insurer name, TPA name, policy number validation, coverage limits, excluded items. Pre-authorisation request raised electronically through TPA portal API integration (or manual letter for non-API TPAs). Pre-auth reference number recorded against bill. Cashless pathway: approved amount reserved, patient pays only co-pay/excess. Reimbursement pathway: full bill raised, claim documents generated (discharge summary, investigation reports, itemised bill). Pre-auth expiry tracked — renewal reminder raised 24h before expiry for long IPD stays.</div>
+              <div class="step-meta">
+                <span class="step-tag api">TPA Portal API</span>
+                <span class="step-tag db">Pre-auth Tracking</span>
+                <span class="step-tag notify">Renewal Alert</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">3</div></div>
+            <div class="step-body">
+              <div class="step-title">Multi-Mode Payment Collection</div>
+              <div class="step-detail">Cashier screen displays itemised bill with subtotal, discount applied, GST breakdown, advance adjustment. Payment modes: <span class="highlight">Cash</span> (change calculation), <span class="highlight">Card/POS</span> (integrated terminal), <span class="highlight">UPI QR</span> (dynamic QR per bill, Razorpay/Paytm), <span class="highlight">Net Banking</span>, <span class="highlight">NEFT/RTGS</span>. Split payment across modes supported (e.g., ₹5000 cash + ₹3000 UPI). Patient advance deducted from bill. Payment confirmation triggers <span class="highlight">payment.received</span> Kafka event → Audit log + BI analytics. Receipt generated: itemised + GST-compliant + unique receipt number.</div>
+              <div class="step-meta">
+                <span class="step-tag api">Payment Gateway</span>
+                <span class="step-tag kafka">payment.received</span>
+                <span class="step-tag notify">Receipt Print</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">4</div></div>
+            <div class="step-body">
+              <div class="step-title">GST Invoice Generation & Compliance</div>
+              <div class="step-detail">On payment, <span class="highlight">GST invoice</span> auto-generated with: hospital GSTIN, patient details, itemised service list, HSN/SAC codes, CGST + SGST breakdown per slab (0%/5%/12%/18%), total tax amount, place of supply. Tax invoice compliant with Indian GST rules — sequential invoice numbering with branch prefix. <span class="highlight">GSTR-1 export</span>: monthly export of B2B and B2C invoices in GSTN-portal JSON format. Invoice PDF uploaded to S3, pre-signed download link emailed. Cancelled bills: credit note issued with reason — GSTR-1 adjustment handled. Exempt services (blood transfusion, dialysis) flagged correctly.</div>
+              <div class="step-meta">
+                <span class="step-tag db">GST Computation</span>
+                <span class="step-tag api">GSTN Export</span>
+                <span class="step-tag notify">Email Invoice</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-left"><div class="step-num">5</div></div>
+            <div class="step-body">
+              <div class="step-title">Day-End Close & Branch Consolidation</div>
+              <div class="step-detail">At day-end, cashier initiates <span class="highlight">day-close sequence</span>: cash drawer count entered and matched against system total — variance report if mismatch. Cashier session locked — no further transactions allowed for the day. Branch-level summary generated: OPD collections, IPD collections, pharmacy, lab, outstanding (credit/TPA). <span class="highlight">day-close.done</span> Kafka event triggers BI nightly aggregation. Tenant Admin receives consolidated cross-branch summary email. Discrepancy workflow: cashier supervisor must sign off before session locks. Petty cash management: advances, reimbursements tracked separately. Month-end reconciliation report for accountant.</div>
+              <div class="step-meta">
+                <span class="step-tag kafka">day-close.done</span>
+                <span class="step-tag notify">Tenant Admin Email</span>
+                <span class="step-tag rbac">Branch Admin Approval</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="module-panel">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-icon" style="background:#FFFBEB">⚙</div>
+              <span class="panel-title">Key Components</span>
+            </div>
+            <div class="component-list">
+              <div class="component-item"><div class="comp-dot"></div>Charge Master & Auto Aggregator</div>
+              <div class="component-item"><div class="comp-dot"></div>TPA / Insurance Engine</div>
+              <div class="component-item"><div class="comp-dot"></div>Multi-Mode Payment Gateway</div>
+              <div class="component-item"><div class="comp-dot"></div>GST Invoice Engine</div>
+              <div class="component-item"><div class="comp-dot"></div>GSTR-1 Export Module</div>
+              <div class="component-item"><div class="comp-dot"></div>Refund & Credit Notes</div>
+              <div class="component-item"><div class="comp-dot"></div>Advance Management</div>
+              <div class="component-item"><div class="comp-dot"></div>Day-End Close Engine</div>
+            </div>
+          </div>
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-icon" style="background:#FFF4ED">⚡</div>
+              <span class="panel-title">Kafka Events</span>
+            </div>
+            <div class="event-list">
+              <div class="event-item"><div class="event-name" style="color:#059669">▼ drug.dispensed</div><div class="event-desc">Pharmacy charge line created</div></div>
+              <div class="event-item"><div class="event-name" style="color:#059669">▼ labcharge.generated</div><div class="event-desc">Lab charge line created</div></div>
+              <div class="event-item"><div class="event-name">payment.received</div><div class="event-desc">→ Audit + BI analytics</div></div>
+              <div class="event-item"><div class="event-name">bill.settled</div><div class="event-desc">→ Patient portal receipt</div></div>
+              <div class="event-item"><div class="event-name">day-close.done</div><div class="event-desc">→ BI nightly aggregation</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         M05 — HR & PAYROLL
+    ════════════════════════════════════════════════ -->
+    <section class="module-section" id="m05">
+      <div class="module-header">
+        <div class="module-header-left">
+          <div class="module-number-badge">
+            <div class="module-num m05">M05</div>
+            <span class="module-type-tag">ADMIN</span>
+          </div>
+          <h2 class="module-title">HR & Payroll Management</h2>
+          <p class="module-tagline">Biometric attendance integration, leave lifecycle management, automated payroll computation with PF/ESIC/PT deductions, and full Indian regulatory compliance reporting.</p>
+        </div>
+        <div class="module-meta">
+          <div class="integration-tags">
+            <span class="int-tag"><span class="int-tag-dot"></span>Finance <span class="int-arrow">→</span></span>
+            <span class="int-tag"><span class="int-tag-dot"></span>BI Reports <span class="int-arrow">→</span></span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Audit</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-grid">
+        <div class="steps-container">
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">1</div></div>
+            <div class="step-body">
+              <div class="step-title">Employee Onboarding & Master Setup</div>
+              <div class="step-detail">HR executive creates employee record: personal details, Aadhaar + PAN (encrypted storage, DISHA compliant), academic qualifications, medical council registration number (for clinical staff), emergency contact. Designation, grade, and pay band assigned. Branch and department mapped. <span class="highlight">System credentials</span> provisioned automatically based on role template — minimising access provisioning time. Biometric enrollment: fingerprint/face scan data registered in ZKTeco/Suprema device and employee ID mapped. Bank account for salary credited. PF and ESIC number generated or existing number recorded.</div>
+              <div class="step-meta">
+                <span class="step-tag db">Employee Master</span>
+                <span class="step-tag rbac">Auto Role Assignment</span>
+                <span class="step-tag api">Biometric API</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">2</div></div>
+            <div class="step-body">
+              <div class="step-title">Shift Scheduling & Biometric Attendance</div>
+              <div class="step-detail">Branch Admin configures <span class="highlight">shift templates</span>: morning, evening, night, rotational — with grace period, overtime threshold, and weekly off rules. Duty roster published 7 days in advance — staff notified via in-app and WhatsApp. Biometric API (<span class="highlight">ZKTeco/Suprema REST API</span>) syncs punch records every 5 minutes: IN/OUT timestamps mapped to employee. Late, early-out, and absent flags auto-raised with threshold rules. <span class="highlight">Manual override</span> with justification field for missed punches — requires Dept Head approval. Real-time attendance dashboard for Dept Heads. OT computation auto-triggered when hours exceed threshold.</div>
+              <div class="step-meta">
+                <span class="step-tag api">Biometric Sync 5min</span>
+                <span class="step-tag kafka">attendance.marked</span>
+                <span class="step-tag rbac">Dept Head Override</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">3</div></div>
+            <div class="step-body">
+              <div class="step-title">Leave Management Lifecycle</div>
+              <div class="step-detail">Employee applies for leave: selects type (CL/SL/EL/Comp-off/Maternity/Paternity), dates, reason, and handover notes. <span class="highlight">Approval workflow</span>: Dept Head approves first → Branch Admin has override authority → cross-branch resource check for critical roles. Leave balance auto-deducted from accrual ledger on approval. Sandwich leave rule applied: working days between holidays counted as leave. <span class="highlight">Leave encashment</span> at year-end or resignation: calculated and sent to payroll run. Medical leave: doctor certificate upload required after 2 consecutive days. Team calendar shows leave visibility for Dept Heads. Maternity/Paternity: statutory period auto-calculated, legal compliance enforced.</div>
+              <div class="step-meta">
+                <span class="step-tag db">Leave Ledger</span>
+                <span class="step-tag rbac">Multi-level Approval</span>
+                <span class="step-tag notify">In-App + WhatsApp</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">4</div></div>
+            <div class="step-body">
+              <div class="step-title">Monthly Payroll Run & Computation</div>
+              <div class="step-detail">Payroll officer initiates monthly run. Engine aggregates: working days from attendance, approved leaves, OT hours, advances taken. <span class="highlight">Gross computation</span>: Basic + HRA + TA + Special Allowances + OT pay. <span class="highlight">Deductions</span>: PF (12% employee + 12% employer), ESIC (0.75% employee + 3.25% employer), Professional Tax (state-specific slab), TDS (Form 16 computation), salary advance recovery. Net salary calculated. Payslip PDF generated: all components, deductions, net pay, YTD figures. Batch salary disbursement file generated in NEFT/bank format. <span class="highlight">payroll.run</span> Kafka event → Finance module for accounting entries.</div>
+              <div class="step-meta">
+                <span class="step-tag kafka">payroll.run → Finance</span>
+                <span class="step-tag db">Statutory Computation</span>
+                <span class="step-tag notify">Payslip Email</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-left"><div class="step-num">5</div></div>
+            <div class="step-body">
+              <div class="step-title">Statutory Compliance Reports</div>
+              <div class="step-detail">Monthly: <span class="highlight">PF challan</span> (ECR format for EPFO portal upload), <span class="highlight">ESIC contribution statement</span> (Form 5 for ESIC portal). Quarterly: TDS returns (Form 24Q) with PAN validation. Annually: <span class="highlight">Form 16</span> generation per employee (Part A from TRACES, Part B auto-computed), Form 16A for contract staff. Labour law compliance: registers maintained digitally — Form A/B (attendance register), Wage Register, Muster Roll. Professional Tax remittance challan per state. Full audit trail: all payroll changes with before/after values, approver, timestamp.</div>
+              <div class="step-meta">
+                <span class="step-tag api">EPFO/ESIC Portal</span>
+                <span class="step-tag db">Statutory Reports</span>
+                <span class="step-tag notify">Compliance Reminders</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="module-panel">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-icon" style="background:#FDF2F8">⚙</div>
+              <span class="panel-title">Key Components</span>
+            </div>
+            <div class="component-list">
+              <div class="component-item"><div class="comp-dot"></div>Employee Master & Profile</div>
+              <div class="component-item"><div class="comp-dot"></div>Biometric Integration (ZKTeco)</div>
+              <div class="component-item"><div class="comp-dot"></div>Shift Scheduling Engine</div>
+              <div class="component-item"><div class="comp-dot"></div>Leave Accrual Engine</div>
+              <div class="component-item"><div class="comp-dot"></div>Payroll Computation Engine</div>
+              <div class="component-item"><div class="comp-dot"></div>PF/ESIC/PT Deduction Module</div>
+              <div class="component-item"><div class="comp-dot"></div>Payslip & Form 16 Generator</div>
+              <div class="component-item"><div class="comp-dot"></div>Statutory Report Suite</div>
+            </div>
+          </div>
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-icon" style="background:#FFF4ED">⚡</div>
+              <span class="panel-title">Kafka Events</span>
+            </div>
+            <div class="event-list">
+              <div class="event-item"><div class="event-name">user.login</div><div class="event-desc">→ Audit & session tracking</div></div>
+              <div class="event-item"><div class="event-name">attendance.marked</div><div class="event-desc">→ BI staff analytics</div></div>
+              <div class="event-item"><div class="event-name">payroll.run</div><div class="event-desc">→ Finance accounting entries</div></div>
+              <div class="event-item"><div class="event-name">leave.approved</div><div class="event-desc">→ Shift scheduling update</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         M06 — INVENTORY
+    ════════════════════════════════════════════════ -->
+    <section class="module-section" id="m06">
+      <div class="module-header">
+        <div class="module-header-left">
+          <div class="module-number-badge">
+            <div class="module-num m06">M06</div>
+            <span class="module-type-tag">ADMIN</span>
+          </div>
+          <h2 class="module-title">Inventory & Procurement</h2>
+          <p class="module-tagline">Multi-level PO approval, vendor management with rate contracts, GRN quality control, inter-branch transfers, and fixed asset lifecycle management.</p>
+        </div>
+        <div class="module-meta">
+          <div class="integration-tags">
+            <span class="int-tag"><span class="int-tag-dot"></span>Pharmacy (Stock)</span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Finance <span class="int-arrow">→</span></span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Audit</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-grid">
+        <div class="steps-container">
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">1</div></div>
+            <div class="step-body">
+              <div class="step-title">Reorder Alert & Purchase Requisition</div>
+              <div class="step-detail">Real-time stock monitoring: every dispensing or consumption event decrements the item ledger. When stock ≤ <span class="highlight">reorder level</span> (configurable per item per branch), auto purchase requisition (PR) created. Store Manager and Dept Head notified via in-system alert + email. PR contains: item code, current stock, reorder qty, preferred vendor, estimated value. Emergency PRs (stock = 0) escalated immediately to Branch Admin with SMS alert. Multiple items can be bundled into a single PR. Last 3 purchase rates displayed for cost benchmarking.</div>
+              <div class="step-meta">
+                <span class="step-tag realtime">Stock Monitoring</span>
+                <span class="step-tag notify">Store Manager Alert</span>
+                <span class="step-tag kafka">stock.low (consume)</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">2</div></div>
+            <div class="step-body">
+              <div class="step-title">Multi-Level Approval Workflow</div>
+              <div class="step-detail"><span class="highlight">Approval matrix</span> configurable by tenant: PR up to ₹10k → Store Manager, ₹10k–₹50k → Branch Admin, ₹50k+ → Tenant Admin. Each approver sees full PR details, current stock, consumption trend, and vendor quotes. Approver can: Approve, Reject with reason, or Modify quantity. Multi-item PR approval: all items approved or each line item independently. Approval audit trail: approver name, timestamp, decision, comments. Escalation: auto-escalation after 24h of inactivity at any approval stage. Emergency procurement: Branch Admin can bypass approval for critical items with mandatory post-approval within 24h.</div>
+              <div class="step-meta">
+                <span class="step-tag rbac">Multi-Level Approval</span>
+                <span class="step-tag notify">Email + In-App</span>
+                <span class="step-tag db">Approval Matrix</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">3</div></div>
+            <div class="step-body">
+              <div class="step-title">Vendor Management & PO Generation</div>
+              <div class="step-detail"><span class="highlight">Vendor master</span>: registered vendors with GST number, PAN, bank details, category (pharma/surgical/equipment), performance rating, rate contracts. Rate contract items: PO price auto-populated from contract. New item purchase: 3-quote comparison mandatory above threshold — quotes uploaded as documents. PO auto-generated on final approval: sequential PO number, delivery date, payment terms, GST details, terms & conditions. PO dispatched to vendor via <span class="highlight">email API</span> (Sendgrid/SES) + WhatsApp for preferred vendors. PO amendments tracked with version history. PO cancellation workflow with vendor notification.</div>
+              <div class="step-meta">
+                <span class="step-tag notify">PO Email to Vendor</span>
+                <span class="step-tag db">Rate Contract</span>
+                <span class="step-tag api">Vendor Portal API</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">4</div></div>
+            <div class="step-body">
+              <div class="step-title">GRN — Goods Receipt & Quality Check</div>
+              <div class="step-detail">Goods received at store: <span class="highlight">GRN created</span> against PO number. Item-by-item verification: quantity received vs ordered, batch numbers, expiry dates (rejection if expiry &lt; 6 months for pharma), physical condition. Quality check by pharmacist for drugs: random sample inspection per defined SOP. Accepted items: stock ledger incremented → Pharmacy real-time stock updated → Finance notified for payables. Rejected items: <span class="highlight">return-to-vendor</span> document generated, vendor debit note created. Partial GRN supported: pending items tracked for follow-up. Vendor invoice reconciled against PO and GRN — three-way match for payment processing.</div>
+              <div class="step-meta">
+                <span class="step-tag db">Stock Increment</span>
+                <span class="step-tag kafka">grn.completed → Finance</span>
+                <span class="step-tag api">Pharmacy Stock Sync</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-left"><div class="step-num">5</div></div>
+            <div class="step-body">
+              <div class="step-title">Asset Register & Consumption Tracking</div>
+              <div class="step-detail">Capital equipment tracked in <span class="highlight">fixed asset register</span>: serial number, purchase date, cost, department, warranty, vendor. Depreciation schedule auto-computed (SLM/WDV method). <span class="highlight">AMC (Annual Maintenance Contract)</span> alerts: reminder 30/60 days before expiry. Breakdown record linked to asset: downtime tracked, vendor escalation auto-raised if SLA breached. Inter-branch transfer of assets with custody transfer record. Consumable items tracked by department-wise consumption: OT gloves, IV sets, disposables. Monthly consumption reports by department for budgeting. Slow-moving/dead stock alerts for rationalisation.</div>
+              <div class="step-meta">
+                <span class="step-tag db">Asset Register</span>
+                <span class="step-tag notify">AMC Reminder</span>
+                <span class="step-tag realtime">Dept Consumption</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="module-panel">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-icon" style="background:#ECFDF5">⚙</div>
+              <span class="panel-title">Key Components</span>
+            </div>
+            <div class="component-list">
+              <div class="component-item"><div class="comp-dot"></div>Item Master & Category Config</div>
+              <div class="component-item"><div class="comp-dot"></div>Stock Ledger (Real-time)</div>
+              <div class="component-item"><div class="comp-dot"></div>Reorder Automation Engine</div>
+              <div class="component-item"><div class="comp-dot"></div>Multi-Level Approval Router</div>
+              <div class="component-item"><div class="comp-dot"></div>Vendor Management & Contracts</div>
+              <div class="component-item"><div class="comp-dot"></div>PO Generation Engine</div>
+              <div class="component-item"><div class="comp-dot"></div>GRN & Quality Module</div>
+              <div class="component-item"><div class="comp-dot"></div>Asset Register & AMC</div>
+            </div>
+          </div>
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-icon" style="background:#FFF4ED">⚡</div>
+              <span class="panel-title">Kafka Events</span>
+            </div>
+            <div class="event-list">
+              <div class="event-item"><div class="event-name" style="color:#059669">▼ stock.low</div><div class="event-desc">Consumed from Pharmacy</div></div>
+              <div class="event-item"><div class="event-name">po.approved</div><div class="event-desc">→ Vendor PO dispatch</div></div>
+              <div class="event-item"><div class="event-name">grn.completed</div><div class="event-desc">→ Finance payable + Stock update</div></div>
+              <div class="event-item"><div class="event-name">asset.maintenance.due</div><div class="event-desc">→ Admin notification</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+</div>
+
+  <!-- PLATFORM MODULES DIVIDER -->
+  <div class="section-divider">
+    <div class="section-divider-label">Section 03</div>
+    <div class="section-divider-title">Platform Modules</div>
+    <div class="section-divider-sub">Intelligence, patient engagement, security, and platform operations</div>
+    <div class="section-divider-modules">
+      <span class="sd-mod-tag">M07 BI & Reports</span>
+      <span class="sd-mod-tag">M08 Patient Portal</span>
+      <span class="sd-mod-tag">M09 Audit & Security</span>
+      <span class="sd-mod-tag">M10 IPD</span>
+      <span class="sd-mod-tag">M11 Appointment</span>
+      <span class="sd-mod-tag">M12 Platform Admin</span>
+    </div>
+  </div>
+
+<div class="content">
+
+    <!-- M07 BI -->
+    <section class="module-section" id="m07">
+      <div class="module-header">
+        <div class="module-header-left">
+          <div class="module-number-badge">
+            <div class="module-num m07">M07</div>
+            <span class="module-type-tag">PLATFORM</span>
+          </div>
+          <h2 class="module-title">Business Intelligence & Reports</h2>
+          <p class="module-tagline">Real-time Kafka event ingestion, nightly ETL aggregation, executive dashboards, scheduled report delivery, and Power BI / Tableau export APIs.</p>
+        </div>
+        <div class="module-meta">
+          <div class="integration-tags">
+            <span class="int-tag"><span class="int-tag-dot"></span>All Modules (Events)</span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Elasticsearch <span class="int-arrow">→</span></span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Dashboards <span class="int-arrow">→</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col-steps">
+        <div class="compact-step">
+          <div class="compact-step-num">1</div>
+          <div class="compact-step-title">Real-Time Event Stream Ingestion</div>
+          <div class="compact-step-detail">All module Kafka events consumed by Analytics microservice → normalised event schema → written to Elasticsearch event index. Events carry: tenantId, branchId, moduleId, eventType, userId, entityId, timestamp. Used for live operational dashboards (queue lengths, active IPD occupancy, today's collections). Redis cache serves real-time dashboard widgets with &lt;200ms latency.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">2</div>
+          <div class="compact-step-title">Nightly ETL Aggregation</div>
+          <div class="compact-step-detail">Triggered by day-close.done Kafka event. Spring Batch job aggregates events into summary tables per branch and tenant: daily revenue, OPD volume, bed occupancy, pharmacy turnover, lab TAT compliance, staff attendance. Pre-computed aggregations stored in summary tables. Redis cache refreshed from summary tables → dashboard load time &lt;100ms. Historical data partitioned by tenant-month for query isolation.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">3</div>
+          <div class="compact-step-title">Executive Dashboard — Real-Time View</div>
+          <div class="compact-step-detail">Tenant Admin dashboard: cross-branch revenue comparison, OPD patient volumes, bed occupancy heatmap, doctor performance metrics, pharmacy turnover, outstanding bills, KPI trend lines. Branch Admin view: daily collections, department-wise OPD, staff attendance, consumable consumption rate. Department Head view: patient queue, consultation time averages, pending lab results, staff on-duty. All charts interactive — drill-down from tenant → branch → department → individual.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">4</div>
+          <div class="compact-step-title">Scheduled Report Delivery</div>
+          <div class="compact-step-detail">Report scheduler: daily, weekly, monthly, quarterly. Tenant Admin configures: report type, recipients, format (PDF/Excel/CSV), delivery time. Cron job generates reports → stored in S3 with pre-signed URL → email delivered via SES. Reports include: P&L summary, MIS reports, compliance reports (DISHA audit trail), drug consumption, lab TAT analysis, staff productivity. Failed delivery retried 3 times with alerting.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">5</div>
+          <div class="compact-step-title">BI Tool Export & Webhook Streaming</div>
+          <div class="compact-step-detail">REST API for external BI tools: Power BI connector, Tableau data source, Looker Studio integration. API returns structured JSON with RBAC-filtered data — tenantId scope enforced at API layer. Excel/CSV export with column selection. Webhook streaming: tenant can register webhook URL to receive real-time event stream (for custom analytics pipelines). Rate-limited to prevent abuse. API key management with expiry and rotation workflows.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- M08 PATIENT PORTAL -->
+    <section class="module-section" id="m08">
+      <div class="module-header">
+        <div class="module-header-left">
+          <div class="module-number-badge">
+            <div class="module-num m08">M08</div>
+            <span class="module-type-tag">PLATFORM</span>
+          </div>
+          <h2 class="module-title">Patient Portal & PWA</h2>
+          <p class="module-tagline">DISHA-aligned self-service portal — OTP authentication, appointment booking, report access, online payments, and multi-channel push/SMS/WhatsApp notifications.</p>
+        </div>
+      </div>
+
+      <div class="two-col-steps">
+        <div class="compact-step">
+          <div class="compact-step-num">1</div>
+          <div class="compact-step-title">Self-Registration & DISHA Consent</div>
+          <div class="compact-step-detail">Patient visits portal URL or installs PWA. Mobile OTP verification (Twilio/MSG91) → profile creation: name, DOB, gender, address, blood group, known allergies. Linked to existing UHID if already a hospital patient (UHID lookup by mobile + DOB). DISHA consent form presented with granular toggles: data sharing, research use, guardian consent for minors. Consent version and timestamp stored immutably. Profile photo optional. ABHA (Ayushman Bharat Health Account) linking supported.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">2</div>
+          <div class="compact-step-title">Appointment Booking Engine</div>
+          <div class="compact-step-detail">Browse doctors by: specialty, branch, availability, language, gender preference. Real-time slot calendar: available slots pulled from Appointment module API. Conflict check enforced — double booking prevented. Appointment type: New/Follow-up. Booking confirmed → calendar invite generated (iCal) + SMS confirmation with QR code. Pre-visit form optionally prompted: chief complaint, recent investigations, current medications. Appointment rescheduling and cancellation with penalty-free window configured by tenant.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">3</div>
+          <div class="compact-step-title">Health Record & Report Access</div>
+          <div class="compact-step-detail">Complete visit history: OPD visits, IPD admissions, procedures, prescriptions. Lab reports available within minutes of validation — PDF download via secure time-limited S3 presigned URL (valid 72h). Prescription history with refill request workflow: patient requests refill → doctor receives notification → approves/rejects with optional note. FHIR-compliant health record export for ABHA linked patients. Document upload: patient can upload external reports for doctor review. All downloads logged for audit trail.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">4</div>
+          <div class="compact-step-title">Online Bill Payment</div>
+          <div class="compact-step-detail">Outstanding bills listed with breakup: consultation, pharmacy, lab, procedure. UPI QR / card / net banking via Razorpay/Paytm gateway integration. Payment confirmation → receipt emailed + GST invoice downloadable. Advance payment for upcoming procedures or IPD admission. Payment history with PDF receipts. Disputed bill: raise query workflow → billing team responds within SLA. Family account management: single login handles multiple family member UHIDs (parent controls child account).</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">5</div>
+          <div class="compact-step-title">Notification Engine — Omnichannel</div>
+          <div class="compact-step-detail">SMS (Twilio/MSG91), WhatsApp Business API, Push Notifications (FCM for Android, APNs for iOS), In-app alerts. Notification types: appointment reminder (24h + 2h before), report ready, bill generated, payment receipt, prescription expiry, refill reminder, health check-up reminder. Multi-language support: English + 8 regional languages. Notification preferences: patient controls which channels per type. Bulk notification for health camps or seasonal health alerts by Tenant Admin. Unsubscribe with granular control (regulatory requirement).</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- M09 AUDIT & SECURITY -->
+    <section class="module-section" id="m09">
+      <div class="module-header">
+        <div class="module-header-left">
+          <div class="module-number-badge">
+            <div class="module-num m09">M09</div>
+            <span class="module-type-tag">PLATFORM</span>
+          </div>
+          <h2 class="module-title">Audit, Compliance & Security</h2>
+          <p class="module-tagline">Immutable audit log for every data operation, DISHA data privacy lifecycle, AES-256 encrypted backups, OWASP hardening, and automated vulnerability scanning.</p>
+        </div>
+      </div>
+
+      <div class="two-col-steps">
+        <div class="compact-step">
+          <div class="compact-step-num">1</div>
+          <div class="compact-step-title">Immutable Audit Log Engine</div>
+          <div class="compact-step-detail">Every CREATE, UPDATE, DELETE operation across all modules appended to audit_log table: userId, tenantId, branchId, entity_type, entity_id, old_value (JSON), new_value (JSON), IP address, user_agent, timestamp. Table is append-only — no UPDATE or DELETE permitted even for Super Admin (PostgreSQL row security). Critical operations (role change, patient data access, financial override) trigger real-time alert to Branch Admin. Audit API: RBAC-filtered query by date, user, entity, action. Retention policy: 7 years (healthcare regulatory requirement).</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">2</div>
+          <div class="compact-step-title">Security Monitoring & MFA</div>
+          <div class="compact-step-detail">Failed login attempts: 5 consecutive → account lockout + Admin alert. Suspicious patterns: login from new device/IP → OTP re-verification required. MFA enforcement: configurable per role level (mandatory for L1–L3). Session management: concurrent session detection, single active session enforced for sensitive roles. Privilege escalation monitor: temporary elevated access with mandatory justification and time-bound expiry. Security dashboard: real-time failed logins map, active sessions count, anomaly score per user. Integration with SIEM tools via webhook.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">3</div>
+          <div class="compact-step-title">DISHA Data Privacy Compliance</div>
+          <div class="compact-step-detail">Patient consent lifecycle: consent given → stored with version + timestamp. Right-to-access: patient requests full data export → system generates FHIR bundle within 7 days. Right-to-correction: patient raises correction request → clinical staff reviews → approved correction recorded with old/new values. Data retention policies: active patient data retained indefinitely, discharged patient data anonymised after 7 years per policy. Deletion requests: Personally Identifiable Information anonymised (name → pseudonym, mobile → masked) while clinical data retained for medico-legal. DPO (Data Protection Officer) access and reporting dashboard.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">4</div>
+          <div class="compact-step-title">Backup & Disaster Recovery</div>
+          <div class="compact-step-detail">Daily per-tenant PostgreSQL schema backup: pg_dump → AES-256 encrypted → S3 cross-region replication (Mumbai + Singapore). Retention: 30 daily, 12 weekly, 7 yearly backups. PITR (Point-in-Time Recovery): WAL archiving enabled — restore to any second within last 7 days. RTO (Recovery Time Objective): 4 hours. RPO (Recovery Point Objective): 15 minutes. Monthly DR drill: restore to staging environment and validate data integrity. Redis snapshot backup: every 15 minutes to S3. Elasticsearch snapshot: daily to S3. Recovery runbook documented and version-controlled.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">5</div>
+          <div class="compact-step-title">Vulnerability Management & Penetration Testing</div>
+          <div class="compact-step-detail">OWASP ZAP: automated weekly scans against staging environment — OWASP Top 10 checks. Snyk CVE monitoring: continuous scanning of container images and dependencies — critical CVEs auto-alert DevOps. Annual 3rd-party penetration test by CERT-In empanelled agency. Bug bounty program for responsible disclosure. 72-hour breach disclosure workflow: detection → assessment → regulatory notification (CERT-In + DISHA authority) → public communication if required. Patch management SLA: Critical: 24h, High: 7d, Medium: 30d. Security training: mandatory quarterly awareness for all staff.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- M10 IPD -->
+    <section class="module-section" id="m10">
+      <div class="module-header">
+        <div class="module-header-left">
+          <div class="module-number-badge">
+            <div class="module-num m10">M10</div>
+            <span class="module-type-tag">CLINICAL</span>
+          </div>
+          <h2 class="module-title">IPD — In-Patient Department</h2>
+          <p class="module-tagline">Bed management, ward nursing workflow, medication administration records, daily doctor rounds, ICU monitoring integration, and comprehensive discharge billing.</p>
+        </div>
+        <div class="module-meta">
+          <div class="integration-tags">
+            <span class="int-tag"><span class="int-tag-dot"></span>OPD (Admission)</span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Pharmacy <span class="int-arrow">→</span></span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Lab <span class="int-arrow">→</span></span>
+            <span class="int-tag"><span class="int-tag-dot"></span>Finance <span class="int-arrow">→</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-grid">
+        <div class="steps-container">
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">1</div></div>
+            <div class="step-body">
+              <div class="step-title">Admission & Bed Assignment</div>
+              <div class="step-detail">Admission from OPD (doctor raises admission order) or Emergency. Bed availability map shows real-time status: <span class="highlight">Available, Occupied, Being Cleaned, Reserved, Blocked for Maintenance</span>. Bed selection: ward type (General/Semi-private/Private/ICU/NICU/PICU), patient gender compliance, isolation requirement. Admitting doctor and nursing team assigned. Admission deposit collected and recorded. TPA pre-authorisation triggered automatically for insurance patients. Housekeeping notified to prepare bed. Patient wristband with UHID + bed number printed.</div>
+              <div class="step-meta">
+                <span class="step-tag realtime">Live Bed Map</span>
+                <span class="step-tag kafka">patient.admitted</span>
+                <span class="step-tag notify">Housekeeping Alert</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">2</div></div>
+            <div class="step-body">
+              <div class="step-title">Ward Nursing — Vitals & MAR</div>
+              <div class="step-detail">Nursing station shows all admitted patients on the ward with current status. Per-shift vitals entry: BP, pulse, temperature, SpO2, urine output, pain score, GCS (for ICU). Vitals charted graphically — abnormal trend alerts to duty doctor. <span class="highlight">Medication Administration Record (MAR)</span>: all ordered medications shown with due time. Nurse confirms each administration — missed dose flags raised automatically after grace period. Diet order management: dietician prescribes → kitchen notified. Escalation workflow: nurse raises concern → duty doctor receives priority notification. ICU integrations: HL7 feeds from bedside monitors (ventilator, infusion pump) for continuous parameter capture.</div>
+              <div class="step-meta">
+                <span class="step-tag realtime">Vitals Monitoring</span>
+                <span class="step-tag notify">Abnormal Alert</span>
+                <span class="step-tag api">ICU Monitor HL7</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">3</div></div>
+            <div class="step-body">
+              <div class="step-title">Daily Doctor Rounds & Treatment Updates</div>
+              <div class="step-detail">Attending doctor completes daily round notes: clinical update, treatment plan revision, new pharmacy orders, new lab orders. <span class="highlight">Round notes</span> structured: current condition, plan for next 24h, diet orders, physiotherapy instructions, social work notes. New pharmacy orders for IPD → Pharmacy ward dispensing workflow (separate from OPD counter). Lab orders raised during rounds appear in Lab worklist with IPD ward priority. Consultant referral system: request sent to specialist with clinical summary → response tracked. Multidisciplinary team (MDT) meeting documentation for complex cases. Prognosis and family counselling notes (confidential access only).</div>
+              <div class="step-meta">
+                <span class="step-tag kafka">ipdorder.created → Pharmacy/Lab</span>
+                <span class="step-tag rbac">Doctor Role Required</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-connector"></div>
+            <div class="step-left"><div class="step-num">4</div></div>
+            <div class="step-body">
+              <div class="step-title">Discharge Planning & Clearance Workflow</div>
+              <div class="step-detail">Doctor raises <span class="highlight">discharge order</span>. System initiates clearance checklist: Pharmacy (all medicines dispensed, no pending returns), Lab (all reports validated, no pending samples), Finance (bill settled or TPA approved), Nursing (discharge summary signed). Each clearance item shows responsible staff with pending status. All departments clear → discharge summary auto-populated from complete EMR: diagnosis, treatment summary, discharge medications, follow-up instructions, dietary advice, activity restrictions. Bed status changed to <span class="highlight">Being Cleaned</span> → housekeeping notified.</div>
+              <div class="step-meta">
+                <span class="step-tag realtime">Clearance Checklist Live</span>
+                <span class="step-tag notify">Housekeeping Alert</span>
+                <span class="step-tag db">Discharge PDF</span>
+              </div>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-left"><div class="step-num">5</div></div>
+            <div class="step-body">
+              <div class="step-title">IPD Billing — Full Admission Charges</div>
+              <div class="step-detail">All IPD charges auto-aggregated from Kafka events throughout admission: <span class="highlight">bed rent</span> (per day, per ward type), nursing charges, <span class="highlight">ward medicines</span> (from Pharmacy MAR), <span class="highlight">investigations</span> (from Lab), procedures and OT charges, consultant visit charges, diet charges, oxygen charges, blood transfusion. Advance deposit adjusted. TPA final bill submitted electronically with supporting documents (discharge summary, investigation reports). Final GST invoice generated. Payment collected → discharge receipt issued → patient portal receipt updated. Claims follow-up dashboard for pending TPA settlements.</div>
+              <div class="step-meta">
+                <span class="step-tag kafka">All IPD charge events → Finance</span>
+                <span class="step-tag api">TPA Claims Submission</span>
+                <span class="step-tag notify">Discharge Receipt</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="module-panel">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-icon" style="background:#F5F3FF">⚙</div>
+              <span class="panel-title">Key Components</span>
+            </div>
+            <div class="component-list">
+              <div class="component-item"><div class="comp-dot"></div>Bed & Ward Management Engine</div>
+              <div class="component-item"><div class="comp-dot"></div>Admission & Transfer Workflow</div>
+              <div class="component-item"><div class="comp-dot"></div>Medication Administration Record</div>
+              <div class="component-item"><div class="comp-dot"></div>Nursing Notes & Vitals Chart</div>
+              <div class="component-item"><div class="comp-dot"></div>Daily Round Documentation</div>
+              <div class="component-item"><div class="comp-dot"></div>ICU Monitor HL7 Integration</div>
+              <div class="component-item"><div class="comp-dot"></div>Discharge Checklist Engine</div>
+              <div class="component-item"><div class="comp-dot"></div>IPD Billing Aggregator</div>
+            </div>
+          </div>
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-icon" style="background:#FFF4ED">⚡</div>
+              <span class="panel-title">Kafka Events</span>
+            </div>
+            <div class="event-list">
+              <div class="event-item"><div class="event-name">patient.admitted</div><div class="event-desc">→ Bed occupancy + BI</div></div>
+              <div class="event-item"><div class="event-name">ipdorder.created</div><div class="event-desc">→ Pharmacy + Lab worklist</div></div>
+              <div class="event-item"><div class="event-name">vitals.abnormal</div><div class="event-desc">→ Duty doctor alert</div></div>
+              <div class="event-item"><div class="event-name">bed.rent.daily</div><div class="event-desc">→ Finance auto-charge</div></div>
+              <div class="event-item"><div class="event-name">patient.discharged</div><div class="event-desc">→ Bed available + Portal</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- M11 APPOINTMENT -->
+    <section class="module-section" id="m11">
+      <div class="module-header">
+        <div class="module-header-left">
+          <div class="module-number-badge">
+            <div class="module-num m11">M11</div>
+            <span class="module-type-tag">PLATFORM</span>
+          </div>
+          <h2 class="module-title">Appointment Scheduling</h2>
+          <p class="module-tagline">Doctor schedule configuration, conflict-free slot booking, automated pre-visit reminders, QR check-in with OPD token generation, and no-show management.</p>
+        </div>
+      </div>
+
+      <div class="two-col-steps">
+        <div class="compact-step">
+          <div class="compact-step-num">1</div>
+          <div class="compact-step-title">Doctor Schedule Configuration</div>
+          <div class="compact-step-detail">Doctor or Branch Admin configures working schedule: days of week, shift timings, slot duration (5/10/15/20 min), max patients per slot (for group consultations), block-out dates (leave, CME, conferences). Schedule templates: weekly recurring or custom date-range. Branch-wise schedules for doctors practicing at multiple branches. Buffer slots: optional gap between patients. VIP/Priority slots held back for urgent cases. Schedule published with advance notice — existing appointments not disturbed if modifications made.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">2</div>
+          <div class="compact-step-title">Appointment Booking — Multi-Channel</div>
+          <div class="compact-step-detail">Booking channels: Patient Portal/PWA (self-service), Front Desk (staff-assisted with screen sharing capability), Phone booking (staff enters while on call). Real-time slot calendar from Schedule API — conflict check prevents double booking. Patient selection: existing UHID lookup or new patient pre-registration. Appointment type: New/Follow-up/Emergency/Video consultation (Phase 2). Confirmation: SMS + email + calendar invite (Google/Apple). Booking fee collection (if configured) via payment gateway. Waiting list management: when slot full, patient offered next available slot or waitlist position.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">3</div>
+          <div class="compact-step-title">Pre-Visit Reminders & Communication</div>
+          <div class="compact-step-detail">Automated reminder schedule configurable: 24h before (SMS + WhatsApp + push) + 2h before (SMS + push). Reminder content: doctor name, time, branch, directions link, parking instructions. Pre-visit questionnaire optionally triggered: chief complaint, vitals history for chronic patients, insurance details update. Fasting instructions for procedure-based consultations. Patient pre-fill improves consultation efficiency. Response tracked: patient can reschedule or cancel via reminder link — slot released automatically on cancellation.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">4</div>
+          <div class="compact-step-title">Check-In & OPD Token Generation</div>
+          <div class="compact-step-detail">Patient arrives → QR code on confirmation SMS scanned at reception kiosk or reception desk. System verifies appointment, matches UHID, confirms identity. OPD token auto-generated and assigned in queue based on appointment time (priority over walk-ins). Token issued via SMS and displayed on digital board via WebSocket. Check-in time recorded — late check-in (>15 min) moved to end of queue. Early arrivals accommodate as per doctor preference setting. Doctor receives notification on check-in of each patient — visible in consultation queue on doctor workstation.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">5</div>
+          <div class="compact-step-title">No-Show & Cancellation Management</div>
+          <div class="compact-step-detail">No-show threshold configurable (e.g., 15 min past appointment time without check-in). Auto-marked as No-Show → slot released for walk-in queue. No-show notification to patient with rebooking link. Cancellation policy: free cancellation up to N hours before (configurable). Late cancellation: penalty fee charged if payment collection enabled. Repeated no-shows: patient flagged in system → Dept Head review. Analytics: no-show rate by doctor, time slot, specialty — helps optimise scheduling. Waitlisted patients automatically SMS-notified of newly available slots.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- M12 PLATFORM ADMIN -->
+    <section class="module-section" id="m12">
+      <div class="module-header">
+        <div class="module-header-left">
+          <div class="module-number-badge">
+            <div class="module-num m12">M12</div>
+            <span class="module-type-tag">PLATFORM</span>
+          </div>
+          <h2 class="module-title">Platform Administration</h2>
+          <p class="module-tagline">Tenant onboarding wizard, schema provisioning, subscription billing, SLA monitoring, platform health dashboards, and cross-tenant analytics for the Super Admin.</p>
+        </div>
+      </div>
+
+      <div class="two-col-steps">
+        <div class="compact-step">
+          <div class="compact-step-num">1</div>
+          <div class="compact-step-title">Tenant Onboarding Wizard</div>
+          <div class="compact-step-detail">Super Admin initiates tenant onboarding: organisation name, type (hospital/clinic/diagnostic centre), primary contact, GST, registered address, plan selection (Starter/Professional/Enterprise). Automated provisioning: new PostgreSQL schema created for tenant, seed data loaded (default role templates, charge master categories, ICD-10 subset), Kafka topics created with tenant namespace, Elasticsearch indices initialised. Tenant Admin credentials generated and emailed. Subdomain assigned (tenant-name.hms.techdigitalwishtree.com). DNS CNAME configured automatically. Total provisioning time: &lt;5 minutes via automated Terraform/Ansible pipeline.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">2</div>
+          <div class="compact-step-title">Tenant & Subscription Lifecycle Management</div>
+          <div class="compact-step-detail">Tenant status management: Active → Trial → Suspended → Terminated. Suspension flow: billing overdue 30 days → data access suspended (read-only for 30 days) → data deletion scheduled (with 60-day notice). Plan upgrade/downgrade: module access gates enforced by feature flag service. Subscription billing: monthly/annual, auto-invoice generated, payment link sent. Grace period: 7-day post-invoice grace before suspension trigger. Tenant data export: full FHIR bundle + DB dump on termination request. Multi-tenant billing dashboard for Super Admin: MRR, ARR, churn rate, plan distribution.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">3</div>
+          <div class="compact-step-title">Platform Health Monitoring</div>
+          <div class="compact-step-detail">Real-time infrastructure dashboard: Kubernetes pod status per service (healthy/degraded/down), DB connection pool utilisation per tenant, Kafka consumer lag per topic (alert if lag > threshold), Redis memory utilisation, Elasticsearch cluster health. Alerting: PagerDuty integration for critical alerts (pod crash, DB failover, Kafka broker down). Incident management: auto-incident ticket created in Jira on alert trigger. Runbook links attached to each alert type. Capacity planning: resource utilisation trend charts — proactive scaling recommendations. Maintenance window management: scheduled maintenance notification to affected tenants.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">4</div>
+          <div class="compact-step-title">SLA Management & Reporting</div>
+          <div class="compact-step-detail">Per-tenant SLA commitments configured: uptime %, API response P95, support response time. Uptime calculation: Kubernetes health check data aggregated per tenant-month. SLA breach detection: automated alerting when approaching breach threshold (e.g., &gt;99% of monthly budget consumed). SLA credit calculation: automatic credit note generation on breach per contract terms. Monthly SLA report: per-tenant uptime, incident summary, MTTR, MTBF. Support ticket SLA: Severity 1 (system down): 1h response, 4h resolution. Severity 2: 4h/24h. Severity 3: 24h/72h. Customer satisfaction survey auto-triggered on ticket closure.</div>
+        </div>
+        <div class="compact-step">
+          <div class="compact-step-num">5</div>
+          <div class="compact-step-title">Cross-Tenant Analytics (Super Admin)</div>
+          <div class="compact-step-detail">Anonymised aggregate analytics across all tenants: platform-wide OPD volume trends, feature adoption heatmap, module usage frequency, API call patterns. Privacy-preserving: all cross-tenant data anonymised — no individual patient data surfaced. Benchmark reports: compare tenant performance against anonymised peer group (with tenant consent). Churn prediction: ML model scoring tenants by engagement drop, support tickets, login frequency. Product improvement signals: most-used features, least-used modules, common support request categories — input for product roadmap.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         KAFKA EVENT FLOW
+    ════════════════════════════════════════════════ -->
+    <section class="kafka-section" id="kafka">
+      <div class="section-eyebrow">
+        <span class="eyebrow-badge">REAL-TIME INTEGRATION · APACHE KAFKA</span>
+      </div>
+      <h2 class="section-title">Cross-Module Kafka Event Architecture</h2>
+      <p class="section-sub">Sub-second event propagation with guaranteed delivery, idempotent consumers, dead-letter queues, and schema isolation by tenantId</p>
+
+      <div class="kafka-flow">
+        <div>
+          <div class="kafka-producers-header">EVENT PRODUCERS</div>
+          <div class="kafka-producers">
+            <div class="kafka-actor">
+              <div class="kafka-actor-icon">🏥</div>
+              <div>
+                <div class="kafka-actor-name">OPD Module</div>
+                <div class="kafka-events-list">
+                  <span class="kafka-event-pill">prescription.created</span>
+                  <span class="kafka-event-pill">laborder.created</span>
+                  <span class="kafka-event-pill">consultation.closed</span>
+                  <span class="kafka-event-pill">discharge.generated</span>
+                </div>
+              </div>
+            </div>
+            <div class="kafka-actor">
+              <div class="kafka-actor-icon">💊</div>
+              <div>
+                <div class="kafka-actor-name">Pharmacy</div>
+                <div class="kafka-events-list">
+                  <span class="kafka-event-pill">drug.dispensed</span>
+                  <span class="kafka-event-pill">stock.low</span>
+                  <span class="kafka-event-pill">po.approved</span>
+                </div>
+              </div>
+            </div>
+            <div class="kafka-actor">
+              <div class="kafka-actor-icon">🔬</div>
+              <div>
+                <div class="kafka-actor-name">Laboratory</div>
+                <div class="kafka-events-list">
+                  <span class="kafka-event-pill">result.validated</span>
+                  <span class="kafka-event-pill">result.critical.alert</span>
+                  <span class="kafka-event-pill">labcharge.generated</span>
+                </div>
+              </div>
+            </div>
+            <div class="kafka-actor">
+              <div class="kafka-actor-icon">💰</div>
+              <div>
+                <div class="kafka-actor-name">Finance</div>
+                <div class="kafka-events-list">
+                  <span class="kafka-event-pill">payment.received</span>
+                  <span class="kafka-event-pill">bill.settled</span>
+                  <span class="kafka-event-pill">day-close.done</span>
+                </div>
+              </div>
+            </div>
+            <div class="kafka-actor">
+              <div class="kafka-actor-icon">👥</div>
+              <div>
+                <div class="kafka-actor-name">HR & Auth</div>
+                <div class="kafka-events-list">
+                  <span class="kafka-event-pill">user.login</span>
+                  <span class="kafka-event-pill">attendance.marked</span>
+                  <span class="kafka-event-pill">payroll.run</span>
+                </div>
+              </div>
+            </div>
+            <div class="kafka-actor">
+              <div class="kafka-actor-icon">🏨</div>
+              <div>
+                <div class="kafka-actor-name">IPD Module</div>
+                <div class="kafka-events-list">
+                  <span class="kafka-event-pill">patient.admitted</span>
+                  <span class="kafka-event-pill">bed.rent.daily</span>
+                  <span class="kafka-event-pill">patient.discharged</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="kafka-bus-header">EVENT BUS</div>
+          <div class="kafka-bus">
+            <div class="kafka-bus-icon">⚡</div>
+            <div class="kafka-bus-name">EVENT BUS</div>
+            <div class="kafka-bus-pills">
+              <div class="kafka-tech-pill">Kafka Topics</div>
+              <div class="kafka-arrow">↕</div>
+              <div class="kafka-tech-pill">Socket.IO Rooms</div>
+              <div class="kafka-arrow">↕</div>
+              <div class="kafka-tech-pill">Redis Channels</div>
+              <div class="kafka-arrow">↕</div>
+              <div class="kafka-tech-pill">Spring Kafka</div>
+              <div class="kafka-arrow">↕</div>
+              <div class="kafka-tech-pill">Dead Letter Queues</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="kafka-consumers-header">EVENT CONSUMERS</div>
+          <div class="kafka-consumers">
+            <div class="kafka-actor">
+              <div class="kafka-actor-icon">💊</div>
+              <div>
+                <div class="kafka-actor-name">Pharmacy Worklist</div>
+                <div class="kafka-events-list">
+                  <span class="kafka-event-pill consumer">prescription.created → Queue &lt;1s</span>
+                </div>
+              </div>
+            </div>
+            <div class="kafka-actor">
+              <div class="kafka-actor-icon">🩺</div>
+              <div>
+                <div class="kafka-actor-name">OPD EMR Screen</div>
+                <div class="kafka-events-list">
+                  <span class="kafka-event-pill consumer">result.validated → Lab results live</span>
+                </div>
+              </div>
+            </div>
+            <div class="kafka-actor">
+              <div class="kafka-actor-icon">💰</div>
+              <div>
+                <div class="kafka-actor-name">Finance Billing</div>
+                <div class="kafka-events-list">
+                  <span class="kafka-event-pill consumer">drug.dispensed → Auto charge</span>
+                  <span class="kafka-event-pill consumer">labcharge.generated → Auto charge</span>
+                </div>
+              </div>
+            </div>
+            <div class="kafka-actor">
+              <div class="kafka-actor-icon">🔐</div>
+              <div>
+                <div class="kafka-actor-name">Audit Logger</div>
+                <div class="kafka-events-list">
+                  <span class="kafka-event-pill consumer">ALL events → Immutable log</span>
+                </div>
+              </div>
+            </div>
+            <div class="kafka-actor">
+              <div class="kafka-actor-icon">📊</div>
+              <div>
+                <div class="kafka-actor-name">BI Analytics</div>
+                <div class="kafka-events-list">
+                  <span class="kafka-event-pill consumer">ALL events → Elasticsearch</span>
+                </div>
+              </div>
+            </div>
+            <div class="kafka-actor">
+              <div class="kafka-actor-icon">📱</div>
+              <div>
+                <div class="kafka-actor-name">Patient Portal</div>
+                <div class="kafka-events-list">
+                  <span class="kafka-event-pill consumer">report.generated → Push notify</span>
+                  <span class="kafka-event-pill consumer">bill.settled → Receipt</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         TIMELINE
+    ════════════════════════════════════════════════ -->
+    <section class="timeline-section" id="timeline">
+      <div class="section-eyebrow">
+        <span class="eyebrow-badge" style="background:rgba(16,185,129,0.1);color:#059669;border-color:rgba(16,185,129,0.2)">DELIVERY · 53 WEEKS</span>
+      </div>
+      <h2 class="section-title">13-Phase Delivery Plan</h2>
+      <p class="section-sub">March 2026 → April 2027 · 540 Person-Days · ₹31.76 Lakhs</p>
+
+      <div class="timeline-grid">
+        <div class="phase-card"><span class="phase-id" style="background:#374151">P0</span><div class="phase-title">Initiation & Architecture</div><div class="phase-meta">3 wks · 20 PD</div><div class="phase-items"><div class="phase-item">Tech stack finalisation</div><div class="phase-item">K8s cluster setup</div><div class="phase-item">DB schema strategy</div></div></div>
+        <div class="phase-card"><span class="phase-id" style="background:#0E8E8E">P1</span><div class="phase-title">Multi-Tenant Core</div><div class="phase-meta">6 wks · 60 PD</div><div class="phase-items"><div class="phase-item">Schema provisioning</div><div class="phase-item">JWT + MFA</div><div class="phase-item">Tenant resolver</div></div></div>
+        <div class="phase-card"><span class="phase-id" style="background:#6D28D9">P2</span><div class="phase-title">RBAC & Branch Mgmt</div><div class="phase-meta">4 wks · 40 PD</div><div class="phase-items"><div class="phase-item">6-tier roles</div><div class="phase-item">200+ permissions</div><div class="phase-item">UHID generation</div></div></div>
+        <div class="phase-card"><span class="phase-id" style="background:#0369A1">P3</span><div class="phase-title">OPD Module</div><div class="phase-meta">5 wks · 52 PD</div><div class="phase-items"><div class="phase-item">Patient registration</div><div class="phase-item">EMR interface</div><div class="phase-item">E-prescription</div></div></div>
+        <div class="phase-card"><span class="phase-id" style="background:#7C3AED">P4</span><div class="phase-title">Pharmacy Module</div><div class="phase-meta">5 wks · 46 PD</div><div class="phase-items"><div class="phase-item">FIFO engine</div><div class="phase-item">PO + GRN</div><div class="phase-item">Drug interaction</div></div></div>
+        <div class="phase-card"><span class="phase-id" style="background:#0369A1">P5</span><div class="phase-title">Laboratory Module</div><div class="phase-meta">5 wks · 46 PD</div><div class="phase-items"><div class="phase-item">Barcode tracking</div><div class="phase-item">HL7/ASTM</div><div class="phase-item">Dual validation</div></div></div>
+        <div class="phase-card"><span class="phase-id" style="background:#B45309">P6</span><div class="phase-title">Finance & Billing</div><div class="phase-meta">5 wks · 50 PD</div><div class="phase-items"><div class="phase-item">Auto aggregation</div><div class="phase-item">GST engine</div><div class="phase-item">TPA claims</div></div></div>
+      </div>
+      <div class="timeline-grid">
+        <div class="phase-card"><span class="phase-id" style="background:#BE185D">P7</span><div class="phase-title">HR & Payroll</div><div class="phase-meta">5 wks · 42 PD</div><div class="phase-items"><div class="phase-item">Biometric integ.</div><div class="phase-item">Leave mgmt</div><div class="phase-item">Payroll run</div></div></div>
+        <div class="phase-card"><span class="phase-id" style="background:#065F46">P8</span><div class="phase-title">Inventory & Procurement</div><div class="phase-meta">4 wks · 34 PD</div><div class="phase-items"><div class="phase-item">Multi-level PO</div><div class="phase-item">GRN + quality</div><div class="phase-item">Asset register</div></div></div>
+        <div class="phase-card"><span class="phase-id" style="background:#1D4ED8">P9</span><div class="phase-title">BI, Reports & Portal</div><div class="phase-meta">5 wks · 44 PD</div><div class="phase-items"><div class="phase-item">Dashboards</div><div class="phase-item">Report builder</div><div class="phase-item">Patient PWA</div></div></div>
+        <div class="phase-card"><span class="phase-id" style="background:#991B1B">P10</span><div class="phase-title">Audit & Security</div><div class="phase-meta">3 wks · 34 PD</div><div class="phase-items"><div class="phase-item">Audit engine</div><div class="phase-item">DISHA compliance</div><div class="phase-item">OWASP hardening</div></div></div>
+        <div class="phase-card"><span class="phase-id" style="background:#374151">P11</span><div class="phase-title">E2E QA & Load Testing</div><div class="phase-meta">5 wks · 46 PD</div><div class="phase-items"><div class="phase-item">Playwright E2E</div><div class="phase-item">k6: 50-tenant load</div><div class="phase-item">UAT sign-off</div></div></div>
+        <div class="phase-card"><span class="phase-id" style="background:#10B981">P12</span><div class="phase-title">Go-Live</div><div class="phase-meta">3 wks · 22 PD</div><div class="phase-items"><div class="phase-item">K8s rollout</div><div class="phase-item">Pilot onboarding</div><div class="phase-item">90-day monitoring</div></div></div>
+        <div class="phase-card" style="background:var(--teal-pale);border-color:rgba(14,142,142,0.2)">
+          <div style="font-size:11px;font-weight:700;color:var(--teal);margin-bottom:8px;">TOTAL</div>
+          <div style="font-size:20px;font-weight:800;color:var(--navy)">540 PD</div>
+          <div style="font-size:11px;color:var(--slate);margin-top:4px">₹31.76 Lakhs</div>
+          <div style="font-size:11px;color:var(--slate)">8 Members</div>
+        </div>
+      </div>
+      <div class="timeline-footer">
+        🚀 PHASE 12 — GO-LIVE · April 2027 · Production K8s Rollout · Pilot Tenant Onboarding · 90-Day Post-Launch Monitoring
+      </div>
+    </section>
+
+    <!-- KPIs -->
+    <section style="padding-top:64px;padding-bottom:64px;border-bottom:1px solid rgba(14,142,142,0.1);" id="kpis">
+      <div class="section-eyebrow">
+        <span class="eyebrow-badge" style="background:rgba(245,158,11,0.1);color:#B45309;border-color:rgba(245,158,11,0.2)">PERFORMANCE · POST-LAUNCH</span>
+      </div>
+      <h2 class="section-title">Platform Success KPIs</h2>
+      <p class="section-sub">Continuously monitored post-launch via Prometheus + Grafana + Alertmanager → PagerDuty</p>
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">Platform Uptime</div><div class="kpi-value">&gt;99.9%</div><div class="kpi-desc">Kubernetes health checks · Alertmanager → PagerDuty · Per calendar month</div></div>
+        <div class="kpi-card"><div class="kpi-label">Tenant Onboarding</div><div class="kpi-value">&lt;48h</div><div class="kpi-desc">Signup to first login · Automated schema provisioning pipeline</div></div>
+        <div class="kpi-card"><div class="kpi-label">API Response P95</div><div class="kpi-value">&lt;300ms</div><div class="kpi-desc">Under 500 concurrent users/tenant · 50 active tenants simultaneously</div></div>
+        <div class="kpi-card"><div class="kpi-label">Cross-Tenant Leakage</div><div class="kpi-value">Zero</div><div class="kpi-desc">Automated isolation tests in every CI build · 3rd-party audit before go-live</div></div>
+        <div class="kpi-card"><div class="kpi-label">Patient Reg Time</div><div class="kpi-value">&lt;3 min</div><div class="kpi-desc">Walk-in to OPD token issued · Measured weekly per branch</div></div>
+        <div class="kpi-card"><div class="kpi-label">Pharmacy TAT</div><div class="kpi-value">&lt;10 min</div><div class="kpi-desc">Prescription received to dispensing complete · Daily tracked</div></div>
+        <div class="kpi-card"><div class="kpi-label">Lab TAT Compliance</div><div class="kpi-value">&gt;90%</div><div class="kpi-desc">Tests completed within SLA per category · Nightly BI compute</div></div>
+        <div class="kpi-card"><div class="kpi-label">Staff Adoption (60d)</div><div class="kpi-value">&gt;92%</div><div class="kpi-desc">% staff actively using within 60 days of go-live per tenant</div></div>
+      </div>
+    </section>
+
+    <!-- RISK REGISTER -->
+    <section style="padding-top:64px;padding-bottom:64px;" id="risks">
+      <div class="section-eyebrow">
+        <span class="eyebrow-badge" style="background:rgba(244,63,94,0.08);color:#BE123C;border-color:rgba(244,63,94,0.2)">RISK MANAGEMENT</span>
+      </div>
+      <h2 class="section-title">Risk Register</h2>
+      <p class="section-sub">Mitigations built into delivery model from Phase 0 — not afterthoughts</p>
+
+      <div class="risk-list">
+        <div class="risk-row"><span class="sev-badge sev-critical">CRITICAL</span><div><div class="risk-name">Cross-Tenant Data Leakage</div></div><div class="risk-mitigation">Schema isolation at DB layer (PostgreSQL search_path) · E2E tenant isolation tests in every CI build · 3rd-party security audit before go-live · pgBouncer connection pooling per schema</div></div>
+        <div class="risk-row"><span class="sev-badge sev-high">HIGH</span><div><div class="risk-name">DISHA / Healthcare Compliance</div></div><div class="risk-mitigation">DISHA checklist at design phase · DPO engagement from Phase 1 · Patient consent workflows built in Phase 2 · Legal team review of data retention policies</div></div>
+        <div class="risk-row"><span class="sev-badge sev-high">HIGH</span><div><div class="risk-name">Multi-Tenant Performance Degradation</div></div><div class="risk-mitigation">Per-tenant connection pool limits via pgBouncer · k6 load test with 50 concurrent tenants in Phase 11 · Query timeout budgets enforced · Slow query log alerts</div></div>
+        <div class="risk-row"><span class="sev-badge sev-high">HIGH</span><div><div class="risk-name">Key Developer Unavailability</div></div><div class="risk-mitigation">Claude Code as AI dev pair to maintain velocity · Cross-training mandatory for all modules · Architecture documented from Phase 0 with ADRs in GitHub</div></div>
+        <div class="risk-row"><span class="sev-badge sev-high">HIGH</span><div><div class="risk-name">Scope Expansion from Stakeholders</div></div><div class="risk-mitigation">Formal SOW freeze after Phase 0 · Change Control Board for all scope additions · Prioritised backlog with sprint-locked scope · Impact analysis mandatory</div></div>
+        <div class="risk-row"><span class="sev-badge sev-medium">MEDIUM</span><div><div class="risk-name">Kafka Event Bus Complexity</div></div><div class="risk-mitigation">Idempotent consumers with deduplication keys · Dead-letter queues for failed events · Spring Batch as fallback for v1 non-critical paths · Schema registry for event versioning</div></div>
+        <div class="risk-row"><span class="sev-badge sev-medium">MEDIUM</span><div><div class="risk-name">Third-Party API Instability</div></div><div class="risk-mitigation">Fallback providers for SMS (MSG91/Twilio) and payments (Razorpay/Paytm) · Circuit breakers via Resilience4j · Graceful degradation modes for non-critical features</div></div>
+        <div class="risk-row"><span class="sev-badge sev-medium">MEDIUM</span><div><div class="risk-name">UAT Delays Across Pilot Tenants</div></div><div class="risk-mitigation">Early UAT engagement from Phase 6 · Parallel synthetic test environments per pilot tenant · Dedicated UAT coordinator · Structured UAT test script library</div></div>
+      </div>
+    </section>
+
+  </div><!-- end content -->
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <div>
+      <div class="footer-brand">TechDigitalWishTree — Enterprise HMS Platform</div>
+      <div class="footer-meta">TGWT-HMS-ENT-2026-001 · v2.0 Enterprise Edition · March 2026 · Confidential</div>
+      <div class="footer-meta" style="margin-top:4px">12 Modules · 53 Weeks · 540 PD · ₹31.76 Lakhs · Go-Live April 2027</div>
+    </div>
+    <div class="footer-right">
+      <div class="footer-badge">DISHA Compliant · OWASP Hardened · Cloud-Native</div>
+    </div>
+  </div>
+
+</div><!-- end main -->
+
+<script>
+// Active nav item on scroll
+const sections = document.querySelectorAll('[id]');
+const navItems = document.querySelectorAll('.nav-item');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('href') === '#' + entry.target.id) {
+          item.classList.add('active');
+        }
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
