@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 HMS Enterprise — Deep Market Research, Gap Analysis & AI/ML Innovation Roadmap
-Enterprise-grade DOCX document generator with mild professional theme.
+Enterprise-grade DOCX document generator with rich professional theme.
+Built by TechDigital WishTree (TGWT)
 """
 
 from docx import Document
@@ -9,11 +10,17 @@ from docx.shared import Inches, Pt, RGBColor, Cm, Emu
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.enum.section import WD_ORIENT
-from docx.oxml.ns import qn
-from docx.oxml import OxmlElement
+from docx.oxml.ns import qn, nsdecls
+from docx.oxml import OxmlElement, parse_xml
 from datetime import datetime
 
 OUTPUT_PATH = "/Users/aksatyam/PRODUCT DESIGN/HMS/docs/research/HMS_Market_Research_Gap_Analysis_AI_Roadmap.docx"
+
+# ─── Company Branding ───
+COMPANY_FULL = "TechDigital WishTree"
+COMPANY_SHORT = "TGWT"
+PRODUCT_NAME = "HMS Enterprise"
+DOC_ID = "TGWT-HMS-ENT-2026-RES-001"
 
 # ─── Brand Colors ───
 NAVY       = RGBColor(27, 58, 92)    # #1B3A5C
@@ -98,19 +105,118 @@ def add_run(para, text, size=11, bold=False, italic=False, color=BLACK, font_nam
     return run
 
 def add_heading_styled(doc, text, level=1):
-    """Custom styled heading with brand colors."""
-    p = doc.add_paragraph()
-    p.paragraph_format.space_before = Pt(18 if level == 1 else 12)
-    p.paragraph_format.space_after = Pt(8)
+    """Custom styled heading with rich brand theming."""
     if level == 1:
-        set_paragraph_borders(p, H_TEAL, "8")
-        add_run(p, text, size=22, bold=True, color=NAVY)
+        # Full-width colored bar header
+        bar = doc.add_paragraph()
+        bar.paragraph_format.space_before = Pt(24)
+        bar.paragraph_format.space_after = Pt(0)
+        set_paragraph_shading(bar, H_DARK_NAVY)
+        add_run(bar, "  ", size=4)  # top pad
+
+        p = doc.add_paragraph()
+        p.paragraph_format.space_before = Pt(0)
+        p.paragraph_format.space_after = Pt(2)
+        set_paragraph_shading(p, H_DARK_NAVY)
+        p.paragraph_format.left_indent = Cm(0.5)
+        add_run(p, text.upper(), size=20, bold=True, color=WHITE)
+
+        # Gold accent underline bar
+        accent = doc.add_paragraph()
+        accent.paragraph_format.space_before = Pt(0)
+        accent.paragraph_format.space_after = Pt(12)
+        set_paragraph_shading(accent, H_GOLD)
+        add_run(accent, " ", size=3)
+        return p
     elif level == 2:
-        set_paragraph_borders(p, H_LIGHTER, "4")
-        add_run(p, text, size=16, bold=True, color=TEAL)
+        p = doc.add_paragraph()
+        p.paragraph_format.space_before = Pt(16)
+        p.paragraph_format.space_after = Pt(6)
+        # Left border accent + teal shading
+        set_paragraph_borders_left(p, H_TEAL, "18")
+        set_paragraph_shading(p, H_BLUE_TINT)
+        p.paragraph_format.left_indent = Cm(0.4)
+        add_run(p, "  " + text, size=14, bold=True, color=NAVY)
+        return p
     elif level == 3:
-        add_run(p, text, size=13, bold=True, color=NAVY)
-    return p
+        p = doc.add_paragraph()
+        p.paragraph_format.space_before = Pt(10)
+        p.paragraph_format.space_after = Pt(4)
+        set_paragraph_borders(p, H_GOLD, "4")
+        add_run(p, "\u25C6  ", size=10, color=GOLD)
+        add_run(p, text, size=12, bold=True, color=NAVY)
+        return p
+
+def set_paragraph_borders_left(paragraph, color_hex, sz="12"):
+    """Add a left border accent to a paragraph."""
+    pPr = paragraph._p.get_or_add_pPr()
+    pBdr = OxmlElement('w:pBdr')
+    left = OxmlElement('w:left')
+    left.set(qn('w:val'), 'single')
+    left.set(qn('w:sz'), sz)
+    left.set(qn('w:color'), color_hex)
+    left.set(qn('w:space'), '8')
+    pBdr.append(left)
+    pPr.append(pBdr)
+
+def add_section_divider(doc):
+    """Add a decorative divider between major sections."""
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.paragraph_format.space_before = Pt(6)
+    p.paragraph_format.space_after = Pt(6)
+    add_run(p, "\u2500" * 40, size=8, color=LIGHT_GRAY)
+
+def add_stat_row(doc, stats):
+    """Add a row of stat boxes (label, value, unit) in a table."""
+    t = doc.add_table(rows=2, cols=len(stats))
+    t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    for i, (val, unit, label) in enumerate(stats):
+        # Value cell
+        c_top = t.rows[0].cells[i]
+        c_top.text = ""
+        set_cell_shading(c_top, H_DARK_NAVY)
+        p = c_top.paragraphs[0]
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.paragraph_format.space_before = Pt(8)
+        p.paragraph_format.space_after = Pt(2)
+        add_run(p, val, size=22, bold=True, color=RGBColor(167, 139, 250))  # light purple
+        if unit:
+            add_run(p, f" {unit}", size=10, color=RGBColor(200, 200, 200))
+        # Label cell
+        c_bot = t.rows[1].cells[i]
+        c_bot.text = ""
+        set_cell_shading(c_bot, H_NAVY)
+        p2 = c_bot.paragraphs[0]
+        p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p2.paragraph_format.space_before = Pt(2)
+        p2.paragraph_format.space_after = Pt(6)
+        add_run(p2, label.upper(), size=7, bold=True, color=RGBColor(180, 190, 210))
+    doc.add_paragraph()  # spacer
+    return t
+
+def add_page_footer(doc):
+    """Add branded footer to current section."""
+    section = doc.sections[-1]
+    footer = section.footer
+    footer.is_linked_to_previous = False
+    fp = footer.paragraphs[0] if footer.paragraphs else footer.add_paragraph()
+    fp.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    fp.paragraph_format.space_before = Pt(4)
+    set_paragraph_borders(fp, H_LIGHTER, "2")
+    add_run(fp, f"{COMPANY_FULL}", size=7, bold=True, color=NAVY)
+    add_run(fp, f"  |  {PRODUCT_NAME}  |  ", size=7, color=GRAY)
+    add_run(fp, "CONFIDENTIAL", size=7, bold=True, color=GOLD)
+
+def add_page_header(doc):
+    """Add branded header to current section."""
+    section = doc.sections[-1]
+    header = section.header
+    header.is_linked_to_previous = False
+    hp = header.paragraphs[0] if header.paragraphs else header.add_paragraph()
+    hp.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    add_run(hp, f"{DOC_ID}", size=7, color=GRAY)
+    add_run(hp, f"  |  {COMPANY_SHORT}", size=7, bold=True, color=TEAL)
 
 def add_body(doc, text, indent=False):
     p = doc.add_paragraph()
@@ -135,13 +241,15 @@ def add_bullet(doc, text, bold_prefix=None, indent_level=0):
 
 def add_callout(doc, text, bg_hex=H_BLUE_TINT, icon="", border_color=H_TEAL):
     p = doc.add_paragraph()
-    p.paragraph_format.space_before = Pt(6)
-    p.paragraph_format.space_after = Pt(8)
-    p.paragraph_format.left_indent = Cm(0.5)
-    p.paragraph_format.right_indent = Cm(0.5)
+    p.paragraph_format.space_before = Pt(8)
+    p.paragraph_format.space_after = Pt(10)
+    p.paragraph_format.left_indent = Cm(0.6)
+    p.paragraph_format.right_indent = Cm(0.6)
     set_paragraph_shading(p, bg_hex)
+    set_paragraph_borders_left(p, border_color, "16")
+    p.paragraph_format.line_spacing = 1.4
     if icon:
-        add_run(p, icon + "  ", size=11)
+        add_run(p, icon + "  ", size=12)
     add_run(p, text, size=10, italic=True, color=RGBColor(45, 55, 72))
     return p
 
@@ -217,89 +325,161 @@ style.font.size = Pt(10.5)
 style.paragraph_format.line_spacing = 1.3
 
 # ═══════════════════════════════════════════════════════
-# COVER PAGE
+# COVER PAGE — Rich Enterprise Theme
 # ═══════════════════════════════════════════════════════
 
-# Top bar
-bar = doc.add_paragraph()
-bar.alignment = WD_ALIGN_PARAGRAPH.CENTER
-set_paragraph_shading(bar, H_DARK_NAVY)
-bar.paragraph_format.space_after = Pt(0)
-add_run(bar, "\n", size=6)
-add_run(bar, "TGWT SOLUTIONS PVT. LTD.", size=10, bold=True, color=WHITE, font_name='Calibri')
-add_run(bar, "\n", size=6)
+# Full-width dark navy header bar
+for _ in range(2):
+    bar = doc.add_paragraph()
+    bar.paragraph_format.space_before = Pt(0)
+    bar.paragraph_format.space_after = Pt(0)
+    set_paragraph_shading(bar, H_DARK_NAVY)
+    add_run(bar, " ", size=4)
+
+# Company name bar
+co_bar = doc.add_paragraph()
+co_bar.alignment = WD_ALIGN_PARAGRAPH.CENTER
+co_bar.paragraph_format.space_before = Pt(0)
+co_bar.paragraph_format.space_after = Pt(0)
+set_paragraph_shading(co_bar, H_DARK_NAVY)
+add_run(co_bar, "\n", size=2)
+add_run(co_bar, "T E C H D I G I T A L   W I S H T R E E", size=11, bold=True, color=RGBColor(167, 139, 250))
+add_run(co_bar, "\n", size=2)
+
+# Gold accent strip
+gold_strip = doc.add_paragraph()
+gold_strip.paragraph_format.space_before = Pt(0)
+gold_strip.paragraph_format.space_after = Pt(0)
+set_paragraph_shading(gold_strip, H_GOLD)
+add_run(gold_strip, " ", size=3)
 
 doc.add_paragraph()
-doc.add_paragraph()
 
-# Classification
+# Classification badge
 cl = doc.add_paragraph()
 cl.alignment = WD_ALIGN_PARAGRAPH.CENTER
-add_run(cl, "CONFIDENTIAL  \u2014  STRATEGIC PLANNING DOCUMENT", size=9, bold=True, color=GOLD)
+cl.paragraph_format.left_indent = Cm(4)
+cl.paragraph_format.right_indent = Cm(4)
+set_paragraph_shading(cl, H_PURPLE_TINT)
+add_run(cl, "  CONFIDENTIAL  \u2014  STRATEGIC PLANNING DOCUMENT  ", size=8, bold=True, color=AI_PURPLE)
 
+doc.add_paragraph()
 doc.add_paragraph()
 
 # Main Title
 t1 = doc.add_paragraph()
 t1.alignment = WD_ALIGN_PARAGRAPH.CENTER
-add_run(t1, "HMS ENTERPRISE", size=44, bold=True, color=NAVY)
+add_run(t1, "HMS", size=56, bold=True, color=NAVY)
+add_run(t1, " ENTERPRISE", size=56, bold=True, color=TEAL)
+
+# Decorative line
+deco = doc.add_paragraph()
+deco.alignment = WD_ALIGN_PARAGRAPH.CENTER
+deco.paragraph_format.space_before = Pt(2)
+deco.paragraph_format.space_after = Pt(2)
+add_run(deco, "\u2500\u2500\u2500\u2500  ", size=12, color=GOLD)
+add_run(deco, "\u25C6", size=12, color=GOLD)
+add_run(deco, "  \u2500\u2500\u2500\u2500", size=12, color=GOLD)
 
 t2 = doc.add_paragraph()
 t2.alignment = WD_ALIGN_PARAGRAPH.CENTER
-t2.paragraph_format.space_before = Pt(0)
-add_run(t2, "Hospital Management System", size=18, color=TEAL)
+t2.paragraph_format.space_before = Pt(4)
+add_run(t2, "Hospital Management System", size=16, color=GRAY)
 
 doc.add_paragraph()
 
-# Subtitle
-t3 = doc.add_paragraph()
-t3.alignment = WD_ALIGN_PARAGRAPH.CENTER
-add_run(t3, "Deep Market Research,\nGap Analysis &\nAI/ML Innovation Roadmap", size=24, bold=True, color=AI_PURPLE)
+# Subtitle in themed box
+sub_box = doc.add_paragraph()
+sub_box.alignment = WD_ALIGN_PARAGRAPH.CENTER
+sub_box.paragraph_format.left_indent = Cm(2.5)
+sub_box.paragraph_format.right_indent = Cm(2.5)
+set_paragraph_shading(sub_box, H_DARK_NAVY)
+sub_box.paragraph_format.space_before = Pt(8)
+sub_box.paragraph_format.space_after = Pt(8)
+add_run(sub_box, "\n", size=4)
+add_run(sub_box, "Deep Market Research\n", size=20, bold=True, color=WHITE)
+add_run(sub_box, "Gap Analysis & AI/ML Innovation Roadmap", size=18, bold=True, color=RGBColor(167, 139, 250))
+add_run(sub_box, "\n", size=4)
 
 doc.add_paragraph()
-doc.add_paragraph()
 
-# Metadata table
-meta_table = doc.add_table(rows=6, cols=2)
+# Metadata table — richly themed
+meta_table = doc.add_table(rows=7, cols=2)
 meta_table.alignment = WD_TABLE_ALIGNMENT.CENTER
 meta_data = [
-    ("Document ID", "TGWT-HMS-ENT-2026-RES-001"),
-    ("Version", "v1.0"),
+    ("Document ID", DOC_ID),
+    ("Version", "v1.0 \u2014 Final"),
     ("Classification", "Confidential \u2014 Enterprise SaaS"),
     ("Date", datetime.now().strftime("%B %d, %Y")),
-    ("Prepared By", "TGWT Solutions \u2014 Product Strategy"),
-    ("Status", "Final"),
+    ("Prepared By", f"{COMPANY_FULL} \u2014 Product Strategy"),
+    ("Author", "Ashish Kumar Satyam"),
+    ("Status", "\u2705  Approved"),
 ]
 for i, (label, value) in enumerate(meta_data):
     c0 = meta_table.rows[i].cells[0]
     c1 = meta_table.rows[i].cells[1]
     c0.text = ""
     c1.text = ""
-    add_run(c0.paragraphs[0], label, size=9, bold=True, color=GRAY)
-    add_run(c1.paragraphs[0], value, size=9, color=NAVY)
-    c0.width = Cm(4)
-    c1.width = Cm(8)
+    p0 = c0.paragraphs[0]
+    p0.paragraph_format.space_before = Pt(4)
+    p0.paragraph_format.space_after = Pt(4)
+    add_run(p0, "  " + label, size=9, bold=True, color=WHITE)
+    set_cell_shading(c0, H_NAVY)
+    p1 = c1.paragraphs[0]
+    p1.paragraph_format.space_before = Pt(4)
+    p1.paragraph_format.space_after = Pt(4)
+    add_run(p1, "  " + value, size=9, color=NAVY)
     if i % 2 == 0:
-        set_cell_shading(c0, H_LIGHT)
         set_cell_shading(c1, H_LIGHT)
+    else:
+        set_cell_shading(c1, H_WHITE)
+    c0.width = Cm(4.5)
+    c1.width = Cm(8)
 
 doc.add_paragraph()
+
+# Tagline with decorative frame
+tag_frame = doc.add_paragraph()
+tag_frame.alignment = WD_ALIGN_PARAGRAPH.CENTER
+tag_frame.paragraph_format.left_indent = Cm(3)
+tag_frame.paragraph_format.right_indent = Cm(3)
+set_paragraph_shading(tag_frame, H_GREEN_TINT)
+set_paragraph_borders_left(tag_frame, H_TEAL, "16")
+add_run(tag_frame, "  India\u2019s First AI-Native Hospital Management Platform  ", size=11, italic=True, color=TEAL)
+
 doc.add_paragraph()
 
-# Bottom tagline
-tag = doc.add_paragraph()
-tag.alignment = WD_ALIGN_PARAGRAPH.CENTER
-add_run(tag, "India\u2019s First AI-Native Hospital Management Platform", size=11, italic=True, color=TEAL)
+# Bottom bars
+for hex_c in [H_GOLD, H_DARK_NAVY, H_DARK_NAVY]:
+    bb = doc.add_paragraph()
+    bb.paragraph_format.space_before = Pt(0)
+    bb.paragraph_format.space_after = Pt(0)
+    set_paragraph_shading(bb, hex_c)
+    add_run(bb, " ", size=3 if hex_c == H_GOLD else 4)
+
+# Add header/footer branding
+add_page_header(doc)
+add_page_footer(doc)
 
 # ═══════════════════════════════════════════════════════
 # TABLE OF CONTENTS (Manual)
 # ═══════════════════════════════════════════════════════
 doc.add_page_break()
 
-toc_title = doc.add_paragraph()
-toc_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
-add_run(toc_title, "TABLE OF CONTENTS", size=18, bold=True, color=NAVY)
-set_paragraph_borders(toc_title, H_TEAL, "6")
+# TOC header bar
+toc_bar = doc.add_paragraph()
+toc_bar.alignment = WD_ALIGN_PARAGRAPH.CENTER
+toc_bar.paragraph_format.space_after = Pt(0)
+set_paragraph_shading(toc_bar, H_DARK_NAVY)
+add_run(toc_bar, "\n", size=6)
+add_run(toc_bar, "TABLE OF CONTENTS", size=18, bold=True, color=WHITE)
+add_run(toc_bar, "\n", size=6)
+
+toc_accent = doc.add_paragraph()
+toc_accent.paragraph_format.space_before = Pt(0)
+toc_accent.paragraph_format.space_after = Pt(0)
+set_paragraph_shading(toc_accent, H_GOLD)
+add_run(toc_accent, " ", size=2)
 
 doc.add_paragraph()
 
@@ -333,9 +513,18 @@ doc.add_page_break()
 
 add_heading_styled(doc, "01  Executive Summary")
 
-add_body(doc, "This document presents a comprehensive market research analysis, competitive intelligence study, gap analysis, and AI/ML innovation roadmap for HMS Enterprise \u2014 a multi-tenant SaaS hospital management platform by TGWT Solutions Pvt. Ltd.")
+add_body(doc, "This document presents a comprehensive market research analysis, competitive intelligence study, gap analysis, and AI/ML innovation roadmap for HMS Enterprise \u2014 a multi-tenant SaaS hospital management platform by TechDigital WishTree")
 
 add_body(doc, "The research identifies 18 critical unmet needs in the Indian HMS market and proposes 12 AI/ML capability modules across four implementation phases to position HMS Enterprise as India\u2019s first AI-native hospital management platform.")
+
+# Key stat boxes
+add_stat_row(doc, [
+    ("$70B", "", "Global HMS 2033"),
+    ("$52.8B", "", "India HealthIT 2030"),
+    ("71%", "", "US Hospitals on AI"),
+    ("18", "", "Market Gaps Found"),
+    ("12", "", "AI/ML Modules"),
+])
 
 add_heading_styled(doc, "Key Findings at a Glance", level=2)
 
@@ -993,33 +1182,72 @@ for cat_title, sources in source_categories:
 
 
 # ═══════════════════════════════════════════════════════
-# FOOTER / END PAGE
+# BACK COVER / END PAGE
 # ═══════════════════════════════════════════════════════
 doc.add_page_break()
+
+doc.add_paragraph()
+doc.add_paragraph()
+
+# End page branding bars
+for _ in range(2):
+    ebar = doc.add_paragraph()
+    ebar.paragraph_format.space_before = Pt(0)
+    ebar.paragraph_format.space_after = Pt(0)
+    set_paragraph_shading(ebar, H_DARK_NAVY)
+    add_run(ebar, " ", size=4)
 
 end_bar = doc.add_paragraph()
 end_bar.alignment = WD_ALIGN_PARAGRAPH.CENTER
 set_paragraph_shading(end_bar, H_DARK_NAVY)
+end_bar.paragraph_format.space_before = Pt(0)
 end_bar.paragraph_format.space_after = Pt(0)
-add_run(end_bar, "\n", size=6)
-add_run(end_bar, "END OF DOCUMENT", size=12, bold=True, color=WHITE)
-add_run(end_bar, "\n", size=6)
+add_run(end_bar, "\n\n", size=6)
+add_run(end_bar, "END OF DOCUMENT", size=16, bold=True, color=WHITE)
+add_run(end_bar, "\n\n", size=6)
+
+gold_end = doc.add_paragraph()
+gold_end.paragraph_format.space_before = Pt(0)
+gold_end.paragraph_format.space_after = Pt(0)
+set_paragraph_shading(gold_end, H_GOLD)
+add_run(gold_end, " ", size=3)
+
+for _ in range(2):
+    ebar2 = doc.add_paragraph()
+    ebar2.paragraph_format.space_before = Pt(0)
+    ebar2.paragraph_format.space_after = Pt(0)
+    set_paragraph_shading(ebar2, H_DARK_NAVY)
+    add_run(ebar2, " ", size=4)
 
 doc.add_paragraph()
 
 end1 = doc.add_paragraph()
 end1.alignment = WD_ALIGN_PARAGRAPH.CENTER
-add_run(end1, "HMS Enterprise \u2014 Deep Market Research, Gap Analysis & AI/ML Innovation Roadmap", size=10, color=GRAY)
+add_run(end1, PRODUCT_NAME, size=14, bold=True, color=NAVY)
+
+end_deco = doc.add_paragraph()
+end_deco.alignment = WD_ALIGN_PARAGRAPH.CENTER
+add_run(end_deco, "\u2500\u2500\u2500  \u25C6  \u2500\u2500\u2500", size=10, color=GOLD)
 
 end2 = doc.add_paragraph()
 end2.alignment = WD_ALIGN_PARAGRAPH.CENTER
-add_run(end2, "Version 1.0  |  ", size=9, color=GRAY)
-add_run(end2, datetime.now().strftime("%B %Y"), size=9, color=GRAY)
-add_run(end2, "  |  TGWT Solutions Pvt. Ltd.", size=9, color=GRAY)
+add_run(end2, "Deep Market Research, Gap Analysis & AI/ML Innovation Roadmap", size=10, color=GRAY)
+
+doc.add_paragraph()
 
 end3 = doc.add_paragraph()
 end3.alignment = WD_ALIGN_PARAGRAPH.CENTER
-add_run(end3, "CONFIDENTIAL \u2014 For internal strategic planning use only", size=9, bold=True, color=GOLD)
+add_run(end3, f"Version 1.0  |  {datetime.now().strftime('%B %Y')}  |  ", size=9, color=GRAY)
+add_run(end3, COMPANY_FULL, size=9, bold=True, color=TEAL)
+
+doc.add_paragraph()
+
+end4 = doc.add_paragraph()
+end4.alignment = WD_ALIGN_PARAGRAPH.CENTER
+end4.paragraph_format.left_indent = Cm(4)
+end4.paragraph_format.right_indent = Cm(4)
+set_paragraph_shading(end4, H_GOLD_TINT)
+add_run(end4, "  CONFIDENTIAL \u2014 For internal strategic planning use only  ", size=9, bold=True, color=GOLD)
 
 
 # ═══════════════════════════════════════════════════════
