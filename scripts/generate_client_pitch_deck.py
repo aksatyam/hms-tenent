@@ -236,7 +236,7 @@ def slide_02_agenda(prs):
 
     items = [
         ("01", "The Problem", "Healthcare IT challenges in India"),
-        ("02", "Market Opportunity", "$8.5B market with massive digital gap"),
+        ("02", "Market Opportunity", "\u20B970,000 Cr+ market with massive digital gap"),
         ("03", "Our Solution", "HMS Enterprise platform overview"),
         ("04", "Platform Architecture", "Cloud-native, multi-tenant design"),
         ("05", "12 Integrated Modules", "Complete hospital workflow coverage"),
@@ -302,7 +302,7 @@ def slide_04_market(prs):
 
     # Stat boxes
     stats = [
-        ("$8.5B", "Market Size 2030"),
+        ("\u20B970,000Cr+", "Market Size 2030"),
         ("18.7%", "CAGR Growth"),
         ("70,000+", "Hospitals in India"),
         ("15%", "Digital Adoption"),
@@ -655,7 +655,7 @@ def slide_11_ai_roadmap(prs):
     add_slide_footer(slide)
 
     # Stat boxes
-    stats = [("12", "AI Modules"), ("4", "Delivery Phases"), ("18", "Gaps Addressed"), ("$2.1B", "AI Health Mkt 2030")]
+    stats = [("12", "AI Modules"), ("4", "Delivery Phases"), ("18", "Gaps Addressed"), ("\u20B917,500Cr", "AI Health Mkt 2030")]
     x = Inches(0.5)
     for val, label in stats:
         add_stat_box(slide, x, Inches(1.4), val, label, Inches(2.95))
@@ -715,21 +715,21 @@ def slide_12_pricing(prs):
     add_slide_footer(slide)
 
     tiers = [
-        ("STARTER", "$999\u2013$2,500/mo", "20\u2013100 beds", [
+        ("STARTER", "\u20B982K\u2013\u20B92.1L/mo", "20\u2013100 beds", [
             "6 core modules included",
             "Email support (48h SLA)",
             "500 req/min API limit",
             "Self-service onboarding",
             "99.5% SLA",
         ], TEAL, RGBColor(230, 255, 250)),
-        ("PROFESSIONAL", "$5K\u2013$15K/mo", "100\u2013500 beds", [
+        ("PROFESSIONAL", "\u20B94.2L\u2013\u20B912.5L/mo", "100\u2013500 beds", [
             "All 12 modules included",
             "Basic AI features",
             "Priority support (4h SLA)",
             "2,000 req/min API limit",
             "99.9% SLA",
         ], AI_BLUE, RGBColor(235, 240, 255)),
-        ("ENTERPRISE", "$15K\u2013$25K/mo", "500+ beds", [
+        ("ENTERPRISE", "\u20B912.5L\u2013\u20B921L/mo", "500+ beds", [
             "Full AI/ML suite",
             "Dedicated CSM (1h SLA)",
             "5,000 req/min API limit",
@@ -781,10 +781,10 @@ def slide_13_projections(prs):
 
     # Year columns as visual bars
     years = [
-        ("Year 1", "25", "$1.5M", "65%", TEAL, 0.5),
-        ("Year 2", "100", "$8M", "72%", AI_BLUE, 1.2),
-        ("Year 3", "350", "$28M", "78%", AI_PURPLE, 2.5),
-        ("Year 5", "1,200", "$120M", "82%", GOLD, 5.0),
+        ("Year 1", "25", "\u20B912.5 Cr", "65%", TEAL, 0.5),
+        ("Year 2", "100", "\u20B967 Cr", "72%", AI_BLUE, 1.2),
+        ("Year 3", "350", "\u20B9234 Cr", "78%", AI_PURPLE, 2.5),
+        ("Year 5", "1,200", "\u20B91,000 Cr", "82%", GOLD, 5.0),
     ]
 
     # Bar chart visual
