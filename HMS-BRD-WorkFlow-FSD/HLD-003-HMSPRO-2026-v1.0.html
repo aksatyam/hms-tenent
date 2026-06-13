@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HLD-003-HMSPRO-2026 — High-Level Design · HMSPro Product Family</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0D1F35; --navy-mid:#152840; --navy-light:#1E3A5F;
+  --teal:#0E8E8E; --teal-bright:#14B8B8; --teal-pale:#E0F7F7;
+  --gold:#C49A2A; --gold-bright:#E0B544; --gold-pale:#FBF3DC;
+  --amber:#F59E0B; --rose:#F43F5E; --green:#10B981; --purple:#8B5CF6; --blue:#2E75B6;
+  --slate:#64748B; --slate-light:#94A3B8;
+  --bg:#F0F4F8; --white:#FFFFFF; --paper:#FAFCFE;
+  --border:rgba(14,142,142,0.15); --border-soft:rgba(13,31,53,0.08);
+  --shadow-sm:0 1px 3px rgba(13,31,53,.08),0 1px 2px rgba(13,31,53,.04);
+  --shadow-md:0 4px 16px rgba(13,31,53,.10),0 2px 6px rgba(13,31,53,.06);
+  --shadow-lg:0 12px 40px rgba(13,31,53,.14),0 4px 12px rgba(13,31,53,.08);
+  --font-main:'Sora',sans-serif; --font-mono:'JetBrains Mono',monospace; --font-serif:'Crimson Pro',serif;
+  --sidebar-w:286px; --radius:12px; --radius-sm:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-main);background:var(--bg);color:var(--navy);line-height:1.6;overflow-x:hidden}
+
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--navy);overflow-y:auto;z-index:100;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:var(--teal) transparent}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--teal);border-radius:2px}
+.sb-brand{padding:24px 20px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.logo-mark{width:38px;height:38px;background:linear-gradient(135deg,var(--teal),var(--teal-bright));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 4px 12px rgba(14,142,142,.4)}
+.logo-text{font-size:13px;font-weight:700;color:#fff;line-height:1.2}
+.logo-sub{font-size:10px;color:var(--slate-light);font-family:var(--font-mono)}
+.sb-badge{display:inline-block;background:rgba(196,154,42,.18);color:var(--gold-bright);font-size:9px;font-weight:600;padding:3px 9px;border-radius:20px;font-family:var(--font-mono);letter-spacing:.5px}
+.sb-sec{padding:14px 12px 4px}
+.sb-sec-label{font-size:9px;font-weight:700;color:var(--slate);letter-spacing:1.5px;text-transform:uppercase;padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;text-decoration:none;transition:all .2s;margin-bottom:2px;position:relative}
+.nav-item:hover{background:rgba(255,255,255,.06)}
+.nav-item.active{background:rgba(14,142,142,.18)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--teal-bright);border-radius:0 3px 3px 0}
+.nav-badge{min-width:30px;height:20px;padding:0 5px;background:rgba(14,142,142,.25);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--teal-bright);font-family:var(--font-mono);flex-shrink:0}
+.nav-item.active .nav-badge{background:var(--teal);color:#fff}
+.nav-label{font-size:12px;font-weight:500;color:rgba(255,255,255,.72);line-height:1.25}
+.nav-item.active .nav-label{color:#fff}
+.sb-foot{margin-top:auto;padding:16px 20px;border-top:1px solid rgba(255,255,255,.06)}
+.sb-foot-text{font-size:10px;color:var(--slate);font-family:var(--font-mono);line-height:1.6}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);min-height:100vh}
+.hero{background:var(--navy);padding:60px 56px 48px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-120px;right:-80px;width:600px;height:600px;background:radial-gradient(circle,rgba(14,142,142,.18)0%,transparent 65%);pointer-events:none;animation:glow 6s ease-in-out infinite alternate}
+.hero::after{content:'';position:absolute;bottom:-80px;left:150px;width:400px;height:400px;background:radial-gradient(circle,rgba(196,154,42,.12)0%,transparent 70%);pointer-events:none;animation:glow 8s ease-in-out infinite alternate-reverse}
+@keyframes glow{from{opacity:.6;transform:scale(1)}to{opacity:1;transform:scale(1.15)}}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(14,142,142,.04)1px,transparent 1px),linear-gradient(90deg,rgba(14,142,142,.04)1px,transparent 1px);background-size:48px 48px;pointer-events:none}
+.hero-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:18px;position:relative;z-index:1}
+.hero-chip{background:rgba(14,142,142,.2);border:1px solid rgba(14,142,142,.4);color:var(--teal-bright);font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;font-family:var(--font-mono);letter-spacing:.5px}
+.hero-chip.gold{background:rgba(196,154,42,.16);border-color:rgba(196,154,42,.4);color:var(--gold-bright)}
+.hero-divline{flex:1;height:1px;background:linear-gradient(90deg,rgba(14,142,142,.3),transparent)}
+.hero-title{font-size:46px;font-weight:800;color:#fff;line-height:1.1;margin-bottom:14px;letter-spacing:-1px;position:relative;z-index:1}
+.hero-title span{color:var(--teal-bright)}
+.hero-sub{font-family:var(--font-serif);font-size:18px;font-weight:300;color:rgba(255,255,255,.6);max-width:680px;line-height:1.7;margin-bottom:32px;position:relative;z-index:1}
+.hero-stats{display:flex;flex-wrap:wrap;gap:12px;position:relative;z-index:1}
+.stat-chip{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:11px 18px;display:flex;align-items:center;gap:12px;transition:all .3s}
+.stat-chip:hover{background:rgba(14,142,142,.15);border-color:rgba(14,142,142,.4);transform:translateY(-2px)}
+.stat-val{font-size:21px;font-weight:800;color:var(--teal-bright);line-height:1}
+.stat-lbl{font-size:11px;color:rgba(255,255,255,.5);font-weight:500}
+
+/* ARCH STRIP */
+.arch-strip{background:#0A1829;padding:0 56px;overflow-x:auto;display:flex;align-items:stretch;border-bottom:1px solid rgba(14,142,142,.15);position:relative}
+.arch-strip::-webkit-scrollbar{height:3px}.arch-strip::-webkit-scrollbar-thumb{background:var(--teal)}
+.arch-strip::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 0%,var(--teal)20%,var(--teal-bright)50%,var(--teal)80%,transparent 100%);background-size:200% 100%;animation:flow 3s linear infinite}
+@keyframes flow{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.arch-layer{padding:14px 20px 12px;border-right:1px solid rgba(255,255,255,.04);min-width:176px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;position:relative}
+.arch-layer:not(:last-child)::after{content:'\2192';position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:var(--teal);font-size:14px;z-index:2;text-shadow:0 0 10px rgba(14,142,142,.6)}
+.arch-layer-name{font-size:10px;font-weight:700;color:var(--teal-bright);letter-spacing:1px;text-transform:uppercase;font-family:var(--font-mono)}
+.arch-layer-sub{font-size:9px;color:var(--slate);font-family:var(--font-mono)}
+.arch-pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.arch-pill{background:rgba(255,255,255,.06);color:rgba(255,255,255,.62);font-size:9px;padding:2px 7px;border-radius:3px;white-space:nowrap;font-family:var(--font-mono)}
+.arch-pill.hl{background:rgba(196,154,42,.2);color:var(--gold-bright)}
+
+/* CONTENT */
+.content{padding:0 56px 90px}
+.section{padding-top:58px;border-bottom:1px solid rgba(14,142,142,.1);padding-bottom:50px}
+.section:last-child{border-bottom:none}
+.sec-head{display:flex;align-items:flex-start;gap:16px;margin-bottom:28px}
+.sec-num{width:46px;height:46px;border-radius:11px;background:linear-gradient(135deg,var(--navy),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;font-family:var(--font-mono);color:var(--teal-bright);flex-shrink:0;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
+.sec-num::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent 40%,rgba(255,255,255,.12)50%,transparent 60%);animation:shimmer 3.5s ease-in-out infinite}
+@keyframes shimmer{0%,100%{transform:translateX(-100%) rotate(45deg)}50%{transform:translateX(100%) rotate(45deg)}}
+.sec-title{font-size:27px;font-weight:800;color:var(--navy);line-height:1.15;letter-spacing:-.5px}
+.sec-tagline{font-family:var(--font-serif);font-size:16px;color:var(--slate);font-weight:300;margin-top:4px}
+.lead{font-size:15px;color:var(--navy-mid);max-width:880px;margin-bottom:22px}
+.lead strong{color:var(--teal)}
+h3.block{font-size:15px;font-weight:700;color:var(--navy);margin:26px 0 12px;display:flex;align-items:center;gap:9px}
+h3.block::before{content:'';width:7px;height:7px;border-radius:2px;background:var(--gold);transform:rotate(45deg)}
+h4.mini{font-size:12px;font-weight:700;color:var(--teal);font-family:var(--font-mono);letter-spacing:.5px;text-transform:uppercase;margin:18px 0 8px}
+
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow-sm);margin-bottom:16px}
+.card-grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:1100px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+.pcard{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-sm);transition:all .25s;position:relative;overflow:hidden}
+.pcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--teal)}
+.pcard:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.pcard.gold::before{background:var(--gold)}.pcard.purple::before{background:var(--purple)}.pcard.rose::before{background:var(--rose)}.pcard.green::before{background:var(--green)}.pcard.blue::before{background:var(--blue)}
+.pcard-icon{width:32px;height:32px;border-radius:8px;background:var(--teal-pale);display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:10px}
+.pcard h5{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.pcard p{font-size:12.5px;color:var(--slate);line-height:1.55}
+.pcard .kv{font-family:var(--font-mono);font-size:11px;color:var(--teal);margin-top:8px}
+
+/* METRIC CARDS */
+.metric{background:linear-gradient(135deg,var(--navy),var(--navy-light));border-radius:var(--radius);padding:20px;color:#fff;position:relative;overflow:hidden}
+.metric::after{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(14,142,142,.3),transparent 70%)}
+.metric .mv{font-size:30px;font-weight:800;color:var(--teal-bright);line-height:1}
+.metric .ml{font-size:12px;color:rgba(255,255,255,.6);margin-top:6px}
+.metric .md{font-size:11px;color:var(--slate-light);margin-top:8px;font-family:var(--font-mono)}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:13px;background:var(--white);min-width:560px}
+thead th{background:var(--navy);color:#fff;text-align:left;padding:11px 14px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;position:sticky;top:0}
+tbody td{padding:10px 14px;border-bottom:1px solid var(--border-soft);vertical-align:top;color:var(--navy-mid)}
+tbody tr:nth-child(even){background:#F8FBFC}
+tbody tr:hover{background:var(--teal-pale)}
+td code,.mono{font-family:var(--font-mono);font-size:11.5px;color:var(--teal)}
+td.id{font-family:var(--font-mono);font-size:11px;color:var(--gold);font-weight:600;white-space:nowrap}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--font-mono);white-space:nowrap}
+.b-must{background:#FFEBEE;color:#C0392B}.b-should{background:var(--gold-pale);color:#B07A0A}
+.b-pool{background:var(--teal-pale);color:var(--teal)}.b-bridge{background:#EAF2FB;color:var(--blue)}.b-silo{background:#F3ECFB;color:var(--purple)}
+.b-core{background:var(--navy);color:#fff}.b-pub{background:#E8F5E9;color:var(--green)}.b-sub{background:var(--gold-pale);color:#B07A0A}
+
+/* CALLOUT */
+.callout{border-left:4px solid var(--teal);background:var(--teal-pale);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--navy-mid)}
+.callout.gold{border-color:var(--gold);background:var(--gold-pale)}
+.callout.rose{border-color:var(--rose);background:#FFF0F2}
+.callout.purple{border-color:var(--purple);background:#F6F2FD}
+.callout strong{color:var(--navy)}
+.callout .tag{font-family:var(--font-mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--teal);display:block;margin-bottom:4px}
+.callout.gold .tag{color:var(--gold)}.callout.rose .tag{color:var(--rose)}.callout.purple .tag{color:var(--purple)}
+
+/* PRINCIPLE LIST */
+.plist{display:flex;flex-direction:column;gap:10px}
+.pitem{display:flex;gap:14px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;box-shadow:var(--shadow-sm)}
+.pitem .pn{font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--gold);flex-shrink:0;width:38px}
+.pitem .pt{font-size:13px}
+.pitem .pt b{color:var(--navy)}
+
+/* DIAGRAM */
+.diagram{background:var(--paper);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-sm);margin-bottom:16px;overflow-x:auto}
+.diagram svg{display:block;margin:0 auto;max-width:100%;height:auto}
+.dia-cap{font-size:11px;color:var(--slate);font-family:var(--font-mono);text-align:center;margin-top:10px}
+.svg-l{font-family:'Sora',sans-serif}
+.svg-mono{font-family:'JetBrains Mono',monospace}
+
+/* TWO COL */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:980px){.two{grid-template-columns:1fr}.main{margin-left:0}.sidebar{transform:translateX(-100%)}}
+
+/* TAG ROW */
+.tagrow{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.tag{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:var(--navy);box-shadow:var(--shadow-sm);font-family:var(--font-mono)}
+.tag.teal{background:var(--teal-pale);color:var(--teal);border-color:rgba(14,142,142,.3)}
+.tag.gold{background:var(--gold-pale);color:#B07A0A;border-color:rgba(196,154,42,.3)}
+
+ul.clean{list-style:none;display:flex;flex-direction:column;gap:7px;margin:10px 0}
+ul.clean li{display:flex;gap:10px;font-size:13px;color:var(--navy-mid);align-items:flex-start}
+ul.clean li::before{content:'\25B8';color:var(--teal);font-size:11px;margin-top:3px;flex-shrink:0}
+
+.foot-block{background:var(--navy);color:#fff;padding:40px 56px;margin-left:var(--sidebar-w)}
+.foot-block h4{font-size:13px;color:var(--teal-bright);font-family:var(--font-mono);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.foot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+@media(max-width:980px){.foot-grid{grid-template-columns:repeat(2,1fr)}.foot-block{margin-left:0}}
+.foot-grid p{font-size:12px;color:rgba(255,255,255,.6);line-height:1.7}
+.foot-grid .mono{color:var(--slate-light);font-size:11px}
+.confidential{font-size:11px;color:var(--rose);font-weight:700;font-family:var(--font-mono);margin-top:24px;text-align:center;letter-spacing:1px}
+@media(max-width:980px){.hero,.content,.arch-strip{padding-left:24px;padding-right:24px}.hero-title{font-size:34px}}
+</style>
+</head>
+<body>
+
+<!-- ░░░░░░░░░░ SIDEBAR ░░░░░░░░░░ -->
+<aside class="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo">
+      <div class="logo-mark">VS</div>
+      <div><div class="logo-text">VSJ AI Labs</div><div class="logo-sub">HMSPro Platform</div></div>
+    </div>
+    <span class="sb-badge">HLD-003-HMSPRO-2026 · v1.0</span>
+  </div>
+  <nav>
+    <div class="sb-sec"><div class="sb-sec-label">Foundations</div>
+      <a class="nav-item active" href="#s0"><span class="nav-badge">00</span><span class="nav-label">Document Control</span></a>
+      <a class="nav-item" href="#s1"><span class="nav-badge">01</span><span class="nav-label">Drivers &amp; Principles</span></a>
+      <a class="nav-item" href="#s2"><span class="nav-badge">02</span><span class="nav-label">System Context (C4-L1)</span></a>
+    </div>
+    <div class="sb-sec"><div class="sb-sec-label">Architecture</div>
+      <a class="nav-item" href="#s3"><span class="nav-badge">03</span><span class="nav-label">Container View (C4-L2)</span></a>
+      <a class="nav-item" href="#s4"><span class="nav-badge">04</span><span class="nav-label">Multi-Tenancy &amp; Isolation</span></a>
+      <a class="nav-item" href="#s5"><span class="nav-badge">05</span><span class="nav-label">Editions &amp; Entitlements</span></a>
+      <a class="nav-item" href="#s6"><span class="nav-badge">06</span><span class="nav-label">Event-Driven Backbone</span></a>
+      <a class="nav-item" href="#s7"><span class="nav-badge">07</span><span class="nav-label">Security &amp; Compliance</span></a>
+      <a class="nav-item" href="#s8"><span class="nav-badge">08</span><span class="nav-label">Module Map (C4-L3)</span></a>
+      <a class="nav-item" href="#s9"><span class="nav-badge">09</span><span class="nav-label">Data Architecture</span></a>
+      <a class="nav-item" href="#s10"><span class="nav-badge">10</span><span class="nav-label">Cross-Cutting Concerns</span></a>
+    </div>
+    <div class="sb-sec"><div class="sb-sec-label">Operations</div>
+      <a class="nav-item" href="#s11"><span class="nav-badge">11</span><span class="nav-label">Deployment &amp; Infra</span></a>
+      <a class="nav-item" href="#s12"><span class="nav-badge">12</span><span class="nav-label">NFR Realisation</span></a>
+      <a class="nav-item" href="#s13"><span class="nav-badge">13</span><span class="nav-label">Architecture Decisions</span></a>
+      <a class="nav-item" href="#s14"><span class="nav-badge">14</span><span class="nav-label">Risks &amp; Traceability</span></a>
+    </div>
+  </nav>
+  <div class="sb-foot">
+    <div class="sb-foot-text">Confidential — VSJ AI Labs Internal<br>Traces: BRD-003 · FSD-003 · TAD-003<br>© 2026 VSJ AI Labs Pvt. Ltd.</div>
+  </div>
+</aside>
+
+<main class="main">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-eyebrow">
+      <span class="hero-chip">HIGH-LEVEL DESIGN</span>
+      <span class="hero-chip gold">SOLUTION ARCHITECTURE</span>
+      <span class="hero-divline"></span>
+    </div>
+    <h1 class="hero-title">HMSPro Product Family — <span>High-Level Design</span></h1>
+    <p class="hero-sub">One multi-tenant core platform; five editions composed from 13 modules. This HLD commits the system architecture, tiered tenancy, entitlement enforcement and event backbone that the FSD's 31 use-cases assume — the bridge from business intent to buildable design.</p>
+    <div class="hero-stats">
+      <div class="stat-chip"><span class="stat-val">5</span><span class="stat-lbl">Editions · one core</span></div>
+      <div class="stat-chip"><span class="stat-val">13</span><span class="stat-lbl">Platform modules</span></div>
+      <div class="stat-chip"><span class="stat-val">3</span><span class="stat-lbl">Isolation tiers</span></div>
+      <div class="stat-chip"><span class="stat-val">4</span><span class="stat-lbl">Enforcement layers</span></div>
+      <div class="stat-chip"><span class="stat-val">≤15min</span><span class="stat-lbl">SME provisioning</span></div>
+      <div class="stat-chip"><span class="stat-val">≤₹120</span><span class="stat-lbl">/tenant/mo (Pool)</span></div>
+    </div>
+  </section>
+
+  <!-- ARCH STRIP -->
+  <div class="arch-strip">
+    <div class="arch-layer"><div class="arch-layer-name">Clients</div><div class="arch-layer-sub">web · pwa · tablet</div><div class="arch-pills"><span class="arch-pill">React SPA</span><span class="arch-pill">Portal PWA</span></div></div>
+    <div class="arch-layer"><div class="arch-layer-name">Edge</div><div class="arch-layer-sub">gateway · authn</div><div class="arch-pills"><span class="arch-pill hl">API GW</span><span class="arch-pill">JWT/MFA</span><span class="arch-pill">WAF</span></div></div>
+    <div class="arch-layer"><div class="arch-layer-name">Services</div><div class="arch-layer-sub">spring boot · 13 mods</div><div class="arch-pills"><span class="arch-pill hl">Entitlement</span><span class="arch-pill">RBAC</span><span class="arch-pill">Domain svcs</span></div></div>
+    <div class="arch-layer"><div class="arch-layer-name">Messaging</div><div class="arch-layer-sub">event backbone</div><div class="arch-pills"><span class="arch-pill hl">Kafka</span><span class="arch-pill">Outbox</span><span class="arch-pill">DLQ</span></div></div>
+    <div class="arch-layer"><div class="arch-layer-name">Data</div><div class="arch-layer-sub">tiered tenancy</div><div class="arch-pills"><span class="arch-pill hl">PostgreSQL+RLS</span><span class="arch-pill">Redis</span><span class="arch-pill">Elasticsearch</span></div></div>
+    <div class="arch-layer"><div class="arch-layer-name">Platform</div><div class="arch-layer-sub">aws eks</div><div class="arch-pills"><span class="arch-pill">EKS</span><span class="arch-pill">Terraform</span><span class="arch-pill">S3/Object</span></div></div>
+    <div class="arch-layer"><div class="arch-layer-name">External</div><div class="arch-layer-sub">integrations</div><div class="arch-pills"><span class="arch-pill">ABDM</span><span class="arch-pill">PACS</span><span class="arch-pill">IRP/GST</span><span class="arch-pill">HL7</span></div></div>
+  </div>
+
+  <div class="content">
+
+  <!-- ░░ S0 DOCUMENT CONTROL ░░ -->
+  <section class="section" id="s0">
+    <div class="sec-head"><div class="sec-num">00</div><div><div class="sec-title">Document Control</div><div class="sec-tagline">Identity, lineage and the chain of traceability</div></div></div>
+    <div class="two">
+      <div class="card">
+        <h4 class="mini">Document Metadata</h4>
+        <div class="tbl-wrap"><table style="min-width:auto">
+          <tbody>
+            <tr><td><b>Document ID</b></td><td class="mono">HLD-003-HMSPRO-2026</td></tr>
+            <tr><td><b>Title</b></td><td>High-Level Design — HMSPro Product Family</td></tr>
+            <tr><td><b>Version</b></td><td>v1.0 (Draft for Architecture Review)</td></tr>
+            <tr><td><b>Date</b></td><td>13 June 2026</td></tr>
+            <tr><td><b>Author</b></td><td>Ashish Kumar Satyam — Founder &amp; Lead Architect</td></tr>
+            <tr><td><b>Owner</b></td><td>VSJ AI Labs Pvt. Ltd. — Platform Engineering</td></tr>
+            <tr><td><b>Classification</b></td><td><span class="badge b-must">Confidential — VSJ AI Labs Internal</span></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <h4 class="mini">Traceability Lineage</h4>
+        <div class="diagram" style="margin:0;background:var(--white);border:none;box-shadow:none">
+          <svg viewBox="0 0 360 230" role="img" aria-label="Document lineage">
+            <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#0E8E8E"/></marker></defs>
+            <g class="svg-l" font-size="11" font-weight="700">
+              <rect x="110" y="6" width="140" height="34" rx="7" fill="#0D1F35"/><text x="180" y="27" fill="#14B8B8" text-anchor="middle">BRD-003 · Business</text>
+              <rect x="110" y="62" width="140" height="34" rx="7" fill="#0D1F35"/><text x="180" y="83" fill="#14B8B8" text-anchor="middle">FSD-003 · Functional</text>
+              <rect x="10" y="120" width="150" height="34" rx="7" fill="#0E8E8E"/><text x="85" y="141" fill="#fff" text-anchor="middle">HLD-003 · this doc</text>
+              <rect x="200" y="120" width="150" height="34" rx="7" fill="#152840"/><text x="275" y="141" fill="#E0B544" text-anchor="middle">TAD-003 · Tenancy</text>
+              <rect x="10" y="178" width="150" height="34" rx="7" fill="#152840"/><text x="85" y="199" fill="#94A3B8" text-anchor="middle">LLD-003 · Detailed</text>
+              <rect x="200" y="178" width="150" height="34" rx="7" fill="#152840"/><text x="275" y="199" fill="#94A3B8" text-anchor="middle">OpenAPI / Schemas</text>
+            </g>
+            <g stroke="#0E8E8E" stroke-width="1.6" fill="none" marker-end="url(#ar)">
+              <path d="M180,40 L180,60"/><path d="M170,96 L100,118"/><path d="M195,96 L268,118"/>
+              <path d="M85,154 L85,176"/><path d="M150,135 L198,135"/><path d="M160,195 L198,195"/>
+            </g>
+          </svg>
+        </div>
+        <p style="font-size:12px;color:var(--slate);margin-top:6px">HLD consumes BRD intent + FSD behaviour, aligns to TAD-003 tenancy, and authorises the LLD and OpenAPI artefacts.</p>
+      </div>
+    </div>
+    <h4 class="mini">Version History</h4>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Version</th><th>Date</th><th>Author</th><th>Summary of Change</th></tr></thead>
+      <tbody>
+        <tr><td class="id">v1.0</td><td>13 Jun 2026</td><td>A. K. Satyam</td><td>Initial HLD: C4 context/container, tiered tenancy, entitlement enforcement, event backbone, security, deployment, ADRs &amp; traceability.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><span class="tag">Scope of this document</span>This HLD specifies <strong>structure and cross-cutting mechanics</strong> — what the containers are, how tenancy and entitlements are enforced, how events flow, and how the system deploys. Per-module class/schema/sequence/API detail is in <strong>LLD-003</strong>. Tenancy isolation primitives (<code>tenant_directory</code>, RLS, golden schema templates) are normative in <strong>TAD-003</strong> and referenced, not re-specified, here.</div>
+  </section>
+
+  <!-- ░░ S1 DRIVERS & PRINCIPLES ░░ -->
+  <section class="section" id="s1">
+    <div class="sec-head"><div class="sec-num">01</div><div><div class="sec-title">Architecture Drivers &amp; Principles</div><div class="sec-tagline">The forces the structure must answer to</div></div></div>
+    <p class="lead">Five business objectives (BRD Sec. 2) and four classes of NFR (BR-NFR-01…04) impose the shape of the system. The dominant driver is <strong>SME unit economics at Pool scale</strong> — thousands of single-vertical tenants must run profitably on shared infrastructure while a hospital tenant on the same code runs on a dedicated database. Architecture exists to make those two extremes one product.</p>
+
+    <h3 class="block">Quality attributes (architecturally significant requirements)</h3>
+    <div class="card-grid g3">
+      <div class="pcard"><div class="pcard-icon">🏢</div><h5>Multi-tenant Isolation</h5><p>Three isolation models behind one contract; zero cross-tenant rows by construction (RLS fail-closed).</p><div class="kv">BR-COMP-01 · BR-NFR-03</div></div>
+      <div class="pcard gold"><div class="pcard-icon">💰</div><h5>Pool Economics</h5><p>≤ ₹120 / tenant / month infra at 1,000-tenant scale; no per-tenant background process.</p><div class="kv">BR-NFR-01</div></div>
+      <div class="pcard blue"><div class="pcard-icon">⚡</div><h5>Latency</h5><p>P95 ≤ 400 ms on POS billing &amp; report-delivery under 50-concurrent-tenant load.</p><div class="kv">BR-NFR-02</div></div>
+      <div class="pcard purple"><div class="pcard-icon">🧩</div><h5>Composability</h5><p>Editions = entitlement bundles; upgrade Pharmacy→Clinic→Hospital with zero data migration.</p><div class="kv">BR-EDN-04 · BR-CORE-02</div></div>
+      <div class="pcard rose"><div class="pcard-icon">🔐</div><h5>Compliance</h5><p>DPDP/CERT-In dual breach clocks; append-only hash-chained audit; consent lifecycle.</p><div class="kv">BR-COMP-01/02</div></div>
+      <div class="pcard green"><div class="pcard-icon">♻️</div><h5>Evolvability</h5><p>M3 split into Pathology + new M13 Radiology with the rest of the platform reused as-is.</p><div class="kv">BRD Sec. 1 · A1</div></div>
+    </div>
+
+    <h3 class="block">Guiding architectural principles</h3>
+    <div class="plist">
+      <div class="pitem"><div class="pn">P1</div><div class="pt"><b>Tenancy is ambient, never a feature.</b> Every DB access runs under <code>SET LOCAL</code> tenant context with RLS fail-closed; background jobs (Quartz, Spring Batch, Kafka consumers) set context explicitly or fail closed. No service trusts a client-supplied tenant id.</div></div>
+      <div class="pitem"><div class="pn">P2</div><div class="pt"><b>Entitlements gate at four independent layers.</b> A disabled module must be unreachable at gateway route, JWT permission set, service guard and UI nav — defence in depth, no single point of bypass (BR-NFR-03).</div></div>
+      <div class="pitem"><div class="pn">P3</div><div class="pt"><b>One shared core, locked ON.</b> Identity, Registry/UHID, M4 Finance, M9 Audit, M12 Platform Admin and Notifications are non-removable for every edition — the spine that makes upgrades migration-free.</div></div>
+      <div class="pitem"><div class="pn">P4</div><div class="pt"><b>Events are the integration contract.</b> Modules communicate through Kafka with a fixed envelope (<code>tenantId</code> mandatory, partition key = <code>tenantId</code>); synchronous calls are the exception, reserved for read-after-write needs.</div></div>
+      <div class="pitem"><div class="pn">P5</div><div class="pt"><b>Money and stock moves are idempotent.</b> Idempotency keys mandatory on all POST money-moving / stock-moving endpoints; duplicate submission returns the original result, never a double effect.</div></div>
+      <div class="pitem"><div class="pn">P6</div><div class="pt"><b>Degrade gracefully, never silently.</b> When PACS, IRP, ABDM or an analyzer is down, the dependent flow continues in a banner-flagged degraded mode and queues reconciliation — it does not block the revenue path.</div></div>
+      <div class="pitem"><div class="pn">P7</div><div class="pt"><b>Auditability is structural.</b> The audit write is part of the transaction, hash-chained; there is no "audit later" path and no single-person release path for reportable clinical results.</div></div>
+    </div>
+  </section>
+
+  <!-- ░░ S2 SYSTEM CONTEXT ░░ -->
+  <section class="section" id="s2">
+    <div class="sec-head"><div class="sec-num">02</div><div><div class="sec-title">System Context — C4 Level 1</div><div class="sec-tagline">Actors and external systems around the platform boundary</div></div></div>
+    <p class="lead">HMSPro sits between healthcare operators (clinical &amp; front-office staff, owners), patients/customers, and a ring of regulated external systems. The VSJ platform team operates it as a control plane above all tenants.</p>
+    <div class="diagram">
+      <svg viewBox="0 0 920 470" role="img" aria-label="System context diagram">
+        <defs>
+          <marker id="c-ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#64748B"/></marker>
+          <linearGradient id="core-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E8E8E"/><stop offset="1" stop-color="#0A6E6E"/></linearGradient>
+        </defs>
+        <!-- center platform -->
+        <rect x="330" y="180" width="260" height="110" rx="14" fill="url(#core-g)" stroke="#14B8B8" stroke-width="2"/>
+        <text x="460" y="218" text-anchor="middle" class="svg-l" font-size="17" font-weight="800" fill="#fff">HMSPro Platform</text>
+        <text x="460" y="240" text-anchor="middle" class="svg-mono" font-size="10" fill="#CFF7F7">multi-tenant SaaS · 5 editions</text>
+        <text x="460" y="262" text-anchor="middle" class="svg-mono" font-size="10" fill="#CFF7F7">13 modules + locked core</text>
+
+        <!-- actors left -->
+        <g class="svg-l" font-size="11" font-weight="600">
+          <rect x="20" y="40" width="170" height="40" rx="9" fill="#0D1F35"/><text x="105" y="58" text-anchor="middle" fill="#fff">Super Admin / Platform Ops</text><text x="105" y="72" text-anchor="middle" class="svg-mono" font-size="9" fill="#94A3B8">VSJ control plane</text>
+          <rect x="20" y="120" width="170" height="40" rx="9" fill="#152840"/><text x="105" y="138" text-anchor="middle" fill="#fff">Tenant Admin / Owner</text><text x="105" y="152" text-anchor="middle" class="svg-mono" font-size="9" fill="#94A3B8">5 personas</text>
+          <rect x="20" y="200" width="170" height="40" rx="9" fill="#152840"/><text x="105" y="218" text-anchor="middle" fill="#fff">Clinical &amp; Front-Office</text><text x="105" y="232" text-anchor="middle" class="svg-mono" font-size="9" fill="#94A3B8">doctor·pharmacist·tech</text>
+          <rect x="20" y="280" width="170" height="40" rx="9" fill="#152840"/><text x="105" y="298" text-anchor="middle" fill="#fff">Patient / Customer</text><text x="105" y="312" text-anchor="middle" class="svg-mono" font-size="9" fill="#94A3B8">portal / PWA</text>
+        </g>
+        <!-- external right -->
+        <g class="svg-l" font-size="10.5" font-weight="600">
+          <rect x="730" y="20" width="170" height="36" rx="9" fill="#fff" stroke="#C49A2A" stroke-width="1.5"/><text x="815" y="42" text-anchor="middle" fill="#0D1F35">ABDM / ABHA (HIP·HIU)</text>
+          <rect x="730" y="66" width="170" height="36" rx="9" fill="#fff" stroke="#C49A2A" stroke-width="1.5"/><text x="815" y="88" text-anchor="middle" fill="#0D1F35">PACS (DICOMweb)</text>
+          <rect x="730" y="112" width="170" height="36" rx="9" fill="#fff" stroke="#C49A2A" stroke-width="1.5"/><text x="815" y="134" text-anchor="middle" fill="#0D1F35">IRP / GST e-Invoice</text>
+          <rect x="730" y="158" width="170" height="36" rx="9" fill="#fff" stroke="#C49A2A" stroke-width="1.5"/><text x="815" y="180" text-anchor="middle" fill="#0D1F35">Lab Analyzers HL7/ASTM</text>
+          <rect x="730" y="204" width="170" height="36" rx="9" fill="#fff" stroke="#C49A2A" stroke-width="1.5"/><text x="815" y="226" text-anchor="middle" fill="#0D1F35">Payment Gateways / UPI</text>
+          <rect x="730" y="250" width="170" height="36" rx="9" fill="#fff" stroke="#C49A2A" stroke-width="1.5"/><text x="815" y="272" text-anchor="middle" fill="#0D1F35">SMS · WhatsApp · Email</text>
+          <rect x="730" y="296" width="170" height="36" rx="9" fill="#fff" stroke="#C49A2A" stroke-width="1.5"/><text x="815" y="318" text-anchor="middle" fill="#0D1F35">CERT-In / DPDP Board</text>
+          <rect x="730" y="342" width="170" height="36" rx="9" fill="#fff" stroke="#C49A2A" stroke-width="1.5"/><text x="815" y="364" text-anchor="middle" fill="#0D1F35">DICOM Modalities (MWL)</text>
+        </g>
+        <!-- connectors -->
+        <g stroke="#64748B" stroke-width="1.3" fill="none" marker-end="url(#c-ar)" stroke-dasharray="0">
+          <path d="M190,60 C260,90 290,150 332,190"/>
+          <path d="M190,140 C250,150 290,170 330,200"/>
+          <path d="M190,220 L328,230"/>
+          <path d="M190,300 C250,290 290,270 330,250"/>
+        </g>
+        <g stroke="#C49A2A" stroke-width="1.3" fill="none" marker-end="url(#c-ar)" stroke-dasharray="4 3">
+          <path d="M590,200 C660,120 690,60 728,40"/>
+          <path d="M590,205 C660,150 690,100 728,84"/>
+          <path d="M590,215 C660,170 690,140 728,130"/>
+          <path d="M592,225 L728,176"/>
+          <path d="M592,235 C660,230 690,225 728,222"/>
+          <path d="M590,250 C660,260 690,265 728,268"/>
+          <path d="M590,265 C660,290 690,305 728,314"/>
+          <path d="M590,275 C660,320 690,345 728,360"/>
+        </g>
+        <text x="260" y="430" class="svg-mono" font-size="10" fill="#64748B">— solid: human actors (HTTPS/JWT)</text>
+        <text x="560" y="430" class="svg-mono" font-size="10" fill="#C49A2A">– – dashed: external systems (API / events)</text>
+      </svg>
+      <div class="dia-cap">Figure 2.1 — C4 Level 1 System Context. Human actors authenticate via the gateway; external systems integrate over typed adapters with graceful-degradation fallbacks.</div>
+    </div>
+    <div class="card-grid g3">
+      <div class="pcard"><h5>Inbound human channels</h5><p>React SPA (operator), Portal PWA (patient), board displays. All terminate at the API gateway with JWT/MFA.</p></div>
+      <div class="pcard gold"><h5>Regulated integrations</h5><p>ABDM, IRP (GST e-invoice), CERT-In/DPDP filing — each behind an adapter so regulatory change is contained.</p></div>
+      <div class="pcard purple"><h5>Device &amp; vendor</h5><p>HL7/ASTM analyzers, DICOM modalities (MWL), PACS via DICOMweb link-out (image storage out of scope v1, A2).</p></div>
+    </div>
+  </section>
+
+  <!-- ░░ S3 CONTAINER VIEW ░░ -->
+  <section class="section" id="s3">
+    <div class="sec-head"><div class="sec-num">03</div><div><div class="sec-title">Container View — C4 Level 2</div><div class="sec-tagline">The deployable units and how requests &amp; events move through them</div></div></div>
+    <p class="lead">A request enters through the edge, is authenticated and entitlement-filtered, lands on a domain service, mutates tenant-scoped Postgres inside a transaction that also writes the audit row and the <strong>outbox</strong>, and emits a Kafka event consumed downstream. Reads for dashboards and search are served from Elasticsearch marts, not the OLTP path.</p>
+    <div class="diagram">
+      <svg viewBox="0 0 940 540" role="img" aria-label="Container diagram">
+        <defs><marker id="k-ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#0E8E8E"/></marker>
+        <marker id="k-ar2" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#C49A2A"/></marker></defs>
+        <!-- swimlane backgrounds -->
+        <rect x="0" y="0" width="940" height="70" fill="#EAF2FB" opacity="0.5"/>
+        <rect x="0" y="80" width="940" height="70" fill="#E0F7F7" opacity="0.5"/>
+        <rect x="0" y="160" width="940" height="150" fill="#FBF3DC" opacity="0.45"/>
+        <rect x="0" y="320" width="940" height="90" fill="#F6F2FD" opacity="0.5"/>
+        <rect x="0" y="420" width="940" height="110" fill="#F0F4F8"/>
+        <g class="svg-mono" font-size="9" fill="#64748B" font-weight="700">
+          <text x="10" y="20">CLIENTS</text><text x="10" y="100">EDGE</text><text x="10" y="180">SERVICES (Spring Boot)</text><text x="10" y="340">MESSAGING</text><text x="10" y="440">DATA &amp; PLATFORM</text>
+        </g>
+        <!-- clients -->
+        <g class="svg-l" font-size="10.5" font-weight="700">
+          <rect x="120" y="14" width="150" height="42" rx="8" fill="#2E75B6"/><text x="195" y="32" text-anchor="middle" fill="#fff">Operator SPA</text><text x="195" y="46" text-anchor="middle" class="svg-mono" font-size="8" fill="#D6E6F5">React · edition-aware shell</text>
+          <rect x="400" y="14" width="150" height="42" rx="8" fill="#2E75B6"/><text x="475" y="32" text-anchor="middle" fill="#fff">Patient Portal PWA</text><text x="475" y="46" text-anchor="middle" class="svg-mono" font-size="8" fill="#D6E6F5">M08</text>
+          <rect x="680" y="14" width="150" height="42" rx="8" fill="#8B5CF6"/><text x="755" y="32" text-anchor="middle" fill="#fff">External Systems</text><text x="755" y="46" text-anchor="middle" class="svg-mono" font-size="8" fill="#E9DEFB">ABDM·PACS·IRP·HL7</text>
+        </g>
+        <!-- edge -->
+        <g class="svg-l" font-size="10.5" font-weight="700">
+          <rect x="250" y="94" width="200" height="44" rx="8" fill="#0D1F35"/><text x="350" y="112" text-anchor="middle" fill="#14B8B8">API Gateway</text><text x="350" y="127" text-anchor="middle" class="svg-mono" font-size="8" fill="#94A3B8">route-filter · rate-limit · WAF</text>
+          <rect x="490" y="94" width="190" height="44" rx="8" fill="#0D1F35"/><text x="585" y="112" text-anchor="middle" fill="#14B8B8">Identity / AuthN</text><text x="585" y="127" text-anchor="middle" class="svg-mono" font-size="8" fill="#94A3B8">JWT · MFA · 6-tier RBAC</text>
+        </g>
+        <!-- services -->
+        <g class="svg-l" font-size="9.5" font-weight="700">
+          <rect x="40" y="176" width="120" height="40" rx="7" fill="#0E8E8E"/><text x="100" y="200" text-anchor="middle" fill="#fff">Entitlement Svc</text>
+          <rect x="180" y="176" width="120" height="40" rx="7" fill="#0E8E8E"/><text x="240" y="200" text-anchor="middle" fill="#fff">Tenant/Onboard</text>
+          <rect x="320" y="176" width="120" height="40" rx="7" fill="#152840"/><text x="380" y="200" text-anchor="middle" fill="#fff">Registry/UHID</text>
+          <rect x="460" y="176" width="120" height="40" rx="7" fill="#152840"/><text x="520" y="200" text-anchor="middle" fill="#fff">Finance M04</text>
+          <rect x="600" y="176" width="120" height="40" rx="7" fill="#152840"/><text x="660" y="200" text-anchor="middle" fill="#fff">Audit M09</text>
+          <rect x="740" y="176" width="160" height="40" rx="7" fill="#152840"/><text x="820" y="200" text-anchor="middle" fill="#fff">Notification core</text>
+          <rect x="40" y="232" width="120" height="40" rx="7" fill="#1E3A5F"/><text x="100" y="256" text-anchor="middle" fill="#fff">OPD·IPD M01/10</text>
+          <rect x="180" y="232" width="120" height="40" rx="7" fill="#1E3A5F"/><text x="240" y="256" text-anchor="middle" fill="#fff">Pharmacy M02</text>
+          <rect x="320" y="232" width="120" height="40" rx="7" fill="#1E3A5F"/><text x="380" y="256" text-anchor="middle" fill="#fff">Lab M03</text>
+          <rect x="460" y="232" width="120" height="40" rx="7" fill="#1E3A5F"/><text x="520" y="256" text-anchor="middle" fill="#fff">Radiology M13</text>
+          <rect x="600" y="232" width="120" height="40" rx="7" fill="#1E3A5F"/><text x="660" y="256" text-anchor="middle" fill="#fff">Scheduling M11</text>
+          <rect x="740" y="232" width="160" height="40" rx="7" fill="#1E3A5F"/><text x="820" y="251" text-anchor="middle" fill="#fff">HR M05 · Inv M06</text><text x="820" y="264" text-anchor="middle" fill="#fff">BI M07</text>
+        </g>
+        <!-- messaging -->
+        <rect x="120" y="334" width="700" height="44" rx="8" fill="#0E8E8E" stroke="#14B8B8" stroke-width="2"/>
+        <text x="470" y="352" text-anchor="middle" class="svg-l" font-size="13" font-weight="800" fill="#fff">Apache Kafka — event backbone</text>
+        <text x="470" y="368" text-anchor="middle" class="svg-mono" font-size="9" fill="#CFF7F7">partition key = tenantId · consumer groups · DLQ · ~30 event types</text>
+        <!-- data -->
+        <g class="svg-l" font-size="9.5" font-weight="700">
+          <rect x="60" y="436" width="170" height="44" rx="7" fill="#0D1F35"/><text x="145" y="455" text-anchor="middle" fill="#14B8B8">PostgreSQL</text><text x="145" y="470" text-anchor="middle" class="svg-mono" font-size="8" fill="#94A3B8">RLS · Pool/Schema/DB tiers</text>
+          <rect x="250" y="436" width="150" height="44" rx="7" fill="#0D1F35"/><text x="325" y="455" text-anchor="middle" fill="#14B8B8">Redis</text><text x="325" y="470" text-anchor="middle" class="svg-mono" font-size="8" fill="#94A3B8">entitlement &amp; session cache</text>
+          <rect x="420" y="436" width="170" height="44" rx="7" fill="#0D1F35"/><text x="505" y="455" text-anchor="middle" fill="#14B8B8">Elasticsearch</text><text x="505" y="470" text-anchor="middle" class="svg-mono" font-size="8" fill="#94A3B8">search · BI marts (tenant-filtered)</text>
+          <rect x="610" y="436" width="150" height="44" rx="7" fill="#0D1F35"/><text x="685" y="455" text-anchor="middle" fill="#14B8B8">Object Store (S3)</text><text x="685" y="470" text-anchor="middle" class="svg-mono" font-size="8" fill="#94A3B8">reports · evidence packs</text>
+          <rect x="780" y="436" width="120" height="44" rx="7" fill="#0D1F35"/><text x="840" y="455" text-anchor="middle" fill="#14B8B8">Scheduler</text><text x="840" y="470" text-anchor="middle" class="svg-mono" font-size="8" fill="#94A3B8">Quartz · Batch</text>
+        </g>
+        <!-- flows -->
+        <g stroke="#0E8E8E" stroke-width="1.4" fill="none" marker-end="url(#k-ar)">
+          <path d="M195,56 L330,92"/><path d="M475,56 L370,92"/>
+          <path d="M350,138 L300,174"/><path d="M585,138 L520,174"/>
+          <path d="M380,272 L420,332"/><path d="M520,272 L500,332"/><path d="M240,272 L320,332"/>
+          <path d="M470,378 L145,434"/><path d="M470,378 L505,434"/>
+        </g>
+        <g stroke="#C49A2A" stroke-width="1.4" fill="none" marker-end="url(#k-ar2)" stroke-dasharray="4 3">
+          <path d="M755,56 L820,174"/><path d="M880,216 L880,332" transform="translate(-60,0)"/>
+        </g>
+      </svg>
+      <div class="dia-cap">Figure 3.1 — C4 Level 2 Container View. Teal = synchronous request path; gold-dashed = external adapter / event path. The Kafka backbone decouples write-side modules from read-side BI and notifications.</div>
+    </div>
+    <h3 class="block">Container responsibilities</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Container</th><th>Responsibility</th><th>Tech</th><th>Scaling unit</th></tr></thead>
+      <tbody>
+        <tr><td><b>API Gateway</b></td><td>TLS termination, routing, per-edition route filter (disabled modules return 404 at edge), rate-limit, WAF.</td><td class="mono">Spring Cloud GW / Kong</td><td>Stateless · HPA</td></tr>
+        <tr><td><b>Identity / AuthN</b></td><td>Login, MFA enrolment, JWT issuance with tenant + entitlement + role claims, token revocation on suspend.</td><td class="mono">Keycloak / custom</td><td>Stateless · HPA</td></tr>
+        <tr><td><b>Entitlement Service</b></td><td>Edition catalog, <code>tenant_modules</code>, dependency-matrix validation, Redis cache + invalidation on toggle.</td><td class="mono">Spring Boot</td><td>Stateless · HPA</td></tr>
+        <tr><td><b>Domain services (13)</b></td><td>Module business logic; each owns its tables, publishes/consumes events, writes audit + outbox in-transaction.</td><td class="mono">Spring Boot</td><td>Per-module HPA</td></tr>
+        <tr><td><b>Kafka</b></td><td>Durable event log; <code>tenantId</code> partitioning; consumer groups per module; DLQ for poison messages.</td><td class="mono">Apache Kafka (MSK)</td><td>Broker fleet</td></tr>
+        <tr><td><b>PostgreSQL</b></td><td>OLTP system of record; RLS fail-closed; Pool (shared+RLS), Schema-per-tenant, or Dedicated DB per tier.</td><td class="mono">PostgreSQL 15 / Aurora</td><td>Per-tier topology</td></tr>
+        <tr><td><b>Redis</b></td><td>Entitlement cache, session, idempotency keys, slot-lock fencing, rate-limit counters.</td><td class="mono">Redis / ElastiCache</td><td>Cluster</td></tr>
+        <tr><td><b>Elasticsearch</b></td><td>Registry search, audit query, BI lite/full marts — every query tenant-filtered server-side.</td><td class="mono">Elasticsearch / OpenSearch</td><td>Cluster</td></tr>
+        <tr><td><b>Scheduler</b></td><td>Pooled Quartz/Batch for reminders, scheduled reports, expiry alerts, payroll — no per-tenant process.</td><td class="mono">Quartz · Spring Batch</td><td>Shared pool</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ░░ S4 MULTI-TENANCY ░░ -->
+  <section class="section" id="s4">
+    <div class="sec-head"><div class="sec-num">04</div><div><div class="sec-title">Multi-Tenancy &amp; Isolation Architecture</div><div class="sec-tagline">Three isolation models, one API — tier follows the plan</div></div></div>
+    <p class="lead">Isolation tier is a <strong>property of the subscription plan</strong>, resolved at onboarding and stored in <code>tenant_directory</code> (the TAD-003 control plane). The same service code serves all three; only the connection-routing and DDL strategy differ. RLS is the universal backstop — even on dedicated DBs it stays on, fail-closed, so a context bug can never leak rows.</p>
+    <div class="diagram">
+      <svg viewBox="0 0 920 330" role="img" aria-label="Isolation tiers">
+        <g class="svg-l">
+          <!-- pool -->
+          <rect x="20" y="30" width="280" height="270" rx="12" fill="#E0F7F7" stroke="#0E8E8E" stroke-width="1.5"/>
+          <text x="160" y="58" text-anchor="middle" font-size="14" font-weight="800" fill="#0E8E8E">POOL — Starter</text>
+          <text x="160" y="76" text-anchor="middle" class="svg-mono" font-size="9" fill="#0A6E6E">shared schema · RLS by tenant_id</text>
+          <rect x="50" y="92" width="220" height="56" rx="8" fill="#fff" stroke="#0E8E8E"/><text x="160" y="116" text-anchor="middle" font-size="11" font-weight="700" fill="#0D1F35">Shared Database</text><text x="160" y="132" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#64748B">rows tagged tenant_id · RLS policy</text>
+          <g class="svg-mono" font-size="8.5" fill="#0A6E6E"><text x="60" y="172">tenantA ▏ tenantB ▏ tenantC …</text><text x="60" y="190">1000s of SME tenants</text></g>
+          <rect x="50" y="206" width="220" height="74" rx="8" fill="#0E8E8E"/><text x="160" y="230" text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff">≤ ₹120 / tenant / month</text><text x="160" y="248" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#CFF7F7">Pharmacy·Pathology·Radiology·Clinic SME</text><text x="160" y="266" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#CFF7F7">BR-NFR-01 economics</text>
+          <!-- bridge -->
+          <rect x="320" y="30" width="280" height="270" rx="12" fill="#EAF2FB" stroke="#2E75B6" stroke-width="1.5"/>
+          <text x="460" y="58" text-anchor="middle" font-size="14" font-weight="800" fill="#2E75B6">BRIDGE — Professional</text>
+          <text x="460" y="76" text-anchor="middle" class="svg-mono" font-size="9" fill="#1E5F99">schema-per-tenant + RLS</text>
+          <rect x="350" y="92" width="220" height="56" rx="8" fill="#fff" stroke="#2E75B6"/><text x="460" y="116" text-anchor="middle" font-size="11" font-weight="700" fill="#0D1F35">Shared Database</text><text x="460" y="132" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#64748B">CREATE SCHEMA from golden template</text>
+          <g><rect x="360" y="158" width="60" height="38" rx="5" fill="#2E75B6"/><text x="390" y="181" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#fff">schema_A</text>
+             <rect x="430" y="158" width="60" height="38" rx="5" fill="#2E75B6"/><text x="460" y="181" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#fff">schema_B</text>
+             <rect x="500" y="158" width="60" height="38" rx="5" fill="#2E75B6"/><text x="530" y="181" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#fff">schema_C</text></g>
+          <rect x="350" y="206" width="220" height="74" rx="8" fill="#2E75B6"/><text x="460" y="230" text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff">Multi-doctor clinics · chains</text><text x="460" y="248" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#D6E6F5">Hospital default · multi-branch</text><text x="460" y="266" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#D6E6F5">stronger blast-radius containment</text>
+          <!-- silo -->
+          <rect x="620" y="30" width="280" height="270" rx="12" fill="#F3ECFB" stroke="#8B5CF6" stroke-width="1.5"/>
+          <text x="760" y="58" text-anchor="middle" font-size="14" font-weight="800" fill="#8B5CF6">SILO — Enterprise</text>
+          <text x="760" y="76" text-anchor="middle" class="svg-mono" font-size="9" fill="#6D3FC0">dedicated database + RLS</text>
+          <rect x="650" y="92" width="100" height="104" rx="8" fill="#fff" stroke="#8B5CF6"/><text x="700" y="146" text-anchor="middle" font-size="10" font-weight="700" fill="#0D1F35">DB · tenantX</text>
+          <rect x="770" y="92" width="100" height="104" rx="8" fill="#fff" stroke="#8B5CF6"/><text x="820" y="146" text-anchor="middle" font-size="10" font-weight="700" fill="#0D1F35">DB · tenantY</text>
+          <rect x="650" y="206" width="220" height="74" rx="8" fill="#8B5CF6"/><text x="760" y="230" text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff">Large hospitals · data residency</text><text x="760" y="248" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#EBE2FB">PgBouncer · own backup schedule</text><text x="760" y="266" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#EBE2FB">isolation-priced (custom)</text>
+        </g>
+      </svg>
+      <div class="dia-cap">Figure 4.1 — Tiered isolation per TAD-003. RLS is present in all three tiers; the difference is the routing &amp; DDL strategy the provisioner applies.</div>
+    </div>
+    <div class="two">
+      <div class="card">
+        <h4 class="mini">Tenant context resolution (every request)</h4>
+        <ul class="clean">
+          <li>JWT carries <code>tenantId</code>, <code>isolationModel</code>, <code>clusterId</code>, role &amp; entitlement set — signed, never client-mutable.</li>
+          <li>A request-scoped <code>TenantContext</code> filter resolves the data source / schema from <code>tenant_directory</code> and opens the connection with <code>SET LOCAL app.tenant_id = …</code>.</li>
+          <li>RLS policies on every tenant table compare <code>tenant_id</code> to the session GUC; missing context ⇒ zero rows (fail-closed), never all rows.</li>
+          <li>Async workers (Kafka consumers, Quartz) re-establish context from the event/job header before any DB access, or abort.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 class="mini">Provisioning &amp; migration (UC-M12-01 / 03)</h4>
+        <ul class="clean">
+          <li><b>Provision:</b> tier-specific playbook — Pool seed rows / <code>CREATE SCHEMA</code> from golden template + RLS + role / <code>CREATE DATABASE</code> + PgBouncer + backup registration.</li>
+          <li><b>Smoke isolation test:</b> write as new tenant, read as canary, assert zero rows — failure rolls back; tenant never serves traffic.</li>
+          <li><b>Migrate (edition/tier):</b> dual-write &amp; verify, atomic flip, old location quarantined 7 days then purged; ≤ 15-min read-only window, zero data loss.</li>
+          <li><b>Region immutable</b> post-creation (residency); change is a formal migration workflow.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout purple"><span class="tag">Why this matters architecturally</span>Because tier is data, not code, an SME tenant can be <strong>upgraded by changing routing strategy</strong> — the application layer is identical across Pool/Bridge/Silo. This is what makes "upgrade edition with zero data migration" (BR-EDN-04) structurally achievable rather than a special case.</div>
+  </section>
+
+  <!-- ░░ S5 EDITIONS & ENTITLEMENTS ░░ -->
+  <section class="section" id="s5">
+    <div class="sec-head"><div class="sec-num">05</div><div><div class="sec-title">Editions &amp; Entitlement Enforcement</div><div class="sec-tagline">An edition is a bundle; enforcement is four-layered</div></div></div>
+    <p class="lead">An <strong>edition</strong> is a named template that pre-applies a module bundle at onboarding; Super Admin then overrides à-la-carte under the dependency matrix. The same <code>tenant_modules</code> entitlement set drives the gateway, the JWT, the service guards and the UI — so a disabled module is unreachable everywhere within 60 s of a toggle (BR-NFR-03).</p>
+    <h3 class="block">Module-by-edition composition (BRD Sec. 3.3)</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Module</th><th>Hospital</th><th>Clinic</th><th>Pharmacy SME</th><th>Pathology SME</th><th>Radiology SME</th></tr></thead>
+      <tbody>
+        <tr><td><b>Core (M4·M9·M12·Reg·Notif)</b></td><td><span class="badge b-core">Core</span></td><td><span class="badge b-core">Core</span></td><td><span class="badge b-core">Core</span></td><td><span class="badge b-core">Core</span></td><td><span class="badge b-core">Core</span></td></tr>
+        <tr><td>M01 OPD / Encounters</td><td>Full</td><td>Lite</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>M02 Pharmacy</td><td>On</td><td>Optional</td><td><b>Core (Retail)</b></td><td>—</td><td>—</td></tr>
+        <tr><td>M03 Pathology</td><td>On</td><td>Optional</td><td>—</td><td><b>Core (Walk-in+B2B)</b></td><td>—</td></tr>
+        <tr><td>M13 Radiology (RIS)</td><td>On</td><td>Optional</td><td>—</td><td>—</td><td><b>Core (Walk-in+B2B)</b></td></tr>
+        <tr><td>M05 HR &amp; Payroll</td><td>On</td><td>Optional</td><td>Opt. lite</td><td>Opt. lite</td><td>Opt. lite</td></tr>
+        <tr><td>M06 Inventory</td><td>On</td><td>Optional</td><td>Embedded subset</td><td>Reagents subset</td><td>Consumables subset</td></tr>
+        <tr><td>M07 BI &amp; Reports</td><td>Full</td><td>Lite</td><td>Lite</td><td>Lite</td><td>Lite</td></tr>
+        <tr><td>M08 Patient Portal</td><td>On</td><td>On</td><td>Optional</td><td>On</td><td>On</td></tr>
+        <tr><td>M10 IPD</td><td>On</td><td><span class="badge b-must">— gateway-disabled</span></td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>M11 Appointment</td><td>On</td><td>On</td><td>—</td><td>Optional</td><td>On (modality slots)</td></tr>
+      </tbody>
+    </table></div>
+    <h3 class="block">Four-layer entitlement enforcement</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 900 240" role="img" aria-label="Four layer enforcement">
+        <defs><marker id="e-ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#0E8E8E"/></marker></defs>
+        <g class="svg-l" font-size="11" font-weight="700">
+          <rect x="20" y="80" width="150" height="80" rx="10" fill="#0D1F35"/><text x="95" y="112" text-anchor="middle" fill="#14B8B8">① Gateway</text><text x="95" y="130" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#94A3B8">route filter</text><text x="95" y="144" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#94A3B8">404 disabled route</text>
+          <rect x="210" y="80" width="150" height="80" rx="10" fill="#152840"/><text x="285" y="112" text-anchor="middle" fill="#14B8B8">② JWT</text><text x="285" y="130" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#94A3B8">permission set</text><text x="285" y="144" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#94A3B8">no claim ⇒ deny</text>
+          <rect x="400" y="80" width="150" height="80" rx="10" fill="#152840"/><text x="475" y="112" text-anchor="middle" fill="#14B8B8">③ Service guard</text><text x="475" y="130" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#94A3B8">@RequiresModule</text><text x="475" y="144" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#94A3B8">+ consumer no-op</text>
+          <rect x="590" y="80" width="150" height="80" rx="10" fill="#152840"/><text x="665" y="112" text-anchor="middle" fill="#14B8B8">④ UI shell</text><text x="665" y="130" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#94A3B8">nav from entitlements</text><text x="665" y="144" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#94A3B8">module unrendered</text>
+          <rect x="780" y="80" width="100" height="80" rx="10" fill="#0E8E8E"/><text x="830" y="112" text-anchor="middle" fill="#fff">Redis</text><text x="830" y="130" text-anchor="middle" class="svg-mono" font-size="8" fill="#CFF7F7">entitlement</text><text x="830" y="144" text-anchor="middle" class="svg-mono" font-size="8" fill="#CFF7F7">cache</text>
+        </g>
+        <g stroke="#0E8E8E" stroke-width="1.5" fill="none" marker-end="url(#e-ar)"><path d="M170,120 L208,120"/><path d="M360,120 L398,120"/><path d="M550,120 L588,120"/></g>
+        <text x="450" y="40" text-anchor="middle" class="svg-l" font-size="12" font-weight="700" fill="#0D1F35">module.entitlement.changed → invalidate all four within 60 s (BR-NFR-03)</text>
+        <g stroke="#C49A2A" stroke-width="1.3" fill="none" stroke-dasharray="4 3"><path d="M830,160 C830,200 95,200 95,162"/><path d="M285,200 L285,162" /><path d="M475,200 L475,162"/><path d="M665,200 L665,162"/></g>
+        <text x="450" y="222" text-anchor="middle" class="svg-mono" font-size="9" fill="#C49A2A">– – all four layers read the same invalidated Redis entitlement cache</text>
+      </svg>
+      <div class="dia-cap">Figure 5.1 — Defence-in-depth entitlement enforcement. No single layer is trusted alone; the toggle event fans out a cache invalidation that all four honour.</div>
+    </div>
+    <div class="callout gold"><span class="tag">Guarded disable (UC-M12-02)</span>Disabling a module first runs the <strong>active-workflow guard</strong> (admitted IPD patients, open POs, unbilled encounters, undelivered reports). If the guard fails, the module cannot be hard-disabled — Super Admin may instead apply <strong>read-only grace mode</strong> with an end date. Core modules (M4, M9, M12, Registry) cannot be disabled by any actor, ever.</div>
+  </section>
+
+  <!-- ░░ S6 EVENT BACKBONE ░░ -->
+  <section class="section" id="s6">
+    <div class="sec-head"><div class="sec-num">06</div><div><div class="sec-title">Event-Driven Backbone</div><div class="sec-tagline">Kafka as the integration contract between modules</div></div></div>
+    <p class="lead">Clinical and commercial state changes are published as events; Finance, BI, Notifications and downstream modules subscribe. Every event carries a fixed envelope, is partitioned by <code>tenantId</code> for ordering-per-tenant, and is produced via the <strong>transactional outbox</strong> so the event and the DB mutation commit atomically — no lost or phantom events.</p>
+    <div class="two">
+      <div class="card">
+        <h4 class="mini">Event envelope (header convention)</h4>
+        <div class="diagram" style="margin:0;background:var(--navy);border:none">
+<svg viewBox="0 0 420 200"><text x="14" y="26" class="svg-mono" font-size="11" fill="#CFF7F7">{</text>
+<text x="30" y="46" class="svg-mono" font-size="11" fill="#14B8B8">"eventId"</text><text x="120" y="46" class="svg-mono" font-size="11" fill="#fff">: uuid,</text>
+<text x="30" y="66" class="svg-mono" font-size="11" fill="#14B8B8">"tenantId"</text><text x="125" y="66" class="svg-mono" font-size="11" fill="#E0B544">: REQUIRED · partition key,</text>
+<text x="30" y="86" class="svg-mono" font-size="11" fill="#14B8B8">"type"</text><text x="120" y="86" class="svg-mono" font-size="11" fill="#fff">: "result.critical.alert",</text>
+<text x="30" y="106" class="svg-mono" font-size="11" fill="#14B8B8">"version"</text><text x="120" y="106" class="svg-mono" font-size="11" fill="#fff">: 1,</text>
+<text x="30" y="126" class="svg-mono" font-size="11" fill="#14B8B8">"occurredAt"</text><text x="140" y="126" class="svg-mono" font-size="11" fill="#fff">: ts,</text>
+<text x="30" y="146" class="svg-mono" font-size="11" fill="#14B8B8">"actor"</text><text x="120" y="146" class="svg-mono" font-size="11" fill="#fff">: userId, "correlationId": …,</text>
+<text x="30" y="166" class="svg-mono" font-size="11" fill="#14B8B8">"payload"</text><text x="120" y="166" class="svg-mono" font-size="11" fill="#fff">: { … domain … }</text>
+<text x="14" y="186" class="svg-mono" font-size="11" fill="#CFF7F7">}</text></svg>
+        </div>
+      </div>
+      <div class="card">
+        <h4 class="mini">Backbone guarantees</h4>
+        <ul class="clean">
+          <li><b>Ordering per tenant</b> via <code>tenantId</code> partition key — a tenant's events never reorder across each other.</li>
+          <li><b>Exactly-once effect</b> through transactional outbox + idempotent consumers (idempotency keys on money/stock).</li>
+          <li><b>Poison isolation</b> — failed messages route to a per-topic DLQ with replay tooling; one bad event never stalls a partition indefinitely.</li>
+          <li><b>Entitlement-aware consumers</b> — a consumer for a module disabled for a tenant <em>no-ops</em> that tenant's events (not DLQ).</li>
+          <li><b>Tenant-dimensioned</b> — every event is queryable by <code>tenantId</code> for blast-radius analysis in incident response (M09).</li>
+        </ul>
+      </div>
+    </div>
+    <h3 class="block">Principal event flows (FSD event tables)</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Event</th><th>Producer</th><th>Key consumers</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">tenant.provisioned</td><td>M12</td><td>All services</td><td>Bootstrap tenant caches on creation</td></tr>
+        <tr><td class="mono">module.entitlement.changed</td><td>M12</td><td>Gateway · guards · UI · Billing</td><td>4-layer enforcement refresh + proration</td></tr>
+        <tr><td class="mono">opd.encounter.closed</td><td>M01</td><td>Finance · BI</td><td>Consult charge + analytics</td></tr>
+        <tr><td class="mono">pharmacy.rx.created</td><td>M01</td><td>M02 dispensing queue</td><td>e-Rx → dispense pipeline</td></tr>
+        <tr><td class="mono">lab.order.created / rad.order.created</td><td>M01/M10/self</td><td>M03 / M13 intake</td><td>Diagnostic/imaging order routing</td></tr>
+        <tr><td class="mono">result.critical.alert</td><td>M03/M13</td><td>Doctor escalation · ward board</td><td>Read-receipt-tracked critical escalation</td></tr>
+        <tr><td class="mono">*.charge.generated</td><td>M01/02/03/10/13</td><td>Finance (M04)</td><td>Charge aggregation onto folio</td></tr>
+        <tr><td class="mono">invoice.settled · dayclose.completed</td><td>M04</td><td>Portal · BI batch</td><td>Receipts + mart refresh trigger</td></tr>
+        <tr><td class="mono">consent.revoked</td><td>M08</td><td>All modules · ABDM gateway</td><td>Revocation fan-out / propagation</td></tr>
+        <tr><td class="mono">stock.reorder.triggered · stock.expiry.alert</td><td>M02/M06</td><td>Procurement · Notifications</td><td>Replenishment &amp; 90/60/30-day alerts</td></tr>
+        <tr><td class="mono">security.incident.opened · audit.chain.mismatch</td><td>M09</td><td>Ops paging · Super Admin</td><td>Dual-clock incident + auto-incident</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ░░ S7 SECURITY ░░ -->
+  <section class="section" id="s7">
+    <div class="sec-head"><div class="sec-num">07</div><div><div class="sec-title">Security &amp; Compliance Architecture</div><div class="sec-tagline">DPDP / ABDM / NABH posture, dual breach clocks, hash-chained audit</div></div></div>
+    <div class="card-grid g4">
+      <div class="metric"><div class="mv">6-tier</div><div class="ml">RBAC hierarchy</div><div class="md">+ data-level scoping</div></div>
+      <div class="metric"><div class="mv">6h / 72h</div><div class="ml">Dual breach clocks</div><div class="md">CERT-In / DPDP</div></div>
+      <div class="metric"><div class="mv">Append-only</div><div class="ml">Hash-chained audit</div><div class="md">in-transaction write</div></div>
+      <div class="metric"><div class="mv">Fail-closed</div><div class="ml">RLS everywhere</div><div class="md">all three tiers</div></div>
+    </div>
+    <div class="two" style="margin-top:16px">
+      <div class="card">
+        <h4 class="mini">Identity, access &amp; data protection</h4>
+        <ul class="clean">
+          <li><b>AuthN:</b> JWT + mandatory MFA enrolment for Tenant Admin; tokens scoped to tenant + entitlements + role; revoked on suspend/migrate.</li>
+          <li><b>AuthZ:</b> 6-tier RBAC × module matrix (FSD Sec. 3.4) with data-level scoping ("own pts / care team") enforced <em>in addition</em> to role.</li>
+          <li><b>Encryption:</b> TLS in transit; at-rest encryption on Postgres / object store; field-level for the most sensitive identifiers.</li>
+          <li><b>Break-glass:</b> BYPASSRLS / emergency views surface in a dedicated review queue requiring retrospective sign-off (M09).</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 class="mini">Audit &amp; incident (M09)</h4>
+        <ul class="clean">
+          <li><b>Hash chain:</b> each <code>audit_entry</code> stores <code>hash_prev</code> + <code>hash</code>; range verification proves non-tampering; a mismatch auto-raises a P1 incident.</li>
+          <li><b>Dual clocks:</b> incident header runs CERT-In (6 h) and DPDP (72 h) countdowns; template completeness gates filing; notifications archived with delivery proof.</li>
+          <li><b>Blast radius:</b> <code>tenantId</code>-dimensioned logs/traces identify affected tenants/principals per incident.</li>
+          <li><b>Consent:</b> immutable, versioned against UHID; <code>consent.revoked</code> propagates (marketing-stop immediate, ABDM HIP/HIU fan-out).</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout rose"><span class="tag">Compliance is structural, not bolted-on</span>The audit write participates in the same DB transaction as the data mutation — there is <strong>no path that mutates clinical/financial data without an audit row</strong>, and no single-person release path for reportable lab/radiology results (dual validation enforced by workflow). DPDP safeguard position (isolation + RLS + encryption + audited RBAC) is inherited by every edition (BR-COMP-01).</div>
+  </section>
+
+  <!-- ░░ S8 MODULE MAP ░░ -->
+  <section class="section" id="s8">
+    <div class="sec-head"><div class="sec-num">08</div><div><div class="sec-title">Module Map — C4 Level 3</div><div class="sec-tagline">13 modules + core as bounded contexts</div></div></div>
+    <p class="lead">Each module is a bounded context owning its tables and events. The core ring (locked ON) is shared by every edition; the satellite modules are entitlement-gated. M03 has been split from the legacy Laboratory into <strong>M03 Pathology</strong> and net-new <strong>M13 Radiology</strong> (BRD A1) — the only structural delta to the hospital scope.</p>
+    <div class="diagram">
+      <svg viewBox="0 0 760 560" role="img" aria-label="Module map">
+        <circle cx="380" cy="280" r="250" fill="none" stroke="#E0F7F7" stroke-width="2"/>
+        <!-- core hub -->
+        <circle cx="380" cy="280" r="118" fill="#0D1F35"/>
+        <text x="380" y="252" text-anchor="middle" class="svg-l" font-size="14" font-weight="800" fill="#14B8B8">CORE — locked ON</text>
+        <g class="svg-mono" font-size="9.5" fill="#CFF7F7" text-anchor="middle">
+          <text x="380" y="274">Identity/Auth · Registry/UHID</text>
+          <text x="380" y="290">M04 Finance · M09 Audit</text>
+          <text x="380" y="306">M12 Platform Admin · Notif.</text>
+        </g>
+        <!-- satellites -->
+        <g class="svg-l" font-size="10" font-weight="700" text-anchor="middle">
+          <g><circle cx="380" cy="60" r="44" fill="#1E3A5F"/><text x="380" y="56" fill="#fff">M01</text><text x="380" y="70" class="svg-mono" font-size="8" fill="#94A3B8">OPD</text></g>
+          <g><circle cx="560" cy="110" r="44" fill="#1E3A5F"/><text x="560" y="106" fill="#fff">M02</text><text x="560" y="120" class="svg-mono" font-size="8" fill="#94A3B8">Pharmacy</text></g>
+          <g><circle cx="660" cy="240" r="44" fill="#1E3A5F"/><text x="660" y="236" fill="#fff">M03</text><text x="660" y="250" class="svg-mono" font-size="8" fill="#94A3B8">Pathology</text></g>
+          <g><circle cx="660" cy="370" r="44" fill="#0E8E8E"/><text x="660" y="366" fill="#fff">M13</text><text x="660" y="380" class="svg-mono" font-size="8" fill="#CFF7F7">Radiology★</text></g>
+          <g><circle cx="540" cy="480" r="44" fill="#1E3A5F"/><text x="540" y="476" fill="#fff">M11</text><text x="540" y="490" class="svg-mono" font-size="8" fill="#94A3B8">Schedule</text></g>
+          <g><circle cx="380" cy="500" r="44" fill="#1E3A5F"/><text x="380" y="496" fill="#fff">M08</text><text x="380" y="510" class="svg-mono" font-size="8" fill="#94A3B8">Portal</text></g>
+          <g><circle cx="220" cy="480" r="44" fill="#1E3A5F"/><text x="220" y="476" fill="#fff">M07</text><text x="220" y="490" class="svg-mono" font-size="8" fill="#94A3B8">BI</text></g>
+          <g><circle cx="100" cy="370" r="44" fill="#1E3A5F"/><text x="100" y="366" fill="#fff">M06</text><text x="100" y="380" class="svg-mono" font-size="8" fill="#94A3B8">Inventory</text></g>
+          <g><circle cx="100" cy="240" r="44" fill="#1E3A5F"/><text x="100" y="236" fill="#fff">M05</text><text x="100" y="250" class="svg-mono" font-size="8" fill="#94A3B8">HR</text></g>
+          <g><circle cx="200" cy="110" r="44" fill="#1E3A5F"/><text x="200" y="106" fill="#fff">M10</text><text x="200" y="120" class="svg-mono" font-size="8" fill="#94A3B8">IPD</text></g>
+        </g>
+        <g stroke="#0E8E8E" stroke-width="1" fill="none" opacity="0.4">
+          <path d="M380,160 L380,104"/><path d="M484,222 L520,140"/><path d="M498,280 L616,250"/><path d="M498,330 L616,360"/>
+          <path d="M470,360 L512,448"/><path d="M380,398 L380,456"/><path d="M290,360 L250,448"/><path d="M262,330 L142,360"/>
+          <path d="M262,250 L144,240"/><path d="M290,222 L236,140"/>
+        </g>
+        <text x="660" y="420" text-anchor="middle" class="svg-mono" font-size="8.5" fill="#0E8E8E">★ net-new in this BRD</text>
+      </svg>
+      <div class="dia-cap">Figure 8.1 — Module map. Core ring is non-removable; satellites are entitlement-gated. Spokes show primary event coupling to core (charges, audit, notifications).</div>
+    </div>
+    <div class="callout"><span class="tag">Bounded-context ownership rule</span>A module reads another module's data only via that module's API or its published events — never by cross-querying its tables. This keeps the schema-per-tenant and dedicated-DB tiers viable and lets a module scale independently.</div>
+  </section>
+
+  <!-- ░░ S9 DATA ARCHITECTURE ░░ -->
+  <section class="section" id="s9">
+    <div class="sec-head"><div class="sec-num">09</div><div><div class="sec-title">Data Architecture</div><div class="sec-tagline">System of record, control plane, and read models</div></div></div>
+    <div class="card-grid g3">
+      <div class="pcard"><div class="pcard-icon">🗃️</div><h5>OLTP — PostgreSQL</h5><p>System of record per module; tiered topology; RLS fail-closed. Gapless invoice series via DB sequences; one active admission/bed by DB constraint.</p><div class="kv">25 key entities (FSD Sec. 19)</div></div>
+      <div class="pcard gold"><div class="pcard-icon">🧭</div><h5>Control plane</h5><p><code>tenant_directory</code> + <code>tenant_modules</code> hold tenancy &amp; entitlements (TAD-003). Shared <code>patient</code> registry &amp; <code>consent_artefact</code> span all editions.</p><div class="kv">UHID carries across upgrades</div></div>
+      <div class="pcard purple"><div class="pcard-icon">🔎</div><h5>Read models — ES</h5><p>Registry search, audit query, BI marts (lite/full). Day-close + event streams refresh marts; every query tenant-filtered server-side.</p><div class="kv">zero cross-tenant rows by construction</div></div>
+    </div>
+    <h3 class="block">Key entities &amp; ownership (data dictionary extract)</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Entity</th><th>Owner</th><th>Design note</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">tenant_directory</td><td>Core</td><td>tenant_id, vertical, plan, isolation_model, cluster_id, schema/db, region, status</td></tr>
+        <tr><td class="mono">tenant_modules</td><td>Core</td><td>state ENABLED/DISABLED/TRIAL, expiry, changed_by, reason — audited entitlements</td></tr>
+        <tr><td class="mono">patient (registry)</td><td>Core</td><td>UHID, abha_id?, verified mobile, consents[] — shared across editions, migration-free upgrade</td></tr>
+        <tr><td class="mono">consent_artefact</td><td>Core</td><td>immutable, versioned against UHID; revocation propagated</td></tr>
+        <tr><td class="mono">folio · invoice · credit_note</td><td>M04</td><td>charge aggregation by source_event; gapless series; voids = credit notes never deletions</td></tr>
+        <tr><td class="mono">b2b_ledger</td><td>M03/M13/M04</td><td>rate_card_version, ageing, credit_state; monthly settlement reconciles to the rupee</td></tr>
+        <tr><td class="mono">result</td><td>M03/M13</td><td>flags, ref_range_version, validations[2], report_version — dual validation, no single-person release</td></tr>
+        <tr><td class="mono">imaging_study</td><td>M13</td><td>gates[results/overrides], states[], report_versions[]; PACS link-out only (v1, A2)</td></tr>
+        <tr><td class="mono">audit_entry</td><td>M09</td><td>before/after, ip, ua, hash_prev, hash — append-only chain</td></tr>
+        <tr><td class="mono">security_incident</td><td>M09</td><td>t0_noticed, certin_clock, dpdp_clock, blast_radius[], filings[]</td></tr>
+      </tbody>
+    </table></div>
+    <p style="font-size:12px;color:var(--slate)">Full column-level schema, types, keys, indexes and RLS policies are specified in <b>LLD-003 Sec. 3</b>.</p>
+  </section>
+
+  <!-- ░░ S10 CROSS-CUTTING ░░ -->
+  <section class="section" id="s10">
+    <div class="sec-head"><div class="sec-num">10</div><div><div class="sec-title">Cross-Cutting Concerns</div><div class="sec-tagline">Capabilities every module relies on</div></div></div>
+    <div class="card-grid g3">
+      <div class="pcard"><div class="pcard-icon">🔔</div><h5>Notification core</h5><p>Channel-by-event-class matrix (WhatsApp + SMS fallback, app, call-tree for criticals with read-receipts). Pooled, no per-tenant worker.</p></div>
+      <div class="pcard gold"><div class="pcard-icon">🧾</div><h5>Idempotency</h5><p>Redis-backed key store on all money/stock POSTs; duplicate submission returns the original result.</p></div>
+      <div class="pcard purple"><div class="pcard-icon">⏱️</div><h5>Scheduling</h5><p>Pooled Quartz/Batch dispatches reminders, scheduled reports, expiry &amp; TAT-breach alerts per tenant timezone.</p></div>
+      <div class="pcard blue"><div class="pcard-icon">📊</div><h5>Observability</h5><p>Structured, <code>tenantId</code>-dimensioned logs, metrics &amp; traces; freshness banners when marts lag SLA.</p></div>
+      <div class="pcard green"><div class="pcard-icon">🌐</div><h5>i18n &amp; a11y</h5><p>EN/HI v1; WCAG 2.1 AA; SME front-desk/POS screens tablet-first &amp; keyboard-first (BR-NFR-04).</p></div>
+      <div class="pcard rose"><div class="pcard-icon">⚙️</div><h5>Policy registry</h5><p>Tenant-configurable grace periods, return windows, discount matrices (consolidation: open item, FSD Sec. 21).</p></div>
+    </div>
+    <div class="callout"><span class="tag">Error &amp; validation convention</span>Field-level validation returns <code>VAL-xxx</code> codes (localised EN/HI); business-rule rejections return <code>RULE-xxx</code> with a remediation hint. The full catalog is in <b>LLD-003 Sec. 9</b>.</div>
+  </section>
+
+  <!-- ░░ S11 DEPLOYMENT ░░ -->
+  <section class="section" id="s11">
+    <div class="sec-head"><div class="sec-num">11</div><div><div class="sec-title">Deployment &amp; Infrastructure</div><div class="sec-tagline">AWS EKS · regional cluster fleet · IaC</div></div></div>
+    <p class="lead">The platform runs on AWS EKS, provisioned by Terraform and configured by Ansible. A <strong>regional cluster fleet</strong> places tenants by data-residency region (India for SME editions in v1; UAE/Singapore reserved for Hospital). Onboarding checks fleet capacity before accepting a tenant (UC-M12-01 A3a).</p>
+    <div class="diagram">
+      <svg viewBox="0 0 900 320" role="img" aria-label="Deployment">
+        <rect x="20" y="20" width="860" height="280" rx="14" fill="#F0F4F8" stroke="#94A3B8" stroke-dasharray="5 4"/>
+        <text x="40" y="46" class="svg-mono" font-size="10" font-weight="700" fill="#64748B">AWS · ap-south-1 (India residency) — replicated pattern per region</text>
+        <!-- ingress -->
+        <rect x="44" y="70" width="120" height="200" rx="10" fill="#0D1F35"/><text x="104" y="160" text-anchor="middle" class="svg-l" font-size="11" font-weight="700" fill="#14B8B8" transform="rotate(-90 104 160)">ALB · WAF · CDN</text>
+        <!-- eks -->
+        <rect x="190" y="60" width="470" height="220" rx="12" fill="#fff" stroke="#0E8E8E" stroke-width="1.5"/>
+        <text x="425" y="84" text-anchor="middle" class="svg-l" font-size="12" font-weight="800" fill="#0E8E8E">EKS Cluster (HPA-scaled)</text>
+        <g class="svg-l" font-size="9.5" font-weight="700" text-anchor="middle">
+          <rect x="206" y="100" width="130" height="40" rx="6" fill="#152840"/><text x="271" y="124" fill="#fff">Gateway / AuthN</text>
+          <rect x="346" y="100" width="140" height="40" rx="6" fill="#152840"/><text x="416" y="124" fill="#fff">Entitlement / Tenant</text>
+          <rect x="496" y="100" width="150" height="40" rx="6" fill="#152840"/><text x="571" y="124" fill="#fff">Domain svcs ×13</text>
+          <rect x="206" y="152" width="200" height="40" rx="6" fill="#0E8E8E"/><text x="306" y="176" fill="#fff">Kafka (MSK) · consumers</text>
+          <rect x="416" y="152" width="110" height="40" rx="6" fill="#1E3A5F"/><text x="471" y="176" fill="#fff">Scheduler pool</text>
+          <rect x="536" y="152" width="110" height="40" rx="6" fill="#1E3A5F"/><text x="591" y="176" fill="#fff">Notif workers</text>
+          <rect x="206" y="204" width="440" height="58" rx="6" fill="#EAF2FB"/><text x="426" y="228" fill="#0D1F35">Observability: logs · metrics · traces (tenantId-dimensioned)</text><text x="426" y="246" class="svg-mono" font-size="8.5" fill="#64748B">CI/CD: build → smoke-test → canary → rollout</text>
+        </g>
+        <!-- data -->
+        <rect x="686" y="60" width="178" height="220" rx="12" fill="#fff" stroke="#2E75B6" stroke-width="1.5"/>
+        <text x="775" y="84" text-anchor="middle" class="svg-l" font-size="11" font-weight="800" fill="#2E75B6">Data plane</text>
+        <g class="svg-l" font-size="9" font-weight="700" text-anchor="middle">
+          <rect x="700" y="98" width="150" height="34" rx="6" fill="#0D1F35"/><text x="775" y="119" fill="#14B8B8">PostgreSQL (tiered)</text>
+          <rect x="700" y="138" width="150" height="34" rx="6" fill="#0D1F35"/><text x="775" y="159" fill="#14B8B8">PgBouncer (Silo)</text>
+          <rect x="700" y="178" width="150" height="34" rx="6" fill="#0D1F35"/><text x="775" y="199" fill="#14B8B8">Redis · Elasticsearch</text>
+          <rect x="700" y="218" width="150" height="34" rx="6" fill="#0D1F35"/><text x="775" y="239" fill="#14B8B8">S3 · Backups</text>
+        </g>
+      </svg>
+      <div class="dia-cap">Figure 11.1 — Deployment topology (one region; replicated per residency region). CI/CD gates every rollout through smoke-test → canary.</div>
+    </div>
+    <div class="tagrow">
+      <span class="tag teal">AWS EKS</span><span class="tag teal">Terraform</span><span class="tag teal">Ansible</span><span class="tag">Kafka / MSK</span><span class="tag">PostgreSQL 15 / Aurora</span><span class="tag">Redis / ElastiCache</span><span class="tag">Elasticsearch / OpenSearch</span><span class="tag gold">S3 object store</span><span class="tag gold">PgBouncer</span><span class="tag">Spring Boot</span><span class="tag">React / PWA</span>
+    </div>
+  </section>
+
+  <!-- ░░ S12 NFR ░░ -->
+  <section class="section" id="s12">
+    <div class="sec-head"><div class="sec-num">12</div><div><div class="sec-title">NFR Realisation &amp; Capacity</div><div class="sec-tagline">How the structure meets the numbers</div></div></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>NFR</th><th>Target</th><th>Architectural mechanism</th></tr></thead>
+      <tbody>
+        <tr><td class="id">BR-NFR-01</td><td>≤ ₹120 / tenant / mo (Pool, 1,000 tenants)</td><td>Shared queues, pooled schedulers, lite BI marts; <b>no per-tenant background process</b>; Pool-tier shared DB with RLS.</td></tr>
+        <tr><td class="id">BR-NFR-02</td><td>P95 ≤ 400 ms POS &amp; report paths @ 50 concurrent tenants</td><td>Stateless HPA services, Redis caches, read models off the OLTP path; degraded-mode banners on slow external deps.</td></tr>
+        <tr><td class="id">BR-NFR-03</td><td>Disabled module unreachable within 60 s</td><td>4-layer enforcement + Redis cache invalidation fan-out on <code>module.entitlement.changed</code>; consumers no-op.</td></tr>
+        <tr><td class="id">BR-NFR-04</td><td>Responsive · WCAG 2.1 AA · tablet/keyboard-first</td><td>Edition-aware shell renders nav from entitlements; POS keyboard-first; ARIA/focus/contrast on every named screen.</td></tr>
+        <tr><td class="id">BR-PLAT-02</td><td>SME provisioning &lt; 15 min</td><td>Templated tier playbooks + automated smoke isolation test; capacity pre-check before accept.</td></tr>
+        <tr><td class="id">BR-COMP-01</td><td>DPDP safeguards + dual clocks operational</td><td>RLS + encryption + audited RBAC inherited by all editions; M09 dual-clock incident workflow.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ░░ S13 ADR ░░ -->
+  <section class="section" id="s13">
+    <div class="sec-head"><div class="sec-num">13</div><div><div class="sec-title">Architecture Decision Records</div><div class="sec-tagline">The choices that define the system, and why</div></div></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>ADR</th><th>Decision</th><th>Rationale</th><th>Trade-off accepted</th></tr></thead>
+      <tbody>
+        <tr><td class="id">ADR-01</td><td>Tiered tenancy (Pool / Schema / Dedicated DB), tier = plan</td><td>Spans SME unit economics → hospital isolation on one codebase; migration-free upgrades</td><td>Routing complexity; three DDL playbooks to maintain</td></tr>
+        <tr><td class="id">ADR-02</td><td>RLS fail-closed in <em>all</em> tiers (even dedicated)</td><td>Defence in depth; a context bug yields zero rows, never a leak</td><td>Minor per-query overhead; GUC discipline in async jobs</td></tr>
+        <tr><td class="id">ADR-03</td><td>Editions as entitlement bundles, not forks</td><td>One build; à-la-carte overrides; B2B network reuse later</td><td>Every feature must be entitlement-aware</td></tr>
+        <tr><td class="id">ADR-04</td><td>Event-driven via Kafka, <code>tenantId</code> partition key</td><td>Decouples write modules from BI/notifications; ordering per tenant; blast-radius queryable</td><td>Eventual consistency on read models; outbox plumbing</td></tr>
+        <tr><td class="id">ADR-05</td><td>Transactional outbox for event publication</td><td>Atomic DB-mutation + event; no lost/phantom events</td><td>Outbox table + relay per module</td></tr>
+        <tr><td class="id">ADR-06</td><td>Split legacy Lab → M03 Pathology + new M13 Radiology</td><td>Imaging lifecycle differs (modality slots, safety gates, PACS); enables Radiology SME edition</td><td>Net-new module build (W4); shared B2B/settlement pattern reused</td></tr>
+        <tr><td class="id">ADR-07</td><td>Radiology v1 = RIS only; PACS via DICOMweb link-out</td><td>Avoids image-storage cost/complexity at SME price points (A2)</td><td>Dependent on ≥1 PACS partner; degraded mode when PACS down</td></tr>
+        <tr><td class="id">ADR-08</td><td>Shared Finance engine as the single billing backbone</td><td>One GST/IRN/ledger/day-close path across all editions &amp; B2B settlements</td><td>Finance is on the critical path for every revenue flow</td></tr>
+        <tr><td class="id">ADR-09</td><td>Pooled schedulers/queues; no per-tenant worker</td><td>Pool economics (BR-NFR-01) at 1,000-tenant scale</td><td>Tenant fairness must be engineered into shared pools</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ░░ S14 RISKS & TRACEABILITY ░░ -->
+  <section class="section" id="s14">
+    <div class="sec-head"><div class="sec-num">14</div><div><div class="sec-title">Architectural Risks &amp; Traceability</div><div class="sec-tagline">What could break the structure, and where the BRD lands</div></div></div>
+    <h3 class="block">Architectural risks &amp; mitigations</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Risk</th><th>Impact</th><th>Architectural mitigation</th></tr></thead>
+      <tbody>
+        <tr><td>Tenant-context leak across pooled resources</td><td>Cross-tenant data exposure (critical)</td><td>RLS fail-closed everywhere; smoke isolation test on provision; break-glass review queue; <code>tenantId</code>-dimensioned audit.</td></tr>
+        <tr><td>Pool noisy-neighbour starving SME tenants</td><td>Latency &amp; margin erosion</td><td>Per-tenant fairness in queues/schedulers; rate-limits; HPA; mart reads off OLTP path.</td></tr>
+        <tr><td>RIS modality-integration variance</td><td>W4 slip (Radiology)</td><td>RIS-only scope (A2); MWL optional per modality; technologist-console fallback (UC-M13-02 A1a).</td></tr>
+        <tr><td>External dependency outage (PACS/IRP/ABDM/analyzer)</td><td>Blocked revenue path</td><td>Adapter pattern + graceful degraded mode with reconciliation queues (P6).</td></tr>
+        <tr><td>Entitlement bypass at one layer</td><td>Disabled module reachable</td><td>4-layer defence in depth; consumers no-op; 60-s cache invalidation SLA.</td></tr>
+        <tr><td>Finance engine as single point on revenue path</td><td>Billing outage stops all editions</td><td>Stateless HPA; idempotent endpoints; outbox replay; IRN/IRP retry with provisional hold.</td></tr>
+      </tbody>
+    </table></div>
+    <h3 class="block">BRD → HLD traceability</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>BRD requirement</th><th>HLD section</th></tr></thead>
+      <tbody>
+        <tr><td class="id">BR-CORE-01/02</td><td>Sec. 5 Editions (core locked ON) · Sec. 9 shared registry · Sec. 4 migration-free upgrade</td></tr>
+        <tr><td class="id">BR-EDN-01…05</td><td>Sec. 5 Editions &amp; entitlement enforcement · Sec. 4 tier migration</td></tr>
+        <tr><td class="id">BR-CLIN-02</td><td>Sec. 5 (M10 gateway-disabled) · Sec. 3 gateway route filter</td></tr>
+        <tr><td class="id">BR-PHAR / PATH / RAD</td><td>Sec. 8 module map · Sec. 6 event flows · Sec. 9 b2b_ledger / settlement</td></tr>
+        <tr><td class="id">BR-PLAT-01/02</td><td>Sec. 11 cluster fleet &amp; provisioning · Sec. 12 &lt;15-min NFR</td></tr>
+        <tr><td class="id">BR-COMP-01/02</td><td>Sec. 7 security · dual clocks · consent lifecycle</td></tr>
+        <tr><td class="id">BR-NFR-01…04</td><td>Sec. 12 NFR realisation · Sec. 10 cross-cutting · Sec. 13 ADR-09</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout gold"><span class="tag">Next artefact</span>This HLD authorises <strong>LLD-003</strong> (per-module class/schema/sequence/API detail) and the per-module <strong>OpenAPI</strong> specifications generated from the FSD endpoint tables. Tenancy primitives remain governed by the TAD-003 addendum covering edition templates in the entitlement service.</div>
+  </section>
+
+  </div><!-- /content -->
+</main>
+
+<!-- FOOTER -->
+<div class="foot-block">
+  <div class="foot-grid">
+    <div><h4>Document</h4><p>HLD-003-HMSPRO-2026 · v1.0<br>High-Level Design<br><span class="mono">13 June 2026</span></p></div>
+    <div><h4>Prepared by</h4><p>Ashish Kumar Satyam<br>Founder &amp; Lead Architect<br><span class="mono">VSJ AI Labs Pvt. Ltd.</span></p></div>
+    <div><h4>Traceability</h4><p>BRD-003 · FSD-003 · TAD-003<br>HMS-Workflow-Enhanced v2.2<br><span class="mono">→ LLD-003 · OpenAPI</span></p></div>
+    <div><h4>Review status</h4><p>Draft — Architecture Review<br>Engineering · QA sign-off pending<br><span class="mono">C4 · ADR · RTM included</span></p></div>
+  </div>
+  <div class="confidential">● CONFIDENTIAL — VSJ AI LABS INTERNAL ●</div>
+</div>
+
+<script>
+// active nav on scroll
+const links=[...document.querySelectorAll('.nav-item')];
+const secs=links.map(l=>document.querySelector(l.getAttribute('href'))).filter(Boolean);
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const id='#'+e.target.id;links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')===id));}});},{rootMargin:'-45% 0px -50% 0px'});
+secs.forEach(s=>obs.observe(s));
+</script>
+</body>
+</html>

@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLD-003-HMSPRO-2026 — Low-Level Design · HMSPro Product Family</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0D1F35; --navy-mid:#152840; --navy-light:#1E3A5F;
+  --teal:#0E8E8E; --teal-bright:#14B8B8; --teal-pale:#E0F7F7;
+  --gold:#C49A2A; --gold-bright:#E0B544; --gold-pale:#FBF3DC;
+  --amber:#F59E0B; --rose:#F43F5E; --green:#10B981; --purple:#8B5CF6; --blue:#2E75B6;
+  --slate:#64748B; --slate-light:#94A3B8;
+  --bg:#F0F4F8; --white:#FFFFFF; --paper:#FAFCFE; --code-bg:#0A1829;
+  --border:rgba(14,142,142,0.15); --border-soft:rgba(13,31,53,0.08);
+  --shadow-sm:0 1px 3px rgba(13,31,53,.08),0 1px 2px rgba(13,31,53,.04);
+  --shadow-md:0 4px 16px rgba(13,31,53,.10),0 2px 6px rgba(13,31,53,.06);
+  --shadow-lg:0 12px 40px rgba(13,31,53,.14),0 4px 12px rgba(13,31,53,.08);
+  --font-main:'Sora',sans-serif; --font-mono:'JetBrains Mono',monospace; --font-serif:'Crimson Pro',serif;
+  --sidebar-w:286px; --radius:12px; --radius-sm:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-main);background:var(--bg);color:var(--navy);line-height:1.6;overflow-x:hidden}
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--navy);overflow-y:auto;z-index:100;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:var(--teal) transparent}
+.sidebar::-webkit-scrollbar{width:4px}.sidebar::-webkit-scrollbar-thumb{background:var(--teal);border-radius:2px}
+.sb-brand{padding:24px 20px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.logo-mark{width:38px;height:38px;background:linear-gradient(135deg,var(--gold),var(--gold-bright));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 4px 12px rgba(196,154,42,.4)}
+.logo-text{font-size:13px;font-weight:700;color:#fff;line-height:1.2}
+.logo-sub{font-size:10px;color:var(--slate-light);font-family:var(--font-mono)}
+.sb-badge{display:inline-block;background:rgba(196,154,42,.18);color:var(--gold-bright);font-size:9px;font-weight:600;padding:3px 9px;border-radius:20px;font-family:var(--font-mono);letter-spacing:.5px}
+.sb-sec{padding:14px 12px 4px}
+.sb-sec-label{font-size:9px;font-weight:700;color:var(--slate);letter-spacing:1.5px;text-transform:uppercase;padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;text-decoration:none;transition:all .2s;margin-bottom:2px;position:relative}
+.nav-item:hover{background:rgba(255,255,255,.06)}
+.nav-item.active{background:rgba(196,154,42,.16)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--gold-bright);border-radius:0 3px 3px 0}
+.nav-badge{min-width:32px;height:20px;padding:0 5px;background:rgba(14,142,142,.25);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--teal-bright);font-family:var(--font-mono);flex-shrink:0}
+.nav-item.active .nav-badge{background:var(--gold);color:#fff}
+.nav-label{font-size:12px;font-weight:500;color:rgba(255,255,255,.72);line-height:1.25}
+.nav-item.active .nav-label{color:#fff}
+.sb-foot{margin-top:auto;padding:16px 20px;border-top:1px solid rgba(255,255,255,.06)}
+.sb-foot-text{font-size:10px;color:var(--slate);font-family:var(--font-mono);line-height:1.6}
+.main{margin-left:var(--sidebar-w);min-height:100vh}
+.hero{background:var(--navy);padding:60px 56px 48px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-120px;right:-80px;width:600px;height:600px;background:radial-gradient(circle,rgba(196,154,42,.16)0%,transparent 65%);pointer-events:none;animation:glow 6s ease-in-out infinite alternate}
+.hero::after{content:'';position:absolute;bottom:-80px;left:150px;width:400px;height:400px;background:radial-gradient(circle,rgba(14,142,142,.14)0%,transparent 70%);pointer-events:none;animation:glow 8s ease-in-out infinite alternate-reverse}
+@keyframes glow{from{opacity:.6;transform:scale(1)}to{opacity:1;transform:scale(1.15)}}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(196,154,42,.04)1px,transparent 1px),linear-gradient(90deg,rgba(196,154,42,.04)1px,transparent 1px);background-size:48px 48px;pointer-events:none}
+.hero-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:18px;position:relative;z-index:1}
+.hero-chip{background:rgba(196,154,42,.18);border:1px solid rgba(196,154,42,.4);color:var(--gold-bright);font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;font-family:var(--font-mono);letter-spacing:.5px}
+.hero-chip.teal{background:rgba(14,142,142,.2);border-color:rgba(14,142,142,.4);color:var(--teal-bright)}
+.hero-divline{flex:1;height:1px;background:linear-gradient(90deg,rgba(196,154,42,.3),transparent)}
+.hero-title{font-size:46px;font-weight:800;color:#fff;line-height:1.1;margin-bottom:14px;letter-spacing:-1px;position:relative;z-index:1}
+.hero-title span{color:var(--gold-bright)}
+.hero-sub{font-family:var(--font-serif);font-size:18px;font-weight:300;color:rgba(255,255,255,.6);max-width:680px;line-height:1.7;margin-bottom:32px;position:relative;z-index:1}
+.hero-stats{display:flex;flex-wrap:wrap;gap:12px;position:relative;z-index:1}
+.stat-chip{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:11px 18px;display:flex;align-items:center;gap:12px;transition:all .3s}
+.stat-chip:hover{background:rgba(196,154,42,.15);border-color:rgba(196,154,42,.4);transform:translateY(-2px)}
+.stat-val{font-size:21px;font-weight:800;color:var(--gold-bright);line-height:1}
+.stat-lbl{font-size:11px;color:rgba(255,255,255,.5);font-weight:500}
+.content{padding:0 56px 90px}
+.section{padding-top:58px;border-bottom:1px solid rgba(14,142,142,.1);padding-bottom:50px}
+.section:last-child{border-bottom:none}
+.sec-head{display:flex;align-items:flex-start;gap:16px;margin-bottom:28px}
+.sec-num{min-width:46px;height:46px;padding:0 8px;border-radius:11px;background:linear-gradient(135deg,var(--navy),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;font-family:var(--font-mono);color:var(--gold-bright);flex-shrink:0;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
+.sec-num::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent 40%,rgba(255,255,255,.1)50%,transparent 60%);animation:shimmer 3.5s ease-in-out infinite}
+@keyframes shimmer{0%,100%{transform:translateX(-100%) rotate(45deg)}50%{transform:translateX(100%) rotate(45deg)}}
+.sec-title{font-size:27px;font-weight:800;color:var(--navy);line-height:1.15;letter-spacing:-.5px}
+.sec-tagline{font-family:var(--font-serif);font-size:16px;color:var(--slate);font-weight:300;margin-top:4px}
+.lead{font-size:15px;color:var(--navy-mid);max-width:880px;margin-bottom:22px}
+.lead strong{color:var(--teal)}
+h3.block{font-size:15px;font-weight:700;color:var(--navy);margin:26px 0 12px;display:flex;align-items:center;gap:9px}
+h3.block::before{content:'';width:7px;height:7px;border-radius:2px;background:var(--gold);transform:rotate(45deg)}
+h4.mini{font-size:12px;font-weight:700;color:var(--teal);font-family:var(--font-mono);letter-spacing:.5px;text-transform:uppercase;margin:18px 0 8px}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow-sm);margin-bottom:16px}
+.card-grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:1100px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+.pcard{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-sm);transition:all .25s;position:relative;overflow:hidden}
+.pcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--teal)}
+.pcard:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.pcard.gold::before{background:var(--gold)}.pcard.purple::before{background:var(--purple)}.pcard.rose::before{background:var(--rose)}.pcard.green::before{background:var(--green)}.pcard.blue::before{background:var(--blue)}
+.pcard h5{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.pcard p{font-size:12.5px;color:var(--slate);line-height:1.55}
+.pcard .kv{font-family:var(--font-mono);font-size:11px;color:var(--teal);margin-top:8px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:12.5px;background:var(--white);min-width:560px}
+thead th{background:var(--navy);color:#fff;text-align:left;padding:10px 13px;font-size:10.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--border-soft);vertical-align:top;color:var(--navy-mid)}
+tbody tr:nth-child(even){background:#F8FBFC}
+tbody tr:hover{background:var(--teal-pale)}
+td code,.mono{font-family:var(--font-mono);font-size:11px;color:var(--teal)}
+td.id{font-family:var(--font-mono);font-size:10.5px;color:var(--gold);font-weight:600;white-space:nowrap}
+.m-get{color:var(--green);font-weight:700}.m-post{color:var(--blue);font-weight:700}.m-put{color:var(--amber);font-weight:700}.m-del{color:var(--rose);font-weight:700}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--font-mono);white-space:nowrap}
+.b-must{background:#FFEBEE;color:#C0392B}.b-pub{background:#E8F5E9;color:#1E8B4C}.b-sub{background:var(--gold-pale);color:#B07A0A}.b-core{background:var(--navy);color:#fff}.b-idem{background:#EAF2FB;color:var(--blue)}
+.callout{border-left:4px solid var(--teal);background:var(--teal-pale);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--navy-mid)}
+.callout.gold{border-color:var(--gold);background:var(--gold-pale)}
+.callout.rose{border-color:var(--rose);background:#FFF0F2}
+.callout.purple{border-color:var(--purple);background:#F6F2FD}
+.callout strong{color:var(--navy)}
+.callout .tag{font-family:var(--font-mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--teal);display:block;margin-bottom:4px}
+.callout.gold .tag{color:var(--gold)}.callout.rose .tag{color:var(--rose)}.callout.purple .tag{color:var(--purple)}
+.diagram{background:var(--paper);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-sm);margin-bottom:16px;overflow-x:auto}
+.diagram svg{display:block;margin:0 auto;max-width:100%;height:auto}
+.dia-cap{font-size:11px;color:var(--slate);font-family:var(--font-mono);text-align:center;margin-top:10px}
+.svg-l{font-family:'Sora',sans-serif}.svg-mono{font-family:'JetBrains Mono',monospace}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:980px){.two{grid-template-columns:1fr}.main{margin-left:0}.sidebar{transform:translateX(-100%)}}
+ul.clean{list-style:none;display:flex;flex-direction:column;gap:7px;margin:10px 0}
+ul.clean li{display:flex;gap:10px;font-size:12.5px;color:var(--navy-mid);align-items:flex-start}
+ul.clean li::before{content:'\25B8';color:var(--teal);font-size:11px;margin-top:3px;flex-shrink:0}
+pre.code{background:var(--code-bg);border-radius:var(--radius-sm);padding:16px 18px;overflow-x:auto;margin:12px 0;border:1px solid rgba(14,142,142,.2)}
+pre.code code{font-family:var(--font-mono);font-size:11.5px;color:#CFE8E8;line-height:1.7;white-space:pre}
+.k{color:#E0B544}.s{color:#8FD98F}.c{color:#64748B;font-style:italic}.fn{color:#14B8B8}.n{color:#F0A868}
+/* module card */
+.mod{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);margin-bottom:22px;overflow:hidden}
+.mod-head{display:flex;align-items:center;gap:14px;padding:16px 20px;background:linear-gradient(135deg,var(--navy),var(--navy-light));position:relative;overflow:hidden}
+.mod-head::after{content:'';position:absolute;top:-40px;right:-20px;width:140px;height:140px;background:radial-gradient(circle,rgba(14,142,142,.25),transparent 70%)}
+.mod-badge{width:50px;height:50px;border-radius:11px;background:rgba(14,142,142,.25);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:800;font-size:14px;color:var(--teal-bright);flex-shrink:0;z-index:1}
+.mod-badge.new{background:rgba(196,154,42,.25);color:var(--gold-bright)}
+.mod-head h3{font-size:18px;color:#fff;font-weight:800;z-index:1}
+.mod-head .sub{font-size:11px;color:var(--slate-light);font-family:var(--font-mono);z-index:1;margin-top:2px}
+.mod-ed{margin-left:auto;z-index:1;display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;max-width:280px}
+.ed-pill{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);font-size:9px;padding:2px 7px;border-radius:10px;font-family:var(--font-mono)}
+.ed-pill.core{background:rgba(196,154,42,.3);color:var(--gold-bright)}
+.mod-body{padding:18px 20px}
+.fsm{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:8px 0 4px}
+.fsm-state{background:var(--teal-pale);color:var(--teal);border:1px solid rgba(14,142,142,.3);font-family:var(--font-mono);font-size:10px;font-weight:600;padding:4px 10px;border-radius:6px}
+.fsm-state.start{background:var(--navy);color:#fff;border-color:var(--navy)}
+.fsm-state.end{background:var(--green);color:#fff;border-color:var(--green)}
+.fsm-arrow{color:var(--gold);font-size:12px;font-weight:700}
+.fsm-arrow small{display:block;font-size:7.5px;color:var(--slate);font-family:var(--font-mono);text-align:center}
+.subgrid{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;margin-top:8px}
+@media(max-width:980px){.subgrid{grid-template-columns:1fr}.mod-ed{max-width:none}}
+.metric{background:linear-gradient(135deg,var(--navy),var(--navy-light));border-radius:var(--radius);padding:18px;color:#fff;position:relative;overflow:hidden}
+.metric::after{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(196,154,42,.3),transparent 70%)}
+.metric .mv{font-size:26px;font-weight:800;color:var(--gold-bright);line-height:1}
+.metric .ml{font-size:11.5px;color:rgba(255,255,255,.6);margin-top:6px}
+.foot-block{background:var(--navy);color:#fff;padding:40px 56px;margin-left:var(--sidebar-w)}
+.foot-block h4{font-size:13px;color:var(--gold-bright);font-family:var(--font-mono);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.foot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+@media(max-width:980px){.foot-grid{grid-template-columns:repeat(2,1fr)}.foot-block{margin-left:0}}
+.foot-grid p{font-size:12px;color:rgba(255,255,255,.6);line-height:1.7}
+.foot-grid .mono{color:var(--slate-light);font-size:11px}
+.confidential{font-size:11px;color:var(--rose);font-weight:700;font-family:var(--font-mono);margin-top:24px;text-align:center;letter-spacing:1px}
+@media(max-width:980px){.hero,.content{padding-left:24px;padding-right:24px}.hero-title{font-size:34px}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo"><div class="logo-mark">VS</div><div><div class="logo-text">VSJ AI Labs</div><div class="logo-sub">HMSPro Platform</div></div></div>
+    <span class="sb-badge">LLD-003-HMSPRO-2026 · v1.0</span>
+  </div>
+  <nav>
+    <div class="sb-sec"><div class="sb-sec-label">Foundations</div>
+      <a class="nav-item active" href="#s0"><span class="nav-badge">00</span><span class="nav-label">Document Control</span></a>
+      <a class="nav-item" href="#s1"><span class="nav-badge">01</span><span class="nav-label">Design Conventions</span></a>
+      <a class="nav-item" href="#s2"><span class="nav-badge">02</span><span class="nav-label">Tenancy &amp; Entitlement Code</span></a>
+      <a class="nav-item" href="#s3"><span class="nav-badge">03</span><span class="nav-label">Logical Data Model</span></a>
+    </div>
+    <div class="sb-sec"><div class="sb-sec-label">Module Detailed Design</div>
+      <a class="nav-item" href="#m12"><span class="nav-badge">M12</span><span class="nav-label">Platform Admin &amp; Core</span></a>
+      <a class="nav-item" href="#m01"><span class="nav-badge">M01</span><span class="nav-label">OPD / Encounters</span></a>
+      <a class="nav-item" href="#m02"><span class="nav-badge">M02</span><span class="nav-label">Pharmacy &amp; POS</span></a>
+      <a class="nav-item" href="#m03"><span class="nav-badge">M03</span><span class="nav-label">Pathology Lab</span></a>
+      <a class="nav-item" href="#m04"><span class="nav-badge">M04</span><span class="nav-label">Finance &amp; GST</span></a>
+      <a class="nav-item" href="#m05"><span class="nav-badge">M05</span><span class="nav-label">HR &amp; Payroll</span></a>
+      <a class="nav-item" href="#m06"><span class="nav-badge">M06</span><span class="nav-label">Inventory</span></a>
+      <a class="nav-item" href="#m07"><span class="nav-badge">M07</span><span class="nav-label">BI &amp; Reports</span></a>
+      <a class="nav-item" href="#m08"><span class="nav-badge">M08</span><span class="nav-label">Patient Portal</span></a>
+      <a class="nav-item" href="#m09"><span class="nav-badge">M09</span><span class="nav-label">Audit &amp; Security</span></a>
+      <a class="nav-item" href="#m10"><span class="nav-badge">M10</span><span class="nav-label">IPD</span></a>
+      <a class="nav-item" href="#m11"><span class="nav-badge">M11</span><span class="nav-label">Scheduling</span></a>
+      <a class="nav-item" href="#m13"><span class="nav-badge">M13</span><span class="nav-label">Radiology (RIS)</span></a>
+    </div>
+    <div class="sb-sec"><div class="sb-sec-label">Cross-Cutting</div>
+      <a class="nav-item" href="#s4"><span class="nav-badge">04</span><span class="nav-label">Sequence Diagrams</span></a>
+      <a class="nav-item" href="#s5"><span class="nav-badge">05</span><span class="nav-label">Error Catalog</span></a>
+      <a class="nav-item" href="#s6"><span class="nav-badge">06</span><span class="nav-label">Traceability Matrix</span></a>
+    </div>
+  </nav>
+  <div class="sb-foot"><div class="sb-foot-text">Confidential — VSJ AI Labs Internal<br>Traces: FSD-003 · HLD-003 · TAD-003<br>© 2026 VSJ AI Labs Pvt. Ltd.</div></div>
+</aside>
+
+<main class="main">
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-eyebrow"><span class="hero-chip">LOW-LEVEL DESIGN</span><span class="hero-chip teal">BUILD-READY DETAIL</span><span class="hero-divline"></span></div>
+    <h1 class="hero-title">HMSPro Product Family — <span>Low-Level Design</span></h1>
+    <p class="hero-sub">The buildable layer beneath HLD-003: column-level schema with RLS policies, the entitlement-enforcement code path, and a uniform per-module spec — state machine, API contract, event contract and business rules — for all 13 modules plus core.</p>
+    <div class="hero-stats">
+      <div class="stat-chip"><span class="stat-val">13+1</span><span class="stat-lbl">Modules detailed</span></div>
+      <div class="stat-chip"><span class="stat-val">~90</span><span class="stat-lbl">API endpoints</span></div>
+      <div class="stat-chip"><span class="stat-val">~30</span><span class="stat-lbl">Kafka events</span></div>
+      <div class="stat-chip"><span class="stat-val">7</span><span class="stat-lbl">State machines</span></div>
+      <div class="stat-chip"><span class="stat-val">25</span><span class="stat-lbl">Key entities</span></div>
+      <div class="stat-chip"><span class="stat-val">31</span><span class="stat-lbl">Use-cases traced</span></div>
+    </div>
+  </section>
+
+  <div class="content">
+
+  <!-- S0 DOC CONTROL -->
+  <section class="section" id="s0">
+    <div class="sec-head"><div class="sec-num">00</div><div><div class="sec-title">Document Control</div><div class="sec-tagline">Identity and lineage</div></div></div>
+    <div class="two">
+      <div class="card"><h4 class="mini">Document Metadata</h4>
+        <div class="tbl-wrap"><table style="min-width:auto"><tbody>
+          <tr><td><b>Document ID</b></td><td class="mono">LLD-003-HMSPRO-2026</td></tr>
+          <tr><td><b>Title</b></td><td>Low-Level Design — HMSPro Product Family</td></tr>
+          <tr><td><b>Version</b></td><td>v1.0 (Draft for Engineering &amp; QA Review)</td></tr>
+          <tr><td><b>Date</b></td><td>13 June 2026</td></tr>
+          <tr><td><b>Author</b></td><td>Ashish Kumar Satyam — Founder &amp; Lead Architect</td></tr>
+          <tr><td><b>Owner</b></td><td>VSJ AI Labs Pvt. Ltd. — Platform Engineering</td></tr>
+          <tr><td><b>Classification</b></td><td><span class="badge b-must">Confidential — VSJ AI Labs Internal</span></td></tr>
+          <tr><td><b>Traces from</b></td><td class="mono">FSD-003 · HLD-003 · TAD-003</td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="card"><h4 class="mini">How to read this document</h4>
+        <ul class="clean">
+          <li><b>Sec. 1–3</b> establish the conventions, the tenancy/entitlement code path and the data model that every module inherits.</li>
+          <li><b>Module cards (M12, M01…M13)</b> follow a fixed shape: <em>state machine → API contract → event contract → validation &amp; business rules</em>, traceable to FSD use-cases.</li>
+          <li><b>Sec. 4–6</b> give cross-module sequence diagrams, the consolidated error catalog, and the UC→API→event→table traceability matrix.</li>
+          <li>Endpoints are indicative v1 contracts; <b>payload-level OpenAPI</b> is generated from these tables as the next artefact (FSD Sec. 21 open item).</li>
+        </ul>
+      </div>
+    </div>
+    <h4 class="mini">Version History</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Version</th><th>Date</th><th>Author</th><th>Summary</th></tr></thead>
+      <tbody><tr><td class="id">v1.0</td><td>13 Jun 2026</td><td>A. K. Satyam</td><td>Initial LLD: conventions, RLS/entitlement code path, logical data model, 14 module specs, sequences, error catalog, RTM.</td></tr></tbody>
+    </table></div>
+  </section>
+
+  <!-- S1 CONVENTIONS -->
+  <section class="section" id="s1">
+    <div class="sec-head"><div class="sec-num">01</div><div><div class="sec-title">Design Conventions</div><div class="sec-tagline">The rules every endpoint, event and table obeys</div></div></div>
+    <div class="card-grid g2">
+      <div class="card"><h4 class="mini">API conventions</h4><ul class="clean">
+        <li>Base path <code>/api/v1/&lt;module&gt;/…</code>; resources plural, kebab where multi-word.</li>
+        <li>Auth: <code>Authorization: Bearer &lt;JWT&gt;</code>; tenant resolved from the token, never from path/body.</li>
+        <li><b>Idempotency:</b> <code>Idempotency-Key</code> header mandatory on all money-moving / stock-moving POSTs; duplicate ⇒ original result, same status.</li>
+        <li>Status codes: 200/201 success, 400 <code>VAL-xxx</code>, 409 <code>RULE-xxx</code> / idempotency conflict, 403 entitlement/RBAC deny, 404 disabled-module route, 422 business gate.</li>
+        <li>Pagination: <code>?page&amp;size</code>, cursor for large sets; all list queries tenant-filtered server-side.</li>
+      </ul></div>
+      <div class="card"><h4 class="mini">Error envelope</h4>
+        <pre class="code"><code>{
+  <span class="k">"code"</span>: <span class="s">"RULE-PHAR-002"</span>,
+  <span class="k">"message"</span>: <span class="s">"Schedule X item blocked at POS"</span>,
+  <span class="k">"field"</span>: <span class="s">"lines[2].drugId"</span>,
+  <span class="k">"remediation"</span>: <span class="s">"Dispense X drugs only against IPD order"</span>,
+  <span class="k">"correlationId"</span>: <span class="s">"…"</span>, <span class="k">"locale"</span>: <span class="s">"en"</span>
+}</code></pre>
+        <p style="font-size:12px;color:var(--slate)">VAL-xxx = field validation; RULE-xxx = business-rule rejection with remediation hint. Localised EN/HI (v1).</p>
+      </div>
+    </div>
+    <div class="card"><h4 class="mini">Kafka event envelope &amp; outbox</h4>
+      <div class="subgrid">
+        <pre class="code"><code><span class="c">// produced via transactional outbox — atomic with the DB write</span>
+{
+  <span class="k">"eventId"</span>: <span class="fn">uuid</span>,
+  <span class="k">"tenantId"</span>: <span class="n">REQUIRED</span>,   <span class="c">// = Kafka partition key</span>
+  <span class="k">"type"</span>: <span class="s">"result.critical.alert"</span>,
+  <span class="k">"version"</span>: <span class="n">1</span>,
+  <span class="k">"occurredAt"</span>: <span class="fn">timestamp</span>,
+  <span class="k">"actor"</span>: <span class="fn">userId</span>,
+  <span class="k">"correlationId"</span>: <span class="fn">uuid</span>,
+  <span class="k">"payload"</span>: { <span class="c">/* domain-specific */</span> }
+}</code></pre>
+        <ul class="clean">
+          <li><b>Outbox:</b> each module writes the event to an <code>outbox</code> row in the same transaction as its state change; a relay publishes to Kafka and marks sent — no lost or phantom events (ADR-05).</li>
+          <li><b>Consumer rules:</b> idempotent by <code>eventId</code>; re-establish tenant context from <code>tenantId</code> before any DB access; <b>no-op</b> events for a module disabled for that tenant (not DLQ).</li>
+          <li><b>DLQ:</b> per-topic dead-letter with replay tooling; poison message never blocks a partition indefinitely.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- S2 TENANCY & ENTITLEMENT CODE -->
+  <section class="section" id="s2">
+    <div class="sec-head"><div class="sec-num">02</div><div><div class="sec-title">Tenancy &amp; Entitlement — Code Path</div><div class="sec-tagline">The two cross-cutting mechanisms made concrete</div></div></div>
+    <p class="lead">Every flow in this document assumes these two mechanisms are already in force (FSD Sec. 3.1). They are specified once here and inherited everywhere; modules never re-implement them.</p>
+    <div class="two">
+      <div class="card"><h4 class="mini">RLS + SET LOCAL (fail-closed)</h4>
+        <pre class="code"><code><span class="c">-- one RLS policy per tenant table; present in ALL tiers</span>
+<span class="k">ALTER TABLE</span> encounter <span class="k">ENABLE ROW LEVEL SECURITY</span>;
+<span class="k">CREATE POLICY</span> tenant_isolation <span class="k">ON</span> encounter
+  <span class="k">USING</span> (tenant_id = current_setting(<span class="s">'app.tenant_id'</span>)::uuid)
+  <span class="k">WITH CHECK</span> (tenant_id = current_setting(<span class="s">'app.tenant_id'</span>)::uuid);
+
+<span class="c">-- request-scoped; missing GUC ⇒ 0 rows, never all rows</span>
+<span class="k">SET LOCAL</span> app.tenant_id = <span class="s">'&lt;from JWT&gt;'</span>;</code></pre>
+        <ul class="clean">
+          <li>A <code>TenantContextFilter</code> resolves data source / schema from <code>tenant_directory</code> and sets the GUC per request.</li>
+          <li>Async workers (Kafka, Quartz, Batch) set context from the event/job header or abort — no ambient access.</li>
+          <li>Break-glass (<code>BYPASSRLS</code>) is a privileged, audited path surfaced in the M09 review queue.</li>
+        </ul>
+      </div>
+      <div class="card"><h4 class="mini">Entitlement guard (service layer ③)</h4>
+        <pre class="code"><code><span class="c">// gateway ① + JWT ② already filtered; guard is layer ③</span>
+<span class="fn">@RequiresModule</span>(<span class="s">"M02"</span>)          <span class="c">// ENABLED|TRIAL else 404/403</span>
+<span class="fn">@RequiresPermission</span>(<span class="s">"pos:sell"</span>)
+<span class="k">public</span> SaleResult <span class="fn">posSale</span>(SaleCmd c){ … }
+
+<span class="c">// entitlement read from Redis cache; invalidated on toggle</span>
+entitlement:{tenantId}:{moduleId} = ENABLED|DISABLED|TRIAL</code></pre>
+        <ul class="clean">
+          <li>UI ④ renders nav from the same entitlement set; disabled module unrendered.</li>
+          <li><code>module.entitlement.changed</code> invalidates the Redis key; all 4 layers refresh within 60 s (BR-NFR-03).</li>
+          <li>Dependency matrix enforced on enable (e.g. IPD requires OPD); core modules never disableable.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout gold"><span class="tag">Guarded disable algorithm (UC-M12-02)</span><b>disable(tenant, module):</b> run active-workflow guard → { admitted IPD patients? open POs? unbilled encounters? undelivered reports? } → if any true ⇒ reject, offer <em>read-only grace mode</em> with end-date; else update <code>tenant_modules</code>, publish <code>module.entitlement.changed</code>, apply mid-cycle proration, write audit (actor + reason ≥ 10 chars).</div>
+  </section>
+
+  <!-- S3 DATA MODEL -->
+  <section class="section" id="s3">
+    <div class="sec-head"><div class="sec-num">03</div><div><div class="sec-title">Logical Data Model</div><div class="sec-tagline">Column-level schema for the key entities — every tenant table carries tenant_id + RLS</div></div></div>
+    <p class="lead">All tenant tables include <code>tenant_id uuid NOT NULL</code> (RLS-enforced), <code>created_at</code>, <code>updated_at</code>, and participate in the audit chain. Control-plane tables live in the platform schema. Below are the load-bearing tables; remaining entities follow the same pattern.</p>
+
+    <h3 class="block">Control plane (platform schema)</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Table</th><th>Columns (type · key)</th><th>Indexes &amp; constraints</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">tenant_directory</td><td>tenant_id <code>uuid PK</code>, vertical <code>enum</code>, plan, isolation_model <code>enum(POOL,SCHEMA,DB)</code>, cluster_id, schema_name?, db_dsn?, region, status <code>enum</code></td><td>uq(subdomain); region immutable; status drives token issuance</td></tr>
+        <tr><td class="mono">tenant_modules</td><td>tenant_id <code>uuid FK</code>, module_id <code>varchar</code>, state <code>enum(ENABLED,DISABLED,TRIAL)</code>, trial_expiry?, changed_by, reason, changed_at</td><td>PK(tenant_id,module_id); audited; core modules row-locked ON</td></tr>
+        <tr><td class="mono">edition_catalog</td><td>code <code>PK</code>, version, included[], optional[], default_limits <code>jsonb</code>, pricing <code>jsonb</code>, sla_profile</td><td>versioned; template applied at onboarding</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 class="block">Shared registry &amp; consent (core)</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Table</th><th>Columns (type · key)</th><th>Rules</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">patient</td><td>uhid <code>varchar PK</code> (tenant-series, branch-prefix), tenant_id, abha_id?, name, dob, sex, mobile <code>verified</code>, guardian_uhid?, photo_ref?</td><td>UHID via DB sequence (collision impossible); one mobile → family via relationship tag</td></tr>
+        <tr><td class="mono">consent_artefact</td><td>id <code>PK</code>, uhid <code>FK</code>, type <code>enum</code>, version <code>int</code>, granted_at, revoked_at?, channel</td><td><b>immutable + versioned</b>; revocation publishes <code>consent.revoked</code></td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 class="block">Finance &amp; B2B (M04 · shared)</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Table</th><th>Columns (type · key)</th><th>Rules</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">folio</td><td>id <code>PK</code>, party_ref (uhid|referrer), charge_lines[] (source_event_id, amount, gst%), status <code>enum(OPEN,SETTLED)</code>, balance</td><td>charge lines traceable to clinical source event</td></tr>
+        <tr><td class="mono">invoice</td><td>series_no <code>uq, gapless</code>, folio_id <code>FK</code>, lines[] (hsn/sac, gst%), irn?, qr?, status</td><td>gapless DB sequence; voids ⇒ credit_note, never delete</td></tr>
+        <tr><td class="mono">credit_note</td><td>id <code>PK</code>, source_invoice <code>FK</code>, lines[], reason_code, approver</td><td>GST-compliant; always references source invoice</td></tr>
+        <tr><td class="mono">b2b_ledger</td><td>referrer_id, rate_card_version, entries[], ageing, credit_state <code>enum(OK,BLOCKED)</code></td><td>monthly settlement reconciles to the rupee; auto credit-block on ageing breach</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 class="block">Clinical &amp; operational (module-owned)</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Table · owner</th><th>Columns (type · key)</th><th>Rules</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">encounter · M01</td><td>id <code>PK</code>, uhid <code>FK</code>, branch, doctor, soap <code>jsonb</code>, icd_codes[], status <code>enum</code>, closed_at, version</td><td>owning doctor edits until closure; addendum-only after (version history)</td></tr>
+        <tr><td class="mono">prescription · M01/M02</td><td>id <code>PK</code>, encounter_id <code>FK</code>, lines[] (drug,dose,freq,duration), schedule_class <code>enum(H,H1,X)</code>, status</td><td>H/H1/X require prescriber registration no.; digitally signed PDF</td></tr>
+        <tr><td class="mono">batch_stock · M02/M06</td><td>item_id, batch, expiry, mrp, qty_on_hand, store_id</td><td>FIFO/FEFO; <b>atomic decrement w/ optimistic lock</b> — negative stock impossible</td></tr>
+        <tr><td class="mono">lab_order / sample · M03</td><td>accession <code>PK</code>, tests[], referrer_id?, barcode <code>uq</code>, condition, status <code>enum</code></td><td>barcode = accession+specimen suffix; state machine Sec. M03</td></tr>
+        <tr><td class="mono">result · M03/M13</td><td>id, section_values <code>jsonb</code>, flags, ref_range_version, validations[2], report_version</td><td><b>dual validation</b>; no single-person release; addendum w/ reason</td></tr>
+        <tr><td class="mono">imaging_study · M13</td><td>accession <code>PK</code>, modality, protocol, gates <code>jsonb</code>, states[], report_versions[]</td><td>no worklist with failed un-overridden gate; PACS link-out only (A2)</td></tr>
+        <tr><td class="mono">admission · M10</td><td>id <code>PK</code>, uhid <code>FK</code>, class, bed_id, payer, estimate, advances[], status</td><td><b>one active admission per patient</b>; bed atomic (no double-occupancy)</td></tr>
+        <tr><td class="mono">appointment · M11</td><td>id <code>PK</code>, resource_ref (doctor|modality|route), slot, channel, status <code>enum</code>, reminders[]</td><td><b>atomic slot lock</b> (Redis fence) — no double-booking by construction</td></tr>
+        <tr><td class="mono">audit_entry · M09</td><td>id, actor, entity, action, before/after <code>jsonb</code>, ip, ua, hash_prev, hash</td><td>append-only hash chain; written in-transaction</td></tr>
+        <tr><td class="mono">security_incident · M09</td><td>id, t0_noticed, certin_clock, dpdp_clock, blast_radius[], filings[], actions[]</td><td>dual-clock header; template completeness gates filing</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><span class="tag">Tier-specific physicalisation</span>The <em>logical</em> model is identical across tiers. Physically: Pool = one DB, all tables carry <code>tenant_id</code> + RLS; Bridge = same tables under a per-tenant <b>schema</b> (RLS still on); Silo = a dedicated <b>database</b> per tenant (RLS still on). The provisioner picks the strategy from <code>isolation_model</code>.</div>
+  </section>
+
+  <!-- ░░░░ MODULE CARDS ░░░░ -->
+
+  <!-- M12 -->
+  <section class="section" id="m12" style="border-top:none">
+    <div class="sec-head"><div class="sec-num" style="background:linear-gradient(135deg,#0E8E8E,#0A6E6E)">M·D</div><div><div class="sec-title">Module Detailed Design</div><div class="sec-tagline">Uniform spec per module — state machine · API · events · rules</div></div></div>
+
+    <div class="mod">
+      <div class="mod-head"><div class="mod-badge">M12</div><div><h3>Platform Administration &amp; Core Services</h3><div class="sub">UC-M12-01/02/03 · control plane</div></div><div class="mod-ed"><span class="ed-pill core">CORE · locked ON</span><span class="ed-pill">Platform</span></div></div>
+      <div class="mod-body">
+        <h4 class="mini">Tenant lifecycle (state)</h4>
+        <div class="fsm"><span class="fsm-state start">PROVISIONING</span><span class="fsm-arrow">→<small>smoke pass</small></span><span class="fsm-state">ACTIVE</span><span class="fsm-arrow">→<small>migrate</small></span><span class="fsm-state">MIGRATING</span><span class="fsm-arrow">→</span><span class="fsm-state">ACTIVE</span><span class="fsm-arrow">→<small>suspend</small></span><span class="fsm-state">SUSPENDED</span><span class="fsm-arrow">→</span><span class="fsm-state end">REACTIVATED</span></div>
+        <div class="subgrid">
+          <div><h4 class="mini">API contract</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Method · Path</th><th>Notes</th></tr></thead><tbody>
+            <tr><td><span class="m-post">POST</span> <code>/platform/tenants</code></td><td>Vertical-first onboard <span class="badge b-idem">idem</span></td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/platform/tenants/{id}</code></td><td>Profile + directory entry</td></tr>
+            <tr><td><span class="m-put">PUT</span> <code>/platform/tenants/{id}/modules/{moduleId}</code></td><td>Entitlement toggle</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/platform/tenants/{id}/migrate</code></td><td>Tier/edition migration</td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/platform/editions</code></td><td>Catalog (templates/pricing/SLA)</td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/platform/clusters</code></td><td>Fleet capacity / placement</td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/platform/analytics/verticals</code></td><td>MRR/churn/adoption per vertical</td></tr>
+          </tbody></table></div></div>
+          <div><h4 class="mini">Events</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Event</th><th>Dir</th></tr></thead><tbody>
+            <tr><td class="mono">tenant.provisioned</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">module.entitlement.changed</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">tenant.migrated</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">tenant.suspended / reactivated</td><td><span class="badge b-pub">PUB</span></td></tr>
+          </tbody></table></div>
+          <h4 class="mini">Key rules</h4><ul class="clean">
+            <li>GSTIN format+checksum; duplicate ⇒ Super-Admin override w/ reason.</li>
+            <li>Smoke isolation test gates ACTIVE; failure rolls back, P1.</li>
+            <li>Core modules non-removable; region immutable post-create.</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M01 -->
+    <div class="mod" id="m01-card">
+      <div class="mod-head"><div class="mod-badge">M01</div><div><h3>OPD / Encounters</h3><div class="sub">UC-M01-01/02 · registration · EMR · e-Rx</div></div><div class="mod-ed"><span class="ed-pill">Hospital</span><span class="ed-pill">Clinic·lite</span></div></div>
+      <div class="mod-body">
+        <h4 class="mini">Encounter state machine (FSD Sec. M01)</h4>
+        <div class="fsm"><span class="fsm-state start">REGISTERED</span><span class="fsm-arrow">→<small>token</small></span><span class="fsm-state">WAITING</span><span class="fsm-arrow">→<small>called</small></span><span class="fsm-state">IN-CONSULT</span><span class="fsm-arrow">→<small>+diagnosis</small></span><span class="fsm-state end">CLOSED</span><span class="fsm-arrow">→<small>addendum</small></span><span class="fsm-state end">CLOSED·vN</span></div>
+        <div class="subgrid">
+          <div><h4 class="mini">API contract</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Method · Path</th><th>Notes</th></tr></thead><tbody>
+            <tr><td><span class="m-post">POST</span> <code>/opd/patients</code></td><td>UHID issue <span class="badge b-idem">idem</span></td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/opd/patients/search</code></td><td>mobile/UHID/ABHA/fuzzy</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/opd/encounters</code></td><td>Open encounter/token</td></tr>
+            <tr><td><span class="m-put">PUT</span> <code>/opd/encounters/{id}/notes</code></td><td>SOAP + ICD-10</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/opd/encounters/{id}/prescription</code></td><td>e-Rx (interaction-checked)</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/opd/encounters/{id}/orders</code></td><td>lab/imaging/pharmacy</td></tr>
+            <tr><td><span class="m-put">PUT</span> <code>/opd/encounters/{id}/close</code></td><td>Close (diagnosis gate)</td></tr>
+          </tbody></table></div></div>
+          <div><h4 class="mini">Events</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Event</th><th>Dir</th></tr></thead><tbody>
+            <tr><td class="mono">opd.encounter.closed</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">pharmacy.rx.created</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">lab.order.created / rad.order.created</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">result.validated / .critical.alert</td><td><span class="badge b-sub">SUB</span></td></tr>
+          </tbody></table></div>
+          <h4 class="mini">Key rules</h4><ul class="clean">
+            <li>Severe interaction/allergy = hard-stop; override audited to clinical governance.</li>
+            <li>Order option hidden if target module disabled (graceful degradation → advice slip).</li>
+            <li>Closure blocked if mandatory diagnosis missing (configurable).</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M02 -->
+    <div class="mod" id="m02-card">
+      <div class="mod-head"><div class="mod-badge">M02</div><div><h3>Pharmacy &amp; Retail POS</h3><div class="sub">UC-M02-01/02/03 · POS · dispensing · PO/GRN</div></div><div class="mod-ed"><span class="ed-pill">Hospital</span><span class="ed-pill">Clinic·opt</span><span class="ed-pill core">Pharmacy SME</span></div></div>
+      <div class="mod-body">
+        <h4 class="mini">Prescription dispensing state machine</h4>
+        <div class="fsm"><span class="fsm-state start">QUEUED</span><span class="fsm-arrow">→<small>open</small></span><span class="fsm-state">IN-DISPENSE</span><span class="fsm-arrow">→<small>all lines</small></span><span class="fsm-state end">DISPENSED</span><span class="fsm-arrow">→<small>some</small></span><span class="fsm-state">PARTIAL</span><span class="fsm-arrow">→<small>balance</small></span><span class="fsm-state end">DISPENSED</span><span class="fsm-arrow">→<small>lapsed</small></span><span class="fsm-state end">EXPIRED</span></div>
+        <div class="subgrid">
+          <div><h4 class="mini">API contract</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Method · Path</th><th>Notes</th></tr></thead><tbody>
+            <tr><td><span class="m-post">POST</span> <code>/pharmacy/pos/sales</code></td><td>Retail GST sale <span class="badge b-idem">idem</span></td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/pharmacy/pos/returns</code></td><td>Against invoice only <span class="badge b-idem">idem</span></td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/pharmacy/rx/queue</code></td><td>Dispensing queue</td></tr>
+            <tr><td><span class="m-put">PUT</span> <code>/pharmacy/rx/{id}/dispense</code></td><td>Full/partial <span class="badge b-idem">idem</span></td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/pharmacy/stock</code></td><td>Batch stock + expiry</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/pharmacy/po</code></td><td>Purchase order</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/pharmacy/grn</code></td><td>Goods receipt <span class="badge b-idem">idem</span></td></tr>
+          </tbody></table></div></div>
+          <div><h4 class="mini">Events</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Event</th><th>Dir</th></tr></thead><tbody>
+            <tr><td class="mono">pharmacy.rx.created</td><td><span class="badge b-sub">SUB</span></td></tr>
+            <tr><td class="mono">pharmcharge.generated</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">stock.reorder.triggered</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">stock.expiry.alert</td><td><span class="badge b-pub">PUB</span></td></tr>
+          </tbody></table></div>
+          <h4 class="mini">Key rules</h4><ul class="clean">
+            <li><b>Negative stock impossible</b> — atomic batch decrement w/ optimistic lock.</li>
+            <li>POS sale ≤ 30 s keyboard-first; H/H1 capture Rx, X blocked at POS.</li>
+            <li>Schedule register immutable, drug-inspector exportable; expired batch hard-blocked.</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M03 -->
+    <div class="mod" id="m03-card">
+      <div class="mod-head"><div class="mod-badge">M03</div><div><h3>Pathology Laboratory</h3><div class="sub">UC-M03-01/02/03 · orders · dual validation · B2B settlement</div></div><div class="mod-ed"><span class="ed-pill">Hospital</span><span class="ed-pill">Clinic·opt</span><span class="ed-pill core">Pathology SME</span></div></div>
+      <div class="mod-body">
+        <h4 class="mini">Sample / result state machine</h4>
+        <div class="fsm"><span class="fsm-state start">ORDERED</span><span class="fsm-arrow">→</span><span class="fsm-state">COLLECTED</span><span class="fsm-arrow">→</span><span class="fsm-state">RECEIVED</span><span class="fsm-arrow">→<small>fail</small></span><span class="fsm-state">REJECTED</span><span class="fsm-arrow">→<small>result</small></span><span class="fsm-state">RESULTED</span><span class="fsm-arrow">→<small>val-1</small></span><span class="fsm-state">VALIDATED-1</span><span class="fsm-arrow">→<small>signoff</small></span><span class="fsm-state end">RELEASED</span></div>
+        <div class="subgrid">
+          <div><h4 class="mini">API contract</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Method · Path</th><th>Notes</th></tr></thead><tbody>
+            <tr><td><span class="m-post">POST</span> <code>/lab/orders</code></td><td>Walk-in / B2B</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/lab/samples/{id}/collect</code></td><td>Barcode issue</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/lab/results/ingest</code></td><td>HL7/ASTM analyzer <span class="badge b-idem">idem</span></td></tr>
+            <tr><td><span class="m-put">PUT</span> <code>/lab/results/{id}/validate</code></td><td>First/second validation</td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/lab/reports/{id}</code></td><td>Signed report PDF</td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/lab/b2b/{referrerId}/statement</code></td><td>Monthly settlement</td></tr>
+          </tbody></table></div></div>
+          <div><h4 class="mini">Events</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Event</th><th>Dir</th></tr></thead><tbody>
+            <tr><td class="mono">lab.order.created</td><td><span class="badge b-sub">SUB</span>/<span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">result.critical.alert</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">result.validated</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">labcharge.generated</td><td><span class="badge b-pub">PUB</span></td></tr>
+          </tbody></table></div>
+          <h4 class="mini">Key rules</h4><ul class="clean">
+            <li><b>No single-person release</b> for reportable results (dual validation by workflow).</li>
+            <li>Critical alert at first validation; escalation chain w/ read-receipt.</li>
+            <li>B2B statement reconciles to ledger to the rupee; auto credit-block on ageing.</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M04 -->
+    <div class="mod" id="m04-card">
+      <div class="mod-head"><div class="mod-badge">M04</div><div><h3>Finance &amp; GST Billing Engine</h3><div class="sub">UC-M04-01/02/03 · charges · day-close · credit notes</div></div><div class="mod-ed"><span class="ed-pill core">CORE · every edition</span></div></div>
+      <div class="mod-body">
+        <h4 class="mini">Folio state</h4>
+        <div class="fsm"><span class="fsm-state start">OPEN</span><span class="fsm-arrow">→<small>partial pay</small></span><span class="fsm-state">OPEN·balance</span><span class="fsm-arrow">→<small>full pay</small></span><span class="fsm-state end">SETTLED</span><span class="fsm-arrow">→<small>refund</small></span><span class="fsm-state">CREDIT-NOTE</span></div>
+        <div class="subgrid">
+          <div><h4 class="mini">API contract</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Method · Path</th><th>Notes</th></tr></thead><tbody>
+            <tr><td><span class="m-get">GET</span> <code>/finance/folios/{id}</code></td><td>Charge lines + sources</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/finance/invoices</code></td><td>GST/IRN-aware <span class="badge b-idem">idem</span></td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/finance/payments</code></td><td>Multi-mode split <span class="badge b-idem">idem</span></td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/finance/credit-notes</code></td><td>Refund/credit <span class="badge b-idem">idem</span></td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/finance/day-close</code></td><td>Branch day-close</td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/finance/reports/gstr1</code></td><td>GSTR-1 export</td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/finance/ledgers/{partyId}</code></td><td>B2B/payer ledger + ageing</td></tr>
+          </tbody></table></div></div>
+          <div><h4 class="mini">Events</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Event</th><th>Dir</th></tr></thead><tbody>
+            <tr><td class="mono">*.charge.generated</td><td><span class="badge b-sub">SUB</span></td></tr>
+            <tr><td class="mono">invoice.settled</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">dayclose.completed</td><td><span class="badge b-pub">PUB</span></td></tr>
+          </tbody></table></div>
+          <h4 class="mini">Key rules</h4><ul class="clean">
+            <li><b>Gapless</b> invoice series (DB sequence); voids = credit notes, never deletions.</li>
+            <li>IRN via IRP before print for B2B over threshold; failure ⇒ retry + provisional hold.</li>
+            <li>One day-close per branch/day; reopen = Tenant Admin + reason (rare-path alert).</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M05 -->
+    <div class="mod" id="m05-card">
+      <div class="mod-head"><div class="mod-badge">M05</div><div><h3>HR, Rosters &amp; Payroll-Lite</h3><div class="sub">UC-M05-01/02 · roster · attendance · payroll</div></div><div class="mod-ed"><span class="ed-pill">Hospital</span><span class="ed-pill">opt-lite all editions</span></div></div>
+      <div class="mod-body">
+        <div class="subgrid">
+          <div><h4 class="mini">API contract</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Method · Path</th><th>Notes</th></tr></thead><tbody>
+            <tr><td><span class="m-post">POST</span> <code>/hr/rosters</code></td><td>Create/publish</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/hr/attendance/punch</code></td><td>Web/mobile + geo-fence</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/hr/leave</code></td><td>Request/approval</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/hr/payroll/runs</code></td><td>Payroll-lite <span class="badge b-idem">idem</span></td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/hr/payslips/{staffId}/{month}</code></td><td>Payslip PDF</td></tr>
+          </tbody></table></div></div>
+          <div><h4 class="mini">Events</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Event</th><th>Dir</th></tr></thead><tbody>
+            <tr><td class="mono">roster.published</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">payroll.completed</td><td><span class="badge b-pub">PUB</span></td></tr>
+          </tbody></table></div>
+          <h4 class="mini">Key rules</h4><ul class="clean">
+            <li>Rest-hour minimums for clinical roles; roster publish-lock 48 h ahead.</li>
+            <li>One approved payroll run/month; corrections via supplementary run.</li>
+            <li>&gt;20% pay delta held for explicit HR override.</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M06 -->
+    <div class="mod" id="m06-card">
+      <div class="mod-head"><div class="mod-badge">M06</div><div><h3>Inventory &amp; Stores</h3><div class="sub">UC-M06-01/02 · indents · cycle count · expiry</div></div><div class="mod-ed"><span class="ed-pill">Hospital</span><span class="ed-pill">SME subsets</span></div></div>
+      <div class="mod-body">
+        <div class="subgrid">
+          <div><h4 class="mini">API contract</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Method · Path</th><th>Notes</th></tr></thead><tbody>
+            <tr><td><span class="m-post">POST</span> <code>/inventory/indents</code></td><td>Department indent</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/inventory/issues</code></td><td>Against indent <span class="badge b-idem">idem</span></td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/inventory/transfers</code></td><td>Sub-store transfer</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/inventory/counts</code></td><td>Cycle count</td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/inventory/expiry-calendar</code></td><td>Dated-stock alerts</td></tr>
+          </tbody></table></div></div>
+          <div><h4 class="mini">Events</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Event</th><th>Dir</th></tr></thead><tbody>
+            <tr><td class="mono">stock.reorder.triggered</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">stock.adjustment.posted</td><td><span class="badge b-pub">PUB</span></td></tr>
+          </tbody></table></div>
+          <h4 class="mini">Key rules</h4><ul class="clean">
+            <li>Issues only against approved indents; FEFO for dated items.</li>
+            <li>Adjustments reason-coded; regulated disposal needs two-person sign-off.</li>
+            <li>90/60/30-day expiry alerts; narcotic items follow M2 schedule rules.</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M07 -->
+    <div class="mod" id="m07-card">
+      <div class="mod-head"><div class="mod-badge">M07</div><div><h3>BI, Dashboards &amp; Reports</h3><div class="sub">UC-M07-01 · role-scoped dashboards · scheduled reports</div></div><div class="mod-ed"><span class="ed-pill">Hospital·full</span><span class="ed-pill">SME·lite</span></div></div>
+      <div class="mod-body">
+        <div class="subgrid">
+          <div><h4 class="mini">API contract</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Method · Path</th><th>Notes</th></tr></thead><tbody>
+            <tr><td><span class="m-get">GET</span> <code>/bi/dashboards/{role}</code></td><td>RBAC+entitlement-scoped</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/bi/subscriptions</code></td><td>Scheduled report</td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/bi/exports/{reportId}</code></td><td>Watermarked artefact</td></tr>
+          </tbody></table></div></div>
+          <div><h4 class="mini">Events</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Event</th><th>Dir</th></tr></thead><tbody>
+            <tr><td class="mono">dayclose.completed</td><td><span class="badge b-sub">SUB</span></td></tr>
+            <tr><td class="mono">*.events (KPI stream)</td><td><span class="badge b-sub">SUB</span></td></tr>
+          </tbody></table></div>
+          <h4 class="mini">Key rules</h4><ul class="clean">
+            <li>All queries tenant-filtered server-side; client cannot widen scope.</li>
+            <li>Exports watermarked tenant+user+timestamp.</li>
+            <li>Dashboard P95 &lt;3 s lite / &lt;5 s full; freshness banner on mart lag.</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M08 -->
+    <div class="mod" id="m08-card">
+      <div class="mod-head"><div class="mod-badge">M08</div><div><h3>Patient / Customer Portal</h3><div class="sub">UC-M08-01/02 · booking · reports · DPDP rights</div></div><div class="mod-ed"><span class="ed-pill">Hosp·Clinic</span><span class="ed-pill">Path·Rad ON</span><span class="ed-pill">Pharma opt</span></div></div>
+      <div class="mod-body">
+        <div class="subgrid">
+          <div><h4 class="mini">API contract</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Method · Path</th><th>Notes</th></tr></thead><tbody>
+            <tr><td><span class="m-post">POST</span> <code>/portal/auth/otp</code></td><td>Mobile OTP login</td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/portal/profiles</code></td><td>Self + family</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/portal/bookings</code></td><td>Slot + prepayment <span class="badge b-idem">idem</span></td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/portal/reports</code></td><td>Signed download links</td></tr>
+            <tr><td><span class="m-put">PUT</span> <code>/portal/consents/{id}/revoke</code></td><td>Revocation</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/portal/data-requests</code></td><td>Access/erasure (DPDP)</td></tr>
+          </tbody></table></div></div>
+          <div><h4 class="mini">Events</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Event</th><th>Dir</th></tr></thead><tbody>
+            <tr><td class="mono">consent.revoked</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">result.validated</td><td><span class="badge b-sub">SUB</span></td></tr>
+            <tr><td class="mono">invoice.settled</td><td><span class="badge b-sub">SUB</span></td></tr>
+          </tbody></table></div>
+          <h4 class="mini">Key rules</h4><ul class="clean">
+            <li>Download links signed, single-profile-scoped, expiring (72 h default).</li>
+            <li>Consent immutable+versioned; revocation never silently fails (reference ID).</li>
+            <li>Erasure routed to tenant DPO with statutory-retention carve-outs.</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M09 -->
+    <div class="mod" id="m09-card">
+      <div class="mod-head"><div class="mod-badge">M09</div><div><h3>Audit, Compliance &amp; Security Ops</h3><div class="sub">UC-M09-01/02 · hash-chain · dual breach clocks</div></div><div class="mod-ed"><span class="ed-pill core">CORE · locked ON</span></div></div>
+      <div class="mod-body">
+        <h4 class="mini">Hash-chain write (in-transaction)</h4>
+        <pre class="code"><code>hash = <span class="fn">SHA256</span>( hash_prev ‖ actor ‖ entity ‖ action ‖ before ‖ after ‖ ts )
+<span class="c">// verify(range): recompute chain; any mismatch ⇒ audit.chain.mismatch ⇒ P1 incident</span></code></pre>
+        <div class="subgrid">
+          <div><h4 class="mini">API contract</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Method · Path</th><th>Notes</th></tr></thead><tbody>
+            <tr><td><span class="m-get">GET</span> <code>/audit/search</code></td><td>entity/user/date/action</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/audit/verify</code></td><td>Hash-chain range proof</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/audit/evidence-packs</code></td><td>Watermarked export</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/security/incidents</code></td><td>Dual-clock start</td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/security/incidents/{id}/blast-radius</code></td><td>Affected tenants/principals</td></tr>
+          </tbody></table></div></div>
+          <div><h4 class="mini">Events</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Event</th><th>Dir</th></tr></thead><tbody>
+            <tr><td class="mono">security.incident.opened</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">audit.chain.mismatch</td><td><span class="badge b-pub">PUB</span></td></tr>
+          </tbody></table></div>
+          <h4 class="mini">Key rules</h4><ul class="clean">
+            <li>CERT-In 6 h / DPDP 72 h countdowns on incident header; templates gate filing.</li>
+            <li>Break-glass surfaces in review queue (7-day SLA sign-off).</li>
+            <li>Any entity history retrievable &lt;5 s P95.</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M10 -->
+    <div class="mod" id="m10-card">
+      <div class="mod-head"><div class="mod-badge">M10</div><div><h3>In-Patient Department</h3><div class="sub">UC-M10-01/02/03 · admission · eMAR · discharge</div></div><div class="mod-ed"><span class="ed-pill">Hospital ONLY</span><span class="ed-pill">gateway-disabled elsewhere</span></div></div>
+      <div class="mod-body">
+        <h4 class="mini">Admission / bed state machine</h4>
+        <div class="fsm"><span class="fsm-state start">ADMITTED</span><span class="fsm-arrow">→<small>transfer</small></span><span class="fsm-state">ADMITTED·re-tariffed</span><span class="fsm-arrow">→<small>order</small></span><span class="fsm-state">DISCHARGE-PENDING</span><span class="fsm-arrow">→<small>settle</small></span><span class="fsm-state end">DISCHARGED</span><span class="fsm-arrow">→</span><span class="fsm-state">HOUSEKEEPING</span><span class="fsm-arrow">→</span><span class="fsm-state end">AVAILABLE</span></div>
+        <div class="subgrid">
+          <div><h4 class="mini">API contract</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Method · Path</th><th>Notes</th></tr></thead><tbody>
+            <tr><td><span class="m-post">POST</span> <code>/ipd/admissions</code></td><td>Planned/emergency <span class="badge b-idem">idem</span></td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/ipd/beds/board</code></td><td>Real-time bed board</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/ipd/orders</code></td><td>CPOE order entry</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/ipd/emar/administrations</code></td><td>eMAR (band-scan) <span class="badge b-idem">idem</span></td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/ipd/discharge/{admissionId}</code></td><td>Discharge workflow</td></tr>
+          </tbody></table></div></div>
+          <div><h4 class="mini">Events</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Event</th><th>Dir</th></tr></thead><tbody>
+            <tr><td class="mono">ipd.admitted / ipd.discharged</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">ipd.order.created</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">result.critical.alert</td><td><span class="badge b-sub">SUB</span></td></tr>
+          </tbody></table></div>
+          <h4 class="mini">Key rules</h4><ul class="clean">
+            <li>One active admission/patient; bed atomic (no double-occupancy).</li>
+            <li>No administration without active order; high-alert drugs double-signature.</li>
+            <li>No discharge with unacknowledged critical results.</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M11 -->
+    <div class="mod" id="m11-card">
+      <div class="mod-head"><div class="mod-badge">M11</div><div><h3>Appointment &amp; Scheduling Engine</h3><div class="sub">UC-M11-01/02 · slots · multi-channel · no-show</div></div><div class="mod-ed"><span class="ed-pill">Hosp·Clinic</span><span class="ed-pill">Radiology slots</span><span class="ed-pill">Path opt</span></div></div>
+      <div class="mod-body">
+        <h4 class="mini">Appointment state machine</h4>
+        <div class="fsm"><span class="fsm-state start">BOOKED</span><span class="fsm-arrow">→<small>reminder</small></span><span class="fsm-state">CONFIRMED</span><span class="fsm-arrow">→<small>arrival</small></span><span class="fsm-state end">CHECKED-IN</span><span class="fsm-arrow">→<small>grace lapse</small></span><span class="fsm-state">NO-SHOW</span><span class="fsm-arrow">→<small>patient</small></span><span class="fsm-state">RESCHEDULED/CANCELLED</span></div>
+        <div class="subgrid">
+          <div><h4 class="mini">API contract</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Method · Path</th><th>Notes</th></tr></thead><tbody>
+            <tr><td><span class="m-get">GET</span> <code>/scheduling/slots</code></td><td>Availability query</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/scheduling/bookings</code></td><td><b>Atomic</b> slot lock <span class="badge b-idem">idem</span></td></tr>
+            <tr><td><span class="m-put">PUT</span> <code>/scheduling/bookings/{id}</code></td><td>Reschedule/cancel</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/scheduling/templates</code></td><td>Session/slot templates</td></tr>
+          </tbody></table></div></div>
+          <div><h4 class="mini">Events</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Event</th><th>Dir</th></tr></thead><tbody>
+            <tr><td class="mono">appointment.booked/cancelled/noshow</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">roster.published</td><td><span class="badge b-sub">SUB</span></td></tr>
+          </tbody></table></div>
+          <h4 class="mini">Key rules</h4><ul class="clean">
+            <li><b>No double-booking by construction</b> (atomic slot lock via Redis fence).</li>
+            <li>Overbooking only within configured %; modality slots respect machine+technologist (M13 feed).</li>
+            <li>No-show fee via Finance; repeat no-show ⇒ prepayment-only.</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M13 -->
+    <div class="mod" id="m13-card">
+      <div class="mod-head"><div class="mod-badge new">M13</div><div><h3>Radiology &amp; Imaging (RIS) <span style="color:var(--gold-bright);font-size:11px">★ net-new</span></h3><div class="sub">UC-M13-01/02/03 · safety gates · structured reporting · PACS link-out</div></div><div class="mod-ed"><span class="ed-pill">Hospital</span><span class="ed-pill">Clinic·opt</span><span class="ed-pill core">Radiology SME</span></div></div>
+      <div class="mod-body">
+        <h4 class="mini">Imaging study state machine</h4>
+        <div class="fsm"><span class="fsm-state start">ORDERED</span><span class="fsm-arrow">→<small>slot</small></span><span class="fsm-state">SCHEDULED</span><span class="fsm-arrow">→<small>gates pass</small></span><span class="fsm-state">CHECKED-IN</span><span class="fsm-arrow">→</span><span class="fsm-state">IN-PROGRESS</span><span class="fsm-arrow">→</span><span class="fsm-state">ACQUIRED</span><span class="fsm-arrow">→<small>signoff</small></span><span class="fsm-state">REPORTED</span><span class="fsm-arrow">→</span><span class="fsm-state end">DELIVERED</span></div>
+        <div class="subgrid">
+          <div><h4 class="mini">API contract</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Method · Path</th><th>Notes</th></tr></thead><tbody>
+            <tr><td><span class="m-post">POST</span> <code>/radiology/orders</code></td><td>Walk-in/B2B intake</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/radiology/studies/{id}/checkin</code></td><td><b>Safety gates</b> + consent</td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/radiology/worklist</code></td><td>Modality/radiologist</td></tr>
+            <tr><td><span class="m-put">PUT</span> <code>/radiology/studies/{id}/status</code></td><td>Acquisition transitions</td></tr>
+            <tr><td><span class="m-post">POST</span> <code>/radiology/reports/{studyId}</code></td><td>Structured draft/sign</td></tr>
+            <tr><td><span class="m-get">GET</span> <code>/radiology/b2b/{referrerId}/statement</code></td><td>Monthly settlement</td></tr>
+          </tbody></table></div></div>
+          <div><h4 class="mini">Events</h4><div class="tbl-wrap"><table style="min-width:auto">
+            <thead><tr><th>Event</th><th>Dir</th></tr></thead><tbody>
+            <tr><td class="mono">rad.order.created</td><td><span class="badge b-sub">SUB</span>/<span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">result.critical.alert</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">result.validated</td><td><span class="badge b-pub">PUB</span></td></tr>
+            <tr><td class="mono">radcharge.generated</td><td><span class="badge b-pub">PUB</span></td></tr>
+          </tbody></table></div>
+          <h4 class="mini">Key rules</h4><ul class="clean">
+            <li><b>No worklist with a failed un-overridden gate</b>; consent precedes acquisition always.</li>
+            <li>Gates: contrast allergy · pregnancy · eGFR (contrast) · MRI implant screen; override audited.</li>
+            <li>PACS via DICOMweb link-out + SSO; unreachable ⇒ degraded mode (A2a); no image storage (A2).</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4 SEQUENCES -->
+  <section class="section" id="s4">
+    <div class="sec-head"><div class="sec-num">04</div><div><div class="sec-title">Cross-Module Sequence Diagrams</div><div class="sec-tagline">The flows where modules collaborate over events</div></div></div>
+
+    <h3 class="block">4.1 — OPD encounter → e-Rx → dispense → charge → invoice</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 900 300" role="img" aria-label="OPD to invoice sequence">
+        <defs><marker id="sq" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#0E8E8E"/></marker>
+        <marker id="sq2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#C49A2A"/></marker></defs>
+        <g class="svg-l" font-size="11" font-weight="700" text-anchor="middle">
+          <rect x="20" y="14" width="120" height="34" rx="7" fill="#1E3A5F"/><text x="80" y="36" fill="#fff">M01 OPD</text>
+          <rect x="240" y="14" width="120" height="34" rx="7" fill="#0E8E8E"/><text x="300" y="36" fill="#fff">Kafka</text>
+          <rect x="460" y="14" width="120" height="34" rx="7" fill="#1E3A5F"/><text x="520" y="36" fill="#fff">M02 Pharmacy</text>
+          <rect x="680" y="14" width="120" height="34" rx="7" fill="#152840"/><text x="740" y="36" fill="#fff">M04 Finance</text>
+        </g>
+        <g stroke="#94A3B8" stroke-width="1" stroke-dasharray="3 4"><line x1="80" y1="48" x2="80" y2="290"/><line x1="300" y1="48" x2="300" y2="290"/><line x1="520" y1="48" x2="520" y2="290"/><line x1="740" y1="48" x2="740" y2="290"/></g>
+        <g class="svg-mono" font-size="9.5" fill="#0D1F35">
+          <line x1="80" y1="78" x2="298" y2="78" stroke="#0E8E8E" stroke-width="1.4" marker-end="url(#sq)"/><text x="190" y="72" text-anchor="middle">pharmacy.rx.created</text>
+          <line x1="300" y1="104" x2="518" y2="104" stroke="#0E8E8E" stroke-width="1.4" marker-end="url(#sq)"/><text x="410" y="98" text-anchor="middle">→ dispensing queue</text>
+          <line x1="520" y1="140" x2="522" y2="140" /><rect x="500" y="128" width="40" height="22" rx="4" fill="#E0F7F7"/><text x="520" y="143" text-anchor="middle" fill="#0E8E8E">dispense (FIFO)</text>
+          <line x1="520" y1="172" x2="302" y2="172" stroke="#C49A2A" stroke-width="1.4" marker-end="url(#sq2)"/><text x="410" y="166" text-anchor="middle" fill="#B07A0A">pharmcharge.generated</text>
+          <line x1="80" y1="200" x2="298" y2="200" stroke="#C49A2A" stroke-width="1.4" marker-end="url(#sq2)"/><text x="190" y="194" text-anchor="middle" fill="#B07A0A">opd.encounter.closed</text>
+          <line x1="300" y1="228" x2="738" y2="228" stroke="#C49A2A" stroke-width="1.4" marker-end="url(#sq2)"/><text x="520" y="222" text-anchor="middle" fill="#B07A0A">*.charge.generated → folio</text>
+          <rect x="700" y="248" width="80" height="22" rx="4" fill="#E0F7F7"/><text x="740" y="263" text-anchor="middle" fill="#0E8E8E">GST invoice</text>
+          <line x1="740" y1="270" x2="82" y2="288" stroke="#0E8E8E" stroke-width="1.2" marker-end="url(#sq)"/><text x="400" y="286" text-anchor="middle">invoice.settled → receipt</text>
+        </g>
+      </svg>
+      <div class="dia-cap">Figure 4.1 — Charges accumulate on the folio via events; Finance is the single billing backbone (ADR-08). Teal = sync/command, gold = event.</div>
+    </div>
+
+    <h3 class="block">4.2 — Lab critical-value escalation (no single-person release)</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 900 250" role="img" aria-label="Critical alert sequence">
+        <defs><marker id="sq3" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#F43F5E"/></marker></defs>
+        <g class="svg-l" font-size="11" font-weight="700" text-anchor="middle">
+          <rect x="20" y="14" width="120" height="34" rx="7" fill="#8B5CF6"/><text x="80" y="36" fill="#fff">Analyzer</text>
+          <rect x="220" y="14" width="120" height="34" rx="7" fill="#1E3A5F"/><text x="280" y="36" fill="#fff">M03 Lab</text>
+          <rect x="420" y="14" width="120" height="34" rx="7" fill="#0E8E8E"/><text x="480" y="36" fill="#fff">Kafka</text>
+          <rect x="620" y="14" width="120" height="34" rx="7" fill="#152840"/><text x="680" y="36" fill="#fff">Notif core</text>
+          <rect x="780" y="14" width="100" height="34" rx="7" fill="#1E3A5F"/><text x="830" y="36" fill="#fff">Doctor</text>
+        </g>
+        <g stroke="#94A3B8" stroke-width="1" stroke-dasharray="3 4"><line x1="80" y1="48" x2="80" y2="240"/><line x1="280" y1="48" x2="280" y2="240"/><line x1="480" y1="48" x2="480" y2="240"/><line x1="680" y1="48" x2="680" y2="240"/><line x1="830" y1="48" x2="830" y2="240"/></g>
+        <g class="svg-mono" font-size="9.5" fill="#0D1F35">
+          <line x1="80" y1="76" x2="278" y2="76" stroke="#0E8E8E" stroke-width="1.4" marker-end="url(#sq)"/><text x="180" y="70" text-anchor="middle">HL7 result (barcode)</text>
+          <rect x="258" y="90" width="44" height="22" rx="4" fill="#FFEBEE"/><text x="280" y="105" text-anchor="middle" fill="#C0392B">flag H/L/Crit</text>
+          <line x1="280" y1="132" x2="478" y2="132" stroke="#F43F5E" stroke-width="1.6" marker-end="url(#sq3)"/><text x="380" y="126" text-anchor="middle" fill="#C0392B">result.critical.alert (val-1)</text>
+          <line x1="480" y1="160" x2="678" y2="160" stroke="#F43F5E" stroke-width="1.6" marker-end="url(#sq3)"/><text x="580" y="154" text-anchor="middle" fill="#C0392B">→ call-tree</text>
+          <line x1="680" y1="188" x2="828" y2="188" stroke="#F43F5E" stroke-width="1.6" marker-end="url(#sq3)"/><text x="754" y="182" text-anchor="middle" fill="#C0392B">read-receipt tracked</text>
+          <rect x="240" y="206" width="120" height="22" rx="4" fill="#E0F7F7"/><text x="300" y="221" text-anchor="middle" fill="#0E8E8E">pathologist val-2 → RELEASED</text>
+        </g>
+      </svg>
+      <div class="dia-cap">Figure 4.2 — Critical alert fires at <em>first</em> validation; release still requires the second (pathologist) sign-off — workflow-enforced dual validation.</div>
+    </div>
+
+    <h3 class="block">4.3 — Entitlement toggle → 4-layer enforcement</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 900 210" role="img" aria-label="Entitlement toggle sequence">
+        <g class="svg-l" font-size="10.5" font-weight="700" text-anchor="middle">
+          <rect x="14" y="14" width="120" height="34" rx="7" fill="#0E8E8E"/><text x="74" y="36" fill="#fff">M12 Entitlement</text>
+          <rect x="190" y="14" width="120" height="34" rx="7" fill="#0E8E8E"/><text x="250" y="36" fill="#fff">Kafka</text>
+          <rect x="360" y="14" width="100" height="34" rx="7" fill="#152840"/><text x="410" y="36" fill="#fff">Redis</text>
+          <rect x="500" y="14" width="90" height="34" rx="7" fill="#152840"/><text x="545" y="36" fill="#fff">Gateway</text>
+          <rect x="610" y="14" width="80" height="34" rx="7" fill="#152840"/><text x="650" y="36" fill="#fff">Guards</text>
+          <rect x="710" y="14" width="80" height="34" rx="7" fill="#152840"/><text x="750" y="36" fill="#fff">UI shell</text>
+          <rect x="810" y="14" width="80" height="34" rx="7" fill="#152840"/><text x="850" y="36" fill="#fff">Billing</text>
+        </g>
+        <g stroke="#94A3B8" stroke-width="1" stroke-dasharray="3 4"><line x1="74" y1="48" x2="74" y2="200"/><line x1="250" y1="48" x2="250" y2="200"/><line x1="410" y1="48" x2="410" y2="200"/><line x1="545" y1="48" x2="545" y2="200"/><line x1="650" y1="48" x2="650" y2="200"/><line x1="750" y1="48" x2="750" y2="200"/><line x1="850" y1="48" x2="850" y2="200"/></g>
+        <g class="svg-mono" font-size="9" fill="#0D1F35">
+          <rect x="40" y="64" width="68" height="22" rx="4" fill="#FBF3DC"/><text x="74" y="79" text-anchor="middle" fill="#B07A0A">guard pass</text>
+          <line x1="74" y1="104" x2="248" y2="104" stroke="#C49A2A" stroke-width="1.4" marker-end="url(#sq2)"/><text x="160" y="98" text-anchor="middle" fill="#B07A0A">module.entitlement.changed</text>
+          <line x1="250" y1="130" x2="408" y2="130" stroke="#0E8E8E" stroke-width="1.4" marker-end="url(#sq)"/><text x="330" y="124" text-anchor="middle">invalidate key</text>
+          <line x1="410" y1="158" x2="543" y2="158" stroke="#0E8E8E" stroke-width="1.2" marker-end="url(#sq)"/>
+          <line x1="410" y1="158" x2="648" y2="172" stroke="#0E8E8E" stroke-width="1.2" marker-end="url(#sq)"/>
+          <line x1="410" y1="158" x2="748" y2="184" stroke="#0E8E8E" stroke-width="1.2" marker-end="url(#sq)"/>
+          <line x1="250" y1="104" x2="848" y2="150" stroke="#C49A2A" stroke-width="1.2" marker-end="url(#sq2)"/><text x="640" y="120" text-anchor="middle" fill="#B07A0A">proration</text>
+          <text x="560" y="200" text-anchor="middle" fill="#0E8E8E">all four layers refresh ≤ 60 s (BR-NFR-03)</text>
+        </g>
+      </svg>
+      <div class="dia-cap">Figure 4.3 — The toggle event fans out a Redis cache invalidation; gateway, guards, UI and billing all reconcile within the 60-second SLA.</div>
+    </div>
+  </section>
+
+  <!-- S5 ERROR CATALOG -->
+  <section class="section" id="s5">
+    <div class="sec-head"><div class="sec-num">05</div><div><div class="sec-title">Error &amp; Rule Catalog (extract)</div><div class="sec-tagline">VAL-xxx field validation · RULE-xxx business rejection</div></div></div>
+    <div class="two">
+      <div class="card"><h4 class="mini">Validation (VAL-xxx · 400)</h4><div class="tbl-wrap"><table style="min-width:auto">
+        <thead><tr><th>Code</th><th>Meaning</th></tr></thead><tbody>
+        <tr><td class="id">VAL-CORE-001</td><td>GSTIN format/checksum invalid</td></tr>
+        <tr><td class="id">VAL-CORE-002</td><td>Subdomain not DNS-safe / reserved</td></tr>
+        <tr><td class="id">VAL-OPD-011</td><td>Mobile not OTP-verified</td></tr>
+        <tr><td class="id">VAL-OPD-012</td><td>DOB/age missing; minor needs guardian</td></tr>
+        <tr><td class="id">VAL-FIN-021</td><td>Tariff not effective-dated for date</td></tr>
+        <tr><td class="id">VAL-RAD-031</td><td>Accession key format invalid (manual)</td></tr>
+      </tbody></table></div></div>
+      <div class="card"><h4 class="mini">Business rule (RULE-xxx · 409/422)</h4><div class="tbl-wrap"><table style="min-width:auto">
+        <thead><tr><th>Code</th><th>Meaning</th></tr></thead><tbody>
+        <tr><td class="id">RULE-EDN-001</td><td>Override violates dependency matrix (IPD w/o OPD)</td></tr>
+        <tr><td class="id">RULE-EDN-002</td><td>Cannot disable core module</td></tr>
+        <tr><td class="id">RULE-EDN-003</td><td>Active-workflow guard failed → grace mode</td></tr>
+        <tr><td class="id">RULE-PHAR-002</td><td>Schedule X blocked at POS</td></tr>
+        <tr><td class="id">RULE-PHAR-004</td><td>Expired batch hard-blocked / negative stock</td></tr>
+        <tr><td class="id">RULE-LAB-006</td><td>Single-person release attempted (dual val.)</td></tr>
+        <tr><td class="id">RULE-RAD-007</td><td>Failed un-overridden safety gate</td></tr>
+        <tr><td class="id">RULE-IPD-010</td><td>Discharge w/ unacknowledged critical result</td></tr>
+        <tr><td class="id">RULE-FIN-021</td><td>Invoice series gap / backdated past day-close</td></tr>
+      </tbody></table></div></div>
+    </div>
+  </section>
+
+  <!-- S6 TRACEABILITY -->
+  <section class="section" id="s6">
+    <div class="sec-head"><div class="sec-num">06</div><div><div class="sec-title">Traceability Matrix</div><div class="sec-tagline">Use-case → API → events → tables — the QA test-design source</div></div></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Use-case</th><th>Primary API</th><th>Events</th><th>Tables</th></tr></thead>
+      <tbody>
+        <tr><td class="id">UC-M12-01</td><td class="mono">POST /platform/tenants</td><td class="mono">tenant.provisioned</td><td class="mono">tenant_directory, tenant_modules</td></tr>
+        <tr><td class="id">UC-M12-02</td><td class="mono">PUT …/modules/{id}</td><td class="mono">module.entitlement.changed</td><td class="mono">tenant_modules</td></tr>
+        <tr><td class="id">UC-M01-01</td><td class="mono">POST /opd/patients</td><td>—</td><td class="mono">patient, consent_artefact</td></tr>
+        <tr><td class="id">UC-M01-02</td><td class="mono">POST …/prescription</td><td class="mono">pharmacy.rx.created, *.order.created</td><td class="mono">encounter, prescription</td></tr>
+        <tr><td class="id">UC-M02-01</td><td class="mono">POST /pharmacy/pos/sales</td><td class="mono">pharmcharge.generated</td><td class="mono">pos_sale/invoice, batch_stock</td></tr>
+        <tr><td class="id">UC-M03-02</td><td class="mono">PUT /lab/results/{id}/validate</td><td class="mono">result.critical.alert, result.validated</td><td class="mono">result, lab_order</td></tr>
+        <tr><td class="id">UC-M03-03</td><td class="mono">GET /lab/b2b/{id}/statement</td><td>—</td><td class="mono">b2b_ledger</td></tr>
+        <tr><td class="id">UC-M04-01</td><td class="mono">POST /finance/invoices</td><td class="mono">invoice.settled</td><td class="mono">folio, invoice</td></tr>
+        <tr><td class="id">UC-M08-02</td><td class="mono">PUT /portal/consents/{id}/revoke</td><td class="mono">consent.revoked</td><td class="mono">consent_artefact</td></tr>
+        <tr><td class="id">UC-M09-02</td><td class="mono">POST /security/incidents</td><td class="mono">security.incident.opened</td><td class="mono">security_incident, audit_entry</td></tr>
+        <tr><td class="id">UC-M10-01</td><td class="mono">POST /ipd/admissions</td><td class="mono">ipd.admitted</td><td class="mono">admission</td></tr>
+        <tr><td class="id">UC-M11-01</td><td class="mono">POST /scheduling/bookings</td><td class="mono">appointment.booked</td><td class="mono">appointment</td></tr>
+        <tr><td class="id">UC-M13-01</td><td class="mono">POST …/studies/{id}/checkin</td><td class="mono">rad.order.created</td><td class="mono">imaging_study, consent_artefact</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout gold"><span class="tag">Open items carried forward (FSD Sec. 21)</span>Payload-level <strong>OpenAPI</strong> generated from these endpoint tables; <strong>policy-registry consolidation</strong> (single service vs per-module config); <strong>voice-to-text vendor</strong> for M13 reporting; <strong>ABDM HIP/HIU certification</strong> plan (design-aligned here, separate execution track).</div>
+  </section>
+
+  </div><!-- /content -->
+</main>
+
+<div class="foot-block">
+  <div class="foot-grid">
+    <div><h4>Document</h4><p>LLD-003-HMSPRO-2026 · v1.0<br>Low-Level Design<br><span class="mono">13 June 2026</span></p></div>
+    <div><h4>Prepared by</h4><p>Ashish Kumar Satyam<br>Founder &amp; Lead Architect<br><span class="mono">VSJ AI Labs Pvt. Ltd.</span></p></div>
+    <div><h4>Traceability</h4><p>FSD-003 · HLD-003 · TAD-003<br>14 module specs · RTM<br><span class="mono">→ OpenAPI per module</span></p></div>
+    <div><h4>Review status</h4><p>Draft — Engineering &amp; QA Review<br>Test-design source (seeds RTM)<br><span class="mono">state · API · events · rules</span></p></div>
+  </div>
+  <div class="confidential">● CONFIDENTIAL — VSJ AI LABS INTERNAL ●</div>
+</div>
+
+<script>
+const links=[...document.querySelectorAll('.nav-item')];
+const secs=links.map(l=>document.querySelector(l.getAttribute('href'))).filter(Boolean);
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const id='#'+e.target.id;links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')===id));}});},{rootMargin:'-45% 0px -50% 0px'});
+secs.forEach(s=>obs.observe(s));
+</script>
+</body>
+</html>
